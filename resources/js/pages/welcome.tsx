@@ -2,10 +2,12 @@ import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin, MessageCircle, Phone, PiggyBank } from 'lucide-react';
 import { useState } from 'react';
+import AppLogoIcon from '@/components/app-logo-icon';
+
 
 const siteData = {
-    appName: 'Mechaban',
-    tagline: 'Solusi mudah untuk booking servis mobil secara online.',
+    appName: import.meta.env.VITE_APP_NAME,
+    tagline: 'Tetes Murni, Energi Alami. ',
     features: [
         { title: 'Booking Mudah', desc: 'Pesan layanan hanya dalam beberapa klik.' },
         { title: 'Pembayaran Digital', desc: 'Mendukung berbagai metode pembayaran modern.' },
@@ -234,7 +236,7 @@ export default function Welcome() {
                                     <a
                                         key={link}
                                         href={href}
-                                        className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-500"
+                                        className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-900"
                                     >
                                         {link}
                                     </a>
@@ -269,19 +271,9 @@ export default function Welcome() {
                                 Register
                             </Link>
                             <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Cari..."
-                                    className="focus:ring-opacity-50 w-36 rounded-full bg-blue-500 py-1.5 pr-8 pl-4 text-sm text-white placeholder-blue-300 transition-colors duration-300 focus:bg-blue-400 focus:ring-2 focus:ring-white focus:outline-none"
-                                />
+
                                 <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform">
-                                    <svg className="h-4 w-4 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
+
                                 </span>
                             </div>
                         </div>
@@ -323,12 +315,9 @@ export default function Welcome() {
                     <div className="container mx-auto px-4 text-center">
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
-                                <svg className="mr-2 h-20 w-40" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-                                    <title>Logo {siteData.appName}</title>
-                                    {/* <image href={logo} x="0" y="0" height="50" width="100" /> */}
-                                </svg>
+                                <AppLogoIcon className="h-30 w-auto" />
 
-                                <h1 className="bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 bg-clip-text pb-2 text-5xl font-extrabold text-transparent md:text-6xl lg:text-7xl">
+                                <h1 className="bg-gradient-to-r from-yellow-300 via-yellow-600 to-yellow-700 bg-clip-text pb-2 text-5xl font-extrabold text-transparent md:text-6xl lg:text-7xl">
                                     {siteData.appName}
                                 </h1>
                             </div>
@@ -338,7 +327,7 @@ export default function Welcome() {
                             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 <a
                                     href="#layanan"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
+                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-yellow-400 px-8 py-3 text-base font-medium text-black shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -360,7 +349,7 @@ export default function Welcome() {
 
                                 <a
                                     href="#kontak"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-blue-600 bg-white px-8 py-3 text-base font-medium text-blue-700 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-600 hover:text-white hover:shadow-xl"
+                                    className="inline-flex transform items-center justify-center rounded-md border border-yellow-400 bg-white px-8 py-3 text-base font-medium text-yellow-400 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:text-white hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
