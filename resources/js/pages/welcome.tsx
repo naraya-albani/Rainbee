@@ -1,3 +1,4 @@
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin, MessageCircle, Phone, PiggyBank } from 'lucide-react';
@@ -72,16 +73,57 @@ const contactInfo = {
     social_media: '@mechaban_id',
 };
 
-const faqs = [
-    { q: 'Apa itu Mechaban?', a: 'Mechaban adalah aplikasi booking servis mobil.' },
-    { q: 'Bagaimana cara mendaftar?', a: 'Klik tombol daftar dan isi formulirnya.' },
-];
+interface FaqItem {
+    id: string;
+    question: string;
+    answer: string;
+}
 
-const promos = [
-    { title: 'Diskon Servis 30%', desc: 'Berlaku sampai akhir bulan ini!' },
-    { title: 'Gratis Ongkir Suku Cadang', desc: 'Untuk pembelian di atas Rp500.000' },
-    { title: 'Servis AC Hemat', desc: 'Cek dan isi ulang AC mulai dari Rp150.000' },
-];
+interface Faq1Props {
+    heading?: string;
+    items?: FaqItem[];
+}
+
+const faqs: Faq1Props = {
+    heading: 'Frequently asked questions',
+    items: [
+        {
+            id: 'faq-1',
+            question: 'What is a FAQ?',
+            answer: 'A FAQ is a list of frequently asked questions and answers on a particular topic.',
+        },
+        {
+            id: 'faq-2',
+            question: 'What is the purpose of a FAQ?',
+            answer: 'The purpose of a FAQ is to provide answers to common questions and help users find the information they need quickly and easily.',
+        },
+        {
+            id: 'faq-3',
+            question: 'How do I create a FAQ?',
+            answer: 'To create a FAQ, you need to compile a list of common questions and answers on a particular topic and organize them in a clear and easy-to-navigate format.',
+        },
+        {
+            id: 'faq-4',
+            question: 'What are the benefits of a FAQ?',
+            answer: 'The benefits of a FAQ include providing quick and easy access to information, reducing the number of support requests, and improving the overall user experience.',
+        },
+        {
+            id: 'faq-5',
+            question: 'How should I organize my FAQ?',
+            answer: 'You should organize your FAQ in a logical manner, grouping related questions together and ordering them from most basic to more advanced topics.',
+        },
+        {
+            id: 'faq-6',
+            question: 'How long should FAQ answers be?',
+            answer: 'FAQ answers should be concise and to the point, typically a few sentences or a short paragraph is sufficient for most questions.',
+        },
+        {
+            id: 'faq-7',
+            question: 'Should I include links in my FAQ?',
+            answer: 'Yes, including links to more detailed information or related resources can be very helpful for users who want to learn more about a particular topic.',
+        },
+    ],
+};
 
 interface Contact7Props {
     title?: string;
@@ -487,33 +529,18 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                <section id="faq" className="bg-section-gray py-12 md:py-16">
-                    <div className="container mx-auto max-w-4xl px-4">
-                        <h2 className="section-title mb-10">Pertanyaan Umum (FAQ)</h2>
-                        <div className="space-y-4">
-                            {faqs.map((faq, index) => (
-                                <details key={index} className="faq-item group rounded-lg bg-white shadow" open={index === 0}>
-                                    <summary className="cursor-pointer px-4 py-3 font-semibold text-gray-800 transition-colors hover:text-blue-700">
-                                        {faq.q}
-                                    </summary>
-                                    <div className="px-4 pb-4 whitespace-pre-line text-gray-600">{faq.a}</div>
-                                </details>
+
+                <section className="py-32">
+                    <div className="container mx-auto max-w-3xl">
+                        <h1 className="mb-4 text-3xl font-semibold md:mb-11 md:text-4xl">{faqs.heading}</h1>
+                        <Accordion type="single" collapsible>
+                            {faqs.items?.map((item, index) => (
+                                <AccordionItem key={index} value={`item-${index}`}>
+                                    <AccordionTrigger className="font-semibold hover:no-underline">{item.question}</AccordionTrigger>
+                                    <AccordionContent className="text-muted-foreground">{item.answer}</AccordionContent>
+                                </AccordionItem>
                             ))}
-                        </div>
-                    </div>
-                </section>
-                <section id="promo" className="bg-white py-12 md:py-16">
-                    <div className="container mx-auto px-4">
-                        <h2 className="section-title">Penawaran Spesial</h2>
-                        <p className="section-subtitle">Jangan lewatkan promo menarik untuk layanan dan suku cadang!</p>
-                        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                            {promos.map((promo, index) => (
-                                <article key={index}>
-                                    <h3 className="promo-title">{promo.title}</h3>
-                                    <p className="promo-desc">{promo.desc}</p>
-                                </article>
-                            ))}
-                        </div>
+                        </Accordion>
                     </div>
                 </section>
                 <section className="bg-background py-32">
