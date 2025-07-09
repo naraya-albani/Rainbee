@@ -1,5 +1,6 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { Mail, MapPin, MessageCircle, Phone, PiggyBank } from 'lucide-react';
 import { useState } from 'react';
 
 const siteData = {
@@ -80,6 +81,117 @@ const promos = [
     { title: 'Servis AC Hemat', desc: 'Cek dan isi ulang AC mulai dari Rp150.000' },
 ];
 
+interface Contact7Props {
+    title?: string;
+    description?: string;
+    emailLabel?: string;
+    emailDescription?: string;
+    email?: string;
+    officeLabel?: string;
+    officeDescription?: string;
+    officeAddress?: string;
+    phoneLabel?: string;
+    phoneDescription?: string;
+    phone?: string;
+    chatLabel?: string;
+    chatDescription?: string;
+    chatLink?: string;
+}
+
+const contact: Contact7Props = {
+    title: 'Contact Us',
+    description: 'Contact the support team at Shadcnblocks.',
+    emailLabel: 'Email',
+    emailDescription: 'We respond to all emails within 24 hours.',
+    email: 'example@shadcnblocks.com',
+    officeLabel: 'Office',
+    officeDescription: 'Drop by our office for a chat.',
+    officeAddress: '1 Eagle St, Brisbane, QLD, 4000',
+    phoneLabel: 'Phone',
+    phoneDescription: "We're available Mon-Fri, 9am-5pm.",
+    phone: '+123 456 7890',
+    chatLabel: 'Live Chat',
+    chatDescription: 'Get instant help from our support team.',
+    chatLink: 'Start Chat',
+};
+
+interface MenuItem {
+    title: string;
+    links: {
+        text: string;
+        url: string;
+    }[];
+}
+
+interface Footer2Props {
+    logo?: {
+        url: string;
+        src: string;
+        alt: string;
+    };
+    tagline?: string;
+    menuItems?: MenuItem[];
+    copyright?: string;
+    bottomLinks?: {
+        text: string;
+        url: string;
+    }[];
+}
+
+const footerData: Footer2Props = {
+    logo: {
+        src: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/block-1.svg',
+        alt: 'blocks for shadcn/ui',
+        url: 'https://www.shadcnblocks.com',
+    },
+    tagline: 'Components made easy.',
+    menuItems: [
+        {
+            title: 'Product',
+            links: [
+                { text: 'Overview', url: '#' },
+                { text: 'Pricing', url: '#' },
+                { text: 'Marketplace', url: '#' },
+                { text: 'Features', url: '#' },
+                { text: 'Integrations', url: '#' },
+                { text: 'Pricing', url: '#' },
+            ],
+        },
+        {
+            title: 'Company',
+            links: [
+                { text: 'About', url: '#' },
+                { text: 'Team', url: '#' },
+                { text: 'Blog', url: '#' },
+                { text: 'Careers', url: '#' },
+                { text: 'Contact', url: '#' },
+                { text: 'Privacy', url: '#' },
+            ],
+        },
+        {
+            title: 'Resources',
+            links: [
+                { text: 'Help', url: '#' },
+                { text: 'Sales', url: '#' },
+                { text: 'Advertise', url: '#' },
+            ],
+        },
+        {
+            title: 'Social',
+            links: [
+                { text: 'Twitter', url: '#' },
+                { text: 'Instagram', url: '#' },
+                { text: 'LinkedIn', url: '#' },
+            ],
+        },
+    ],
+    copyright: '© 2024 Shadcnblocks.com. All rights reserved.',
+    bottomLinks: [
+        { text: 'Terms and Conditions', url: '#' },
+        { text: 'Privacy Policy', url: '#' },
+    ],
+};
+
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props;
 
@@ -101,33 +213,18 @@ export default function Welcome() {
     const whatsappNumber = contactInfo.whatsapp.replace(/[^0-9]/g, '');
     const whatsappLink = `https://wa.me/${whatsappNumber}?text=Halo%20,%20saya%20ingin%20bertanya%20tentang%20layanan...`;
 
-    const appName = 'NamaAplikasi'; // Ganti dengan props atau context jika dinamis
-    const currentDate = new Date();
-
-    const formatDateFooter = (date: Date): string => {
-        return date.toLocaleString('id-ID', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-        });
-    };
-
     return (
         <>
             <Head title="Welcome">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
+            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
                 <header className="sticky top-0 z-50 border-b border-blue-700/50 bg-blue-600">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#home" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
                             {/* <Image src="/img/Logo putih Mechaban 1.png" alt={`Logo ${appName}`} width={100} height={50} className="h-10 w-20" /> */}
-                            <span className="hidden text-xl font-bold text-white sm:inline">{appName}</span>
+                            <span className="hidden text-xl font-bold text-white sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
                         <nav className="hidden flex-grow items-center justify-center space-x-4 md:flex">
@@ -430,30 +527,93 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                <footer className="mt-16 py-8 text-white">
-                    <div className="container mx-auto px-4 text-center">
-                        <p>
-                            &copy; {currentDate.getFullYear()} {appName}. Hak Cipta Dilindungi.
-                        </p>
-                        <p className="mt-2 text-sm text-gray-400">Waktu Server: {formatDateFooter(currentDate)} WIB</p>
-
-                        {/* Kotak Google Maps */}
-                        <div className="mt-6">
-                            <h3 className="mb-2 text-lg font-semibold">Lokasi Kami</h3>
-                            <div className="mx-auto w-full max-w-lg overflow-hidden rounded shadow-lg">
-                                <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.123456789!2d106.1234567!3d-6.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f123456789abc%3A0x123456789abcdef!2sLokasi%20Saya!5e0!3m2!1sen!2sid!4v1685582312345!5m2!1sen!2sid"
-                                    width="100%"
-                                    height="300"
-                                    style={{ border: 0 }}
-                                    allowFullScreen
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade"
-                                ></iframe>
+                <section className="bg-background py-32">
+                    <div className="container mx-auto">
+                        <div className="mb-14">
+                            <h1 className="mt-2 mb-3 text-3xl font-semibold text-balance md:text-4xl">{contact.title}</h1>
+                            <p className="max-w-xl text-lg text-muted-foreground">{contact.description}</p>
+                        </div>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            <div className="rounded-lg bg-muted p-6">
+                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+                                    <Mail className="h-6 w-auto" />
+                                </span>
+                                <p className="mb-2 text-lg font-semibold">{contact.emailLabel}</p>
+                                <p className="mb-3 text-muted-foreground">{contact.emailDescription}</p>
+                                <a href={`mailto:${contact.email}`} className="font-semibold hover:underline">
+                                    {contact.email}
+                                </a>
+                            </div>
+                            <div className="rounded-lg bg-muted p-6">
+                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+                                    <MapPin className="h-6 w-auto" />
+                                </span>
+                                <p className="mb-2 text-lg font-semibold">{contact.officeLabel}</p>
+                                <p className="mb-3 text-muted-foreground">{contact.officeDescription}</p>
+                                <a href="#" className="font-semibold hover:underline">
+                                    {contact.officeAddress}
+                                </a>
+                            </div>
+                            <div className="rounded-lg bg-muted p-6">
+                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+                                    <Phone className="h-6 w-auto" />
+                                </span>
+                                <p className="mb-2 text-lg font-semibold">{contact.phoneLabel}</p>
+                                <p className="mb-3 text-muted-foreground">{contact.phoneDescription}</p>
+                                <a href={`tel:${contact.phone}`} className="font-semibold hover:underline">
+                                    {contact.phone}
+                                </a>
+                            </div>
+                            <div className="rounded-lg bg-muted p-6">
+                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
+                                    <MessageCircle className="h-6 w-auto" />
+                                </span>
+                                <p className="mb-2 text-lg font-semibold">{contact.chatLabel}</p>
+                                <p className="mb-3 text-muted-foreground">{contact.chatDescription}</p>
+                                <a href="#" className="font-semibold hover:underline">
+                                    {contact.chatLink}
+                                </a>
                             </div>
                         </div>
                     </div>
-                </footer>
+                </section>
+                <section className="pt-32">
+                    <div className="container mx-auto">
+                        <footer>
+                            <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
+                                <div className="col-span-2 mb-8 lg:mb-0">
+                                    <div className="flex items-center gap-2 lg:justify-start">
+                                        <PiggyBank className="size-10 text-foreground" />
+                                        <p className="text-xl font-semibold text-foreground">{import.meta.env.VITE_APP_NAME}</p>
+                                    </div>
+                                    <p className="mt-4 font-bold text-muted-foreground">{footerData.tagline}</p>
+                                </div>
+                                {footerData.menuItems?.map((section, sectionIdx) => (
+                                    <div key={sectionIdx}>
+                                        <h3 className="mb-4 font-bold text-foreground">{section.title}</h3>
+                                        <ul className="space-y-4 text-muted-foreground">
+                                            {section.links.map((link, linkIdx) => (
+                                                <li key={linkIdx} className="font-medium hover:text-primary">
+                                                    <a href={link.url}>{link.text}</a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-24 flex flex-col justify-between gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
+                                <p>{footerData.copyright}</p>
+                                <ul className="flex gap-4">
+                                    {footerData.bottomLinks?.map((link, linkIdx) => (
+                                        <li key={linkIdx} className="underline hover:text-primary">
+                                            <a href={link.url}>{link.text}</a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </footer>
+                    </div>
+                </section>
             </div>
         </>
     );
