@@ -1,10 +1,12 @@
+import AppLogoIcon from '@/components/app-logo-icon';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Mail, MapPin, MessageCircle, Phone, PiggyBank } from 'lucide-react';
+import { Mail, MapPin, MessageCircle, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
-import AppLogoIcon from '@/components/app-logo-icon';
-
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -26,28 +28,28 @@ interface WhyChooseUsItem {
 
 const whyChooseUs: WhyChooseUsItem[] = [
     {
-        title: 'Keahlian Terjamin',
-        desc: 'Mekanik kami diseleksi ketat dan bersertifikat, memastikan penanganan terbaik untuk mobil Anda.',
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
+        title: 'Madu Asli Bondowoso',
+        desc: 'Rainbee menghadirkan madu murni yang bersumber langsung dari alam Bondowoso yang terjaga kualitasnya.',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#f59e0b]"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
     },
     {
-        title: 'Kualitas Terpercaya',
-        desc: 'Kami hanya menggunakan suku cadang asli atau setara OEM dengan garansi untuk ketenangan Anda.',
+        title: 'Kualitas Terjamin',
+        desc: 'Setiap tetes Rainbee melewati prosesQuality Control ketat untuk memastikan kemurnian dan manfaatnya bagi Anda.',
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.472-2.472a3.375 3.375 0 0 0-4.773-4.773L6.75 15.17l2.472 2.472a3.375 3.375 0 0 0 4.773-4.773l-.709-.708M6.75 15.17l-2.472 2.472a3.375 3.375 0 0 0 4.773 4.773L11.42 21M12 6.375 13.808 8.183a.75.75 0 0 1 .324 1.023l-1.096 1.942a.75.75 0 0 1-1.3-.732l1.096-1.942a.75.75 0 0 1 .324-1.023L12 6.375Zm0 0L10.192 8.183a.75.75 0 0 0-.324 1.023l1.096 1.942a.75.75 0 0 0 1.3-.732l-1.096-1.942a.75.75 0 0 0-.324-1.023L12 6.375Z" /></svg>`,
     },
     {
-        title: 'Kenyamanan Maksimal',
-        desc: 'Layanan 24/7 dan proses pemesanan online yang praktis menghemat waktu dan tenaga Anda.',
+        title: 'Praktis dan Mudah',
+        desc: 'Dapatkan Rainbee dengan mudah melalui pemesanan online. Cukup beberapa klik, manfaat madu alami sampai ke rumah Anda.',
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
     },
     {
-        title: 'Biaya Jujur',
-        desc: 'Dapatkan estimasi biaya yang jelas di awal tanpa khawatir biaya tak terduga.',
+        title: 'Harga Terjangkau',
+        desc: 'Nikmati madu alami berkualitas tinggi dari Bondowoso dengan harga yang bersahabat.',
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V6.375c0-.621.504-1.125 1.125-1.125h.375m18 3.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75m0 0h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125h-.375m0 0h.75a.75.75 0 0 0 .75-.75v-.75a.75.75 0 0 0-.75-.75h-.75M3 12h18M3 15h18" /></svg>`,
     },
     {
-        title: 'Dukungan Pelanggan Responsif',
-        desc: 'Tim kami siap membantu menjawab pertanyaan Anda melalui berbagai kanal komunikasi.',
+        title: 'Dukungan Pelanggan',
+        desc: 'Tim Rainbee siap membantu Anda dengan informasi produk dan layanan kami melalui berbagai saluran komunikasi.',
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-2.138a.5.5 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.227V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>`,
     },
 ];
@@ -237,6 +239,12 @@ const footerData: Footer2Props = {
 };
 
 export default function Welcome() {
+    const handleVariantClick = (variant: string) => {
+        setSelectedVariant(variant);
+        console.log(`Varian '${variant}' dipilih.`);
+    };
+    const productsVariants = ['100ml', '50ml'];
+    const [selectedVariant, setSelectedVariant] = useState<string | null>('Medium');
     const { auth } = usePage<SharedData>().props;
 
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -264,10 +272,9 @@ export default function Welcome() {
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
-                <header className="sticky top-0 z-50 border-b border-blue-700/50 bg-blue-600">
+                <header className="bg-opacity-90 sticky top-0 z-50 bg-[#f59e0b] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#home" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
-                            {/* <Image src="/img/Logo putih Mechaban 1.png" alt={`Logo ${appName}`} width={100} height={50} className="h-10 w-20" /> */}
                             <span className="hidden text-xl font-bold text-white sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
@@ -278,7 +285,7 @@ export default function Welcome() {
                                     <a
                                         key={link}
                                         href={href}
-                                        className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-900"
+                                        className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-900 hover:text-white dark:text-white dark:hover:bg-yellow-600 dark:hover:text-yellow-200"
                                     >
                                         {link}
                                     </a>
@@ -313,10 +320,7 @@ export default function Welcome() {
                                 Register
                             </Link>
                             <div className="relative">
-
-                                <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform">
-
-                                </span>
+                                <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform"></span>
                             </div>
                         </div>
                     </div>
@@ -324,7 +328,7 @@ export default function Welcome() {
                     {/* Mobile Menu */}
                     <nav
                         id="mobile-menu"
-                        className={`absolute top-full right-0 left-0 border-t border-blue-500 bg-blue-600 py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
+                        className={`absolute top-full right-0 left-0 border-t border-[#f59e0b] bg-blue-600 py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
                             mobileOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
                         }`}
                     >
@@ -353,8 +357,13 @@ export default function Welcome() {
                         </div>
                     </nav>
                 </header>
-                <section id="home" className="bg-feature-bg py-16 md:py-20">
-                    <div className="container mx-auto px-4 text-center">
+
+                <section id="home">
+                    <div className="min-h-screen bg-gray-400 bg-[url('/public/bg-web.jpg')] bg-cover bg-center bg-no-repeat py-16 bg-blend-multiply md:py-20">
+                        <div className="absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-b from-transparent to-background"></div>
+
+                        <div className="relative z-20"></div>
+
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
                                 <AppLogoIcon className="h-30 w-auto" />
@@ -364,12 +373,12 @@ export default function Welcome() {
                                 </h1>
                             </div>
 
-                            <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-gray-600 md:text-xl">{siteData.tagline}</p>
+                            <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-white md:text-xl">{siteData.tagline}</p>
 
                             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 <a
                                     href="#layanan"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-yellow-400 px-8 py-3 text-base font-medium text-black shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:shadow-xl"
+                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-[#ffa407] px-8 py-3 text-base font-medium text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -391,7 +400,7 @@ export default function Welcome() {
 
                                 <a
                                     href="#kontak"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-yellow-400 bg-white px-8 py-3 text-base font-medium text-yellow-400 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:text-white hover:shadow-xl"
+                                    className="inline-flex transform items-center justify-center rounded-md border border-[#f59e0b] px-8 py-3 text-base font-medium text-[#f59e0b] shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-[#f59e0b] hover:text-white hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -411,43 +420,99 @@ export default function Welcome() {
                                 </a>
                             </div>
                         </div>
-
-                        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-                            <div className="-mx-3 flex flex-wrap justify-center">
-                                {siteData.features.map((feature, index) => (
-                                    <div key={index} className="mb-6 w-full px-3 sm:w-1/2 lg:w-1/3">
-                                        <div className="flex h-full transform flex-col items-center rounded-xl border-t-4 border-transparent bg-white p-6 text-center shadow-md transition-all duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.03] hover:border-indigo-500 hover:shadow-xl">
-                                            <div className="mb-4 text-indigo-500">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="mx-auto h-10 w-10"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                    strokeWidth={1}
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                                                    />
-                                                </svg>
-                                            </div>
-                                            <h3 className="mb-2 text-lg font-semibold text-gray-900">{feature.title}</h3>
-                                            <p className="text-sm leading-relaxed text-gray-600">{feature.desc}</p>
-                                        </div>
+                    </div>
+                </section>
+                <section id="products" className="flex min-h-screen items-center justify-center py-12 md:py-16">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                        <div className="mb-10 text-center md:mb-12">
+                            <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Produk Kami</h2>
+                            <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
+                                Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
+                            </p>
+                            <div className="mx-auto mt-6 flex items-center justify-center gap-4">
+                                <Card className="w=350px">
+                                    <div>
+                                        <img
+                                            src="/bg-web.jpg"
+                                            alt="Deskripsi Gambar"
+                                            style={{ width: '250px', height: '150px', marginBottom: '10px', borderRadius: '8px' }}
+                                        />
+                                        <CardHeader>
+                                            <CardTitle>Title</CardTitle>
+                                            <CardDescription>Deskripsisiaiianinsa</CardDescription>
+                                            <CardContent>
+                                                <CardContent className="pt-2">
+                                                    <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {productsVariants.map((variant) => (
+                                                            <Badge
+                                                                key={variant}
+                                                                variant={selectedVariant === variant ? 'default' : 'outline'}
+                                                                className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
+                                                                onClick={() => handleVariantClick(variant)}
+                                                            >
+                                                                {variant}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </CardContent>
+                                            <CardFooter>
+                                                <Button>
+                                                    <ShoppingCart className="10px"></ShoppingCart>
+                                                    Keranjang
+                                                </Button>
+                                            </CardFooter>
+                                        </CardHeader>
                                     </div>
-                                ))}
+                                </Card>
+                                <Card className="w=350px">
+                                    <div>
+                                        <img
+                                            src="/bg-web.jpg"
+                                            alt="Deskripsi Gambar"
+                                            style={{ width: '250px', height: '150px', marginBottom: '10px', borderRadius: '8px' }}
+                                        />
+                                        <CardHeader>
+                                            <CardTitle>Title</CardTitle>
+                                            <CardDescription>Deskripsisiaiianinsa</CardDescription>
+                                            <CardContent>
+                                                <CardContent className="pt-2">
+                                                    <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {productsVariants.map((variant) => (
+                                                            <Badge
+                                                                key={variant}
+                                                                variant={selectedVariant === variant ? 'default' : 'outline'}
+                                                                className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
+                                                                onClick={() => handleVariantClick(variant)}
+                                                            >
+                                                                {variant}
+                                                            </Badge>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </CardContent>
+                                            <CardFooter>
+                                                <Button>
+                                                    <ShoppingCart className="10px"></ShoppingCart>
+                                                    Keranjang
+                                                </Button>
+                                            </CardFooter>
+                                        </CardHeader>
+                                    </div>
+                                </Card>
                             </div>
                         </div>
                     </div>
                 </section>
+
                 <section id="layanan" className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-10 text-center md:mb-12">
-                            <h2 className="mb-4 text-3xl font-bold text-blue-700 md:text-4xl">Mengapa Memilih Mechaban?</h2>
+                            <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Mengapa Memilih Rainbee?</h2>
                             <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
-                                Kami menawarkan solusi otomotif online yang handal, mudah, dan menguntungkan untuk Anda.
+                                Madu alami asli Bondowoso yang murni, praktis untuk didapatkan, dan sangat bermanfaat bagi kesehatan Anda.
                             </p>
                         </div>
 
@@ -464,36 +529,8 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                <section id="tentang-kami" className="py-12 md:py-16">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="mb-10 text-center md:mb-12">
-                            <h2 className="mb-3 text-3xl font-bold text-blue-700 md:text-4xl">Apa Kata Pelanggan Kami?</h2>
-                            <p className="mx-auto max-w-2xl text-lg text-gray-600">Pengalaman nyata dari pengguna layanan.</p>
-                        </div>
 
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                            {sampleReviews.map((review, index) => (
-                                <article key={index} className="flex h-full flex-col rounded-xl bg-white p-6 shadow-lg">
-                                    <div className="mb-4 flex items-center">
-                                        <div className="mr-3 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 font-bold text-gray-600 uppercase">
-                                            {review.name.charAt(0)}
-                                        </div>
-                                        <span className="text-base font-semibold text-gray-800">{review.name}</span>
-                                    </div>
-                                    <blockquote className="flex-grow text-sm text-gray-700 italic">
-                                        <p>"{review.teks_review}"</p>
-                                    </blockquote>
-                                    <div className="mt-4 text-sm text-gray-500">
-                                        Rating: {review.rating} / 5
-                                        <br />
-                                        Tanggal Review: {formatDate(review.tgl_review)}
-                                    </div>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-                <section id="kontak" className="py-12 md:py-16">
+                <section id="kontak" className="flex min-h-screen items-center justify-center py-12 md:py-16">
                     <div className="flex justify-center">
                         <div className="w-full max-w-2xl px-4 text-center sm:px-6 lg:px-8">
                             <div className="flex flex-col items-center gap-6">
@@ -531,7 +568,7 @@ export default function Welcome() {
                 </section>
 
                 <section className="py-32">
-                    <div className="container mx-auto max-w-3xl">
+                    <div className="container mx-auto min-h-screen max-w-3xl">
                         <h1 className="mb-4 text-3xl font-semibold md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
                             {faqs.items?.map((item, index) => (
