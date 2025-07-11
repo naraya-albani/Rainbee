@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,20 +30,34 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => [
+                'required',
+                'string',
+                'max:15',
+                'unique:users,phone',
+                'regex:/^8\d{10,14}$/',
+            ],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        $phone = "62" . $request->phone;
+        $otp = rand(1000, 9999);
+
+        Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
+
+        $response = Http::withHeaders([
+            'Authorization' => env('TOKEN_FONNTE'),
+        ])->post('https://api.fonnte.com/send', [
+            'target' => $phone,
+            'message' => '*' . $otp . '* adalah kode verifikasi Anda. Jangan berikan kode ini kepada siapa pun.',
         ]);
 
-        event(new Registered($user));
+        logger($response->json());
 
-        Auth::login($user);
+        session([
+            'register_name' => $request->name,
+            'register_phone' => $phone,
+        ]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('verification');
     }
 }

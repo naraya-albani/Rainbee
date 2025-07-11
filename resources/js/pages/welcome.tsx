@@ -1,10 +1,9 @@
+import AppLogoIcon from '@/components/app-logo-icon';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Mail, MapPin, MessageCircle, Phone, PiggyBank } from 'lucide-react';
 import { useState } from 'react';
-import AppLogoIcon from '@/components/app-logo-icon';
-
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -313,10 +312,7 @@ export default function Welcome() {
                                 Register
                             </Link>
                             <div className="relative">
-
-                                <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform">
-
-                                </span>
+                                <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform"></span>
                             </div>
                         </div>
                     </div>
