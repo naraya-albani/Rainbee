@@ -21,8 +21,8 @@ class Invoice extends Model
     {
         return [
             'cart_id' => 'integer',
-            'total' => 'decimal:2',
             'status' => 'string',
+            'total' => 'decimal:0',
         ];
     }
 }

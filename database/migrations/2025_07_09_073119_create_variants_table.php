@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('variant_name');
-            $table->decimal('price', 10, 2);
+            $table->integer('size');
+            $table->decimal('price', 10, 0);
             $table->integer('stock')->default(0);
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

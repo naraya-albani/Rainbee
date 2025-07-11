@@ -11,6 +11,8 @@ class Variant extends Model
         'variant_name',
         'price',
         'stock',
+        'size',
+        'image',
     ];
     
     /**
@@ -22,8 +24,17 @@ class Variant extends Model
     {
         return [
             'product_id' => 'integer',
-            'price' => 'decimal:2',
             'stock' => 'integer',
+            'size' => 'integer',
+            'price' => 'decimal:0',
         ];
+    }
+
+    /**
+     * Get the product that owns the variant.
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

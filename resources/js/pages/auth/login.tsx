@@ -32,10 +32,7 @@ export default function Login({ status }: LoginProps) {
     };
 
     return (
-        <AuthLayout
-            title="Selamat datang di Rainbee"
-            description="Masukkan nomor HP untuk melanjutkan"
-        >
+        <AuthLayout title="Selamat datang di Rainbee" description="Masukkan nomor HP untuk melanjutkan">
             <Head title="Log in" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
@@ -81,11 +78,7 @@ export default function Login({ status }: LoginProps) {
                 </div>
             </form>
 
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+            {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
         </AuthLayout>
     );
 }

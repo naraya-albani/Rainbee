@@ -2,11 +2,11 @@ import AppLogoIcons from '@/components/app-logo-text';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { type SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
+import { Head, Link } from '@inertiajs/react';
+import axios from 'axios';
 import { Mail, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -14,6 +14,21 @@ const siteData = {
 };
 
 const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq', 'Kontak'];
+
+type Product = {
+    id: number;
+    name: string;
+    description: string;
+    image_url: string;
+    variants: ProductVariant[];
+};
+
+type ProductVariant = {
+    id: number;
+    product_id: number;
+    size: number;
+    price: string;
+};
 
 interface WhyChooseUsItem {
     title: string;
@@ -211,13 +226,25 @@ const footerData: Footer2Props = {
 };
 
 export default function Welcome() {
-    const handleVariantClick = (variant: string) => {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8000/api/product')
+            .then((response) => {
+                setProducts(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching products:', error);
+            });
+    }, []);
+
+    const handleVariantClick = (variant: number) => {
         setSelectedVariant(variant);
         console.log(`Varian '${variant}' dipilih.`);
     };
     const productsVariants = ['100ml', '50ml'];
-    const [selectedVariant, setSelectedVariant] = useState<string | null>('Medium');
-    const { auth } = usePage<SharedData>().props;
+    const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -237,7 +264,7 @@ export default function Welcome() {
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#f59e0b] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-                        <a href="#home" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
+                        <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
                             <span className="hidden text-xl font-bold text-white sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
@@ -392,73 +419,48 @@ export default function Welcome() {
                             <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
                             </p>
-                            <div className="mx-auto mt-6 flex items-center justify-center gap-9 max-w-screen">
-                                <Card className="w-[350px] overflow-hidden">
-                                    <img
-                                        src="/bg-web.jpg"
-                                        alt="Madu Alami"
-                                        className="h-[180px] w-full rounded-t-lg object-cover"
-                                    />
-                                   <CardContent className="px-4 pb-2 text-left">
-                                        <CardTitle className="mb-1 text-xl font-semibold">Madu Alami Murni</CardTitle>
-                                        <p className="mb-4 text-2xl font-bold text-[#f59e0b]">Rp{new Intl.NumberFormat('id-ID').format(99999.99)}</p>
-                                        <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
-                                        <div className="flex flex-wrap gap-2">
+                            <div className="mx-auto mt-6 flex max-w-screen items-center justify-center gap-9">
+                                {products.map((product) => {
+                                    const selectedVariantData = product.variants.find((variant) => variant.id === selectedVariant);
 
-                                            {productsVariants.map((variant) => (
-                                                <Badge
-                                                    key={variant}
-                                                    variant={selectedVariant === variant ? 'default' : 'outline'}
-                                                    className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
-                                                    onClick={() => handleVariantClick(variant)}
-                                                >
-                                                    {variant}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </CardContent>
+                                    return (
+                                        <Card key={product.id} className="w-[350px] overflow-hidden">
+                                            <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
+                                            <CardContent className="px-4 pb-2 text-left">
+                                                <CardTitle className="mb-1 text-xl font-semibold">{product.name}</CardTitle>
+                                                <p className="mb-4 text-2xl font-bold text-[#f59e0b]">
+                                                    {selectedVariantData
+                                                        ? `Rp${new Intl.NumberFormat('id-ID').format(Number(selectedVariantData.price))}`
+                                                        : 'Pilih varian'}
+                                                </p>
+                                                <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {product.variants.map((variant) => (
+                                                        <Badge
+                                                            key={variant.id}
+                                                            variant={selectedVariant === variant.id ? 'default' : 'outline'}
+                                                            className={`cursor-pointer transition-colors duration-200 ${
+                                                                selectedVariant === variant.id
+                                                                    ? 'bg-primary text-primary-foreground'
+                                                                    : 'hover:bg-muted/80'
+                                                            }`}
+                                                            onClick={() => handleVariantClick(variant.id)}
+                                                        >
+                                                            {variant.size} ml
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
 
-                                    <CardFooter className="p-4 pt-0">
-                                        <Button className="w-full">
-                                            <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
-                                            Keranjang
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-                                <Card className="w-[350px] overflow-hidden">
-                                    <img
-                                        src="/bg-web.jpg"
-                                        alt="Madu Alami"
-                                        className="h-[180px] w-full rounded-t-lg object-cover"
-                                    />
-                                    <CardContent className="px-4 pb-2 text-left">
-                                        <CardTitle className="mb-1 text-xl font-semibold">Madu Alami Murni</CardTitle>
-                                        <p className="mb-4 text-2xl font-bold text-[#f59e0b]">Rp{new Intl.NumberFormat('id-ID').format(99999.99)}</p>
-                                        <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
-                                        <div className="flex flex-wrap gap-2">
-
-                                            {productsVariants.map((variant) => (
-                                                <Badge
-                                                    key={variant}
-                                                    variant={selectedVariant === variant ? 'default' : 'outline'}
-                                                    className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
-                                                    onClick={() => handleVariantClick(variant)}
-                                                >
-                                                    {variant}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-
-                                    <CardFooter className="p-4 pt-0">
-                                        <Button className="w-full">
-                                            <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
-                                            Keranjang
-                                        </Button>
-                                    </CardFooter>
-                                </Card>
-
-
+                                            <CardFooter className="p-4 pt-0">
+                                                <Button className="w-full">
+                                                    <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
+                                                    Keranjang
+                                                </Button>
+                                            </CardFooter>
+                                        </Card>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -528,9 +530,7 @@ export default function Welcome() {
                                     {contact.phone}
                                 </a>
                             </div>
-
                             <div className="col-span-full mt-6">
-                                <></>
                                 <iframe
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31594.412854934653!2d113.721344!3d-8.1723392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd695b617d8f623%3A0xf6c4437632474338!2sPoliteknik%20Negeri%20Jember!5e0!3m2!1sid!2sid!4v1752216074517!5m2!1sid!2sid"
                                     className="w-full rounded-lg"
@@ -570,7 +570,7 @@ export default function Welcome() {
                                 ))}
                             </div>
                             <div className="mt-24 flex flex-col justify-between gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
-                                <p>{footerData.copyright}</p>
+                                <img src="/polije.png" alt="" width={190} />
                                 <ul className="flex gap-4">
                                     {footerData.bottomLinks?.map((link, linkIdx) => (
                                         <li key={linkIdx} className="underline hover:text-primary">

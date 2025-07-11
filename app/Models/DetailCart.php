@@ -24,7 +24,7 @@ class DetailCart extends Model
             'cart_id' => 'integer',
             'variant_id' => 'integer',
             'quantity' => 'integer',
-            'price' => 'decimal:2',
+            'price' => 'decimal:0',
         ];
     }
 }
