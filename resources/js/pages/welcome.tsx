@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
-import { Mail, MapPin, MessageCircle, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
+import { Mail, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 
 const siteData = {
@@ -13,7 +13,7 @@ const siteData = {
     tagline: 'Tetes Murni, Energi Alami. ',
 };
 
-const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq','Lokasi'];
+const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq', 'Kontak'];
 
 interface WhyChooseUsItem {
     title: string;
@@ -123,20 +123,14 @@ interface Contact7Props {
 }
 
 const contact: Contact7Props = {
-    title: 'Contact Us',
-    description: 'Contact the support team at Shadcnblocks.',
+    title: 'Hubungi Kami',
+    description: 'Kami siap membantu Anda dengan pertanyaan atau informasi lebih lanjut.',
     emailLabel: 'Email',
-    emailDescription: 'We respond to all emails within 24 hours.',
-    email: 'example@shadcnblocks.com',
-    officeLabel: 'Office',
-    officeDescription: 'Drop by our office for a chat.',
-    officeAddress: '1 Eagle St, Brisbane, QLD, 4000',
-    phoneLabel: 'Phone',
-    phoneDescription: "We're available Mon-Fri, 9am-5pm.",
-    phone: '+123 456 7890',
-    chatLabel: 'Live Chat',
-    chatDescription: 'Get instant help from our support team.',
-    chatLink: 'Start Chat',
+    emailDescription: 'Kirimkan pertanyaan atau permintaan Anda melalui email.',
+    email: 'rainbee@gmail.com',
+    phoneLabel: 'Telfon',
+    phoneDescription: 'Hubungi kami melalui telfon untuk bantuan cepat.',
+    phone: '08123456789',
 };
 
 interface MenuItem {
@@ -346,8 +340,8 @@ export default function Welcome() {
 
                             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                                 <a
-                                    href="#layanan"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-[#ffa407] px-8 py-3 text-base font-medium text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:shadow-xl"
+                                    href="#produk"
+                                    className="inline-flex transform items-center justify-center rounded-md border border-transparent bg-[#f59e0b] px-8 py-3 text-base font-medium text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-yellow-500 hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -391,86 +385,80 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                <section id="produk" className="flex min-h-screen items-center justify-center py-12 md:py-16">
+                <section id="produk" className="min-h-screen py-12 md:py-16">
                     <div className="flex justify-center">
-                        <div className="w-full max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+                        <div className="w-full px-4 text-center sm:px-6 lg:px-8">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Produk Kami</h2>
                             <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
                             </p>
-                            <div className="mx-auto mt-6 flex items-center justify-center gap-4">
-                                <Card className="w=350px">
-                                    <div>
-                                        <img
-                                            src="/bg-web.jpg"
-                                            alt="Deskripsi Gambar"
-                                            style={{ width: '250px', height: '150px', marginBottom: '10px', borderRadius: '8px' }}
-                                        />
-                                        <CardHeader>
-                                            <CardTitle>Title</CardTitle>
-                                            <CardDescription>Deskripsisiaiianinsa</CardDescription>
-                                            <CardContent>
-                                                <CardContent className="pt-2">
-                                                    <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {productsVariants.map((variant) => (
-                                                            <Badge
-                                                                key={variant}
-                                                                variant={selectedVariant === variant ? 'default' : 'outline'}
-                                                                className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
-                                                                onClick={() => handleVariantClick(variant)}
-                                                            >
-                                                                {variant}
-                                                            </Badge>
-                                                        ))}
-                                                    </div>
-                                                </CardContent>
-                                            </CardContent>
-                                            <CardFooter>
-                                                <Button>
-                                                    <ShoppingCart className="10px"></ShoppingCart>
-                                                    Keranjang
-                                                </Button>
-                                            </CardFooter>
-                                        </CardHeader>
-                                    </div>
+                            <div className="mx-auto mt-6 flex items-center justify-center gap-9 max-w-screen">
+                                <Card className="w-[350px] overflow-hidden">
+                                    <img
+                                        src="/bg-web.jpg"
+                                        alt="Madu Alami"
+                                        className="h-[180px] w-full rounded-t-lg object-cover"
+                                    />
+                                   <CardContent className="px-4 pb-2 text-left">
+                                        <CardTitle className="mb-1 text-xl font-semibold">Madu Alami Murni</CardTitle>
+                                        <p className="mb-4 text-2xl font-bold text-[#f59e0b]">Rp{new Intl.NumberFormat('id-ID').format(99999.99)}</p>
+                                        <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
+                                        <div className="flex flex-wrap gap-2">
+
+                                            {productsVariants.map((variant) => (
+                                                <Badge
+                                                    key={variant}
+                                                    variant={selectedVariant === variant ? 'default' : 'outline'}
+                                                    className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
+                                                    onClick={() => handleVariantClick(variant)}
+                                                >
+                                                    {variant}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+
+                                    <CardFooter className="p-4 pt-0">
+                                        <Button className="w-full">
+                                            <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
+                                            Keranjang
+                                        </Button>
+                                    </CardFooter>
                                 </Card>
-                                <Card className="w=350px">
-                                    <div>
-                                        <img
-                                            src="/bg-web.jpg"
-                                            alt="Deskripsi Gambar"
-                                            style={{ width: '250px', height: '150px', marginBottom: '10px', borderRadius: '8px' }}
-                                        />
-                                        <CardHeader>
-                                            <CardTitle>Title</CardTitle>
-                                            <CardDescription>Deskripsisiaiianinsa</CardDescription>
-                                            <CardContent>
-                                                <CardContent className="pt-2">
-                                                    <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {productsVariants.map((variant) => (
-                                                            <Badge
-                                                                key={variant}
-                                                                variant={selectedVariant === variant ? 'default' : 'outline'}
-                                                                className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
-                                                                onClick={() => handleVariantClick(variant)}
-                                                            >
-                                                                {variant}
-                                                            </Badge>
-                                                        ))}
-                                                    </div>
-                                                </CardContent>
-                                            </CardContent>
-                                            <CardFooter>
-                                                <Button>
-                                                    <ShoppingCart className="10px"></ShoppingCart>
-                                                    Keranjang
-                                                </Button>
-                                            </CardFooter>
-                                        </CardHeader>
-                                    </div>
+                                <Card className="w-[350px] overflow-hidden">
+                                    <img
+                                        src="/bg-web.jpg"
+                                        alt="Madu Alami"
+                                        className="h-[180px] w-full rounded-t-lg object-cover"
+                                    />
+                                    <CardContent className="px-4 pb-2 text-left">
+                                        <CardTitle className="mb-1 text-xl font-semibold">Madu Alami Murni</CardTitle>
+                                        <p className="mb-4 text-2xl font-bold text-[#f59e0b]">Rp{new Intl.NumberFormat('id-ID').format(99999.99)}</p>
+                                        <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
+                                        <div className="flex flex-wrap gap-2">
+
+                                            {productsVariants.map((variant) => (
+                                                <Badge
+                                                    key={variant}
+                                                    variant={selectedVariant === variant ? 'default' : 'outline'}
+                                                    className={`cursor-pointer transition-colors duration-200 ${selectedVariant === variant ? 'bg-primary text-primary-foreground' : 'hover:bg-muted/80'} `}
+                                                    onClick={() => handleVariantClick(variant)}
+                                                >
+                                                    {variant}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+
+                                    <CardFooter className="p-4 pt-0">
+                                        <Button className="w-full">
+                                            <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
+                                            Keranjang
+                                        </Button>
+                                    </CardFooter>
                                 </Card>
+
+
                             </div>
                         </div>
                     </div>
@@ -512,7 +500,7 @@ export default function Welcome() {
                         </Accordion>
                     </div>
                 </section>
-                <section className="bg-background py-32">
+                <section id="kontak" className="bg-background py-32">
                     <div className="container mx-auto">
                         <div className="mb-14">
                             <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>
@@ -529,16 +517,7 @@ export default function Welcome() {
                                     {contact.email}
                                 </a>
                             </div>
-                            <div className="rounded-lg bg-muted p-6">
-                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
-                                    <MapPin className="h-6 w-auto" />
-                                </span>
-                                <p className="mb-2 text-lg font-semibold">{contact.officeLabel}</p>
-                                <p className="mb-3 text-muted-foreground">{contact.officeDescription}</p>
-                                <a href="#" className="font-semibold hover:underline">
-                                    {contact.officeAddress}
-                                </a>
-                            </div>
+
                             <div className="rounded-lg bg-muted p-6">
                                 <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
                                     <Phone className="h-6 w-auto" />
@@ -549,33 +528,19 @@ export default function Welcome() {
                                     {contact.phone}
                                 </a>
                             </div>
-                            <div className="rounded-lg bg-muted p-6">
-                                <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
-                                    <MessageCircle className="h-6 w-auto" />
-                                </span>
-                                <p className="mb-2 text-lg font-semibold">{contact.chatLabel}</p>
-                                <p className="mb-3 text-muted-foreground">{contact.chatDescription}</p>
-                                <a href="#" className="font-semibold hover:underline">
-                                    {contact.chatLink}
-                                </a>
+
+                            <div className="col-span-full mt-6">
+                                <></>
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31594.412854934653!2d113.721344!3d-8.1723392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd695b617d8f623%3A0xf6c4437632474338!2sPoliteknik%20Negeri%20Jember!5e0!3m2!1sid!2sid!4v1752216074517!5m2!1sid!2sid"
+                                    className="w-full rounded-lg"
+                                    height="500"
+                                    style={{ border: 0 }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                ></iframe>
                             </div>
-                        </div>
-                    </div>
-                </section>
-                <section id="lokasi" className="flex min-h-screen items-center justify-center py-12 md:py-16">
-                    <div className="flex justify-center">
-                        <div className="w-full px-4 text-center sm:px-6 lg:px-8">
-                            <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Kunjungi Kami</h2>
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.123456789!2d106.1234567!3d-6.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f123456789abc%3A0x123456789abcdef!2sLokasi%20Saya!5e0!3m2!1sen!2sid!4v1685582312345!5m2!1sen!2sid"
-                                className='w-full rounded-lg'
-                                width="100%"
-                                height="300"
-                                style={{ border: 0 }}
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                            ></iframe>
                         </div>
                     </div>
                 </section>
