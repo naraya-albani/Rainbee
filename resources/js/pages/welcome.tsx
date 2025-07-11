@@ -1,4 +1,4 @@
-import AppLogoIcon from '@/components/app-logo-icon';
+import AppLogoIcons from '@/components/app-logo-text';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,14 @@ import { useState } from 'react';
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
     tagline: 'Tetes Murni, Energi Alami. ',
-    features: [
-        { title: 'Booking Mudah', desc: 'Pesan layanan hanya dalam beberapa klik.' },
-        { title: 'Pembayaran Digital', desc: 'Mendukung berbagai metode pembayaran modern.' },
-        { title: 'Layanan Terpercaya', desc: 'Mitra bengkel berkualitas dan terpercaya.' },
-    ],
 };
 
-const navLinks = ['Beranda', 'Layanan', 'Tentang Kami', 'Kontak'];
+const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq','Lokasi'];
 
 interface WhyChooseUsItem {
     title: string;
     desc: string;
-    icon: string; // SVG string
+    icon: string;
 }
 
 const whyChooseUs: WhyChooseUsItem[] = [
@@ -35,44 +30,27 @@ const whyChooseUs: WhyChooseUsItem[] = [
     {
         title: 'Kualitas Terjamin',
         desc: 'Setiap tetes Rainbee melewati prosesQuality Control ketat untuk memastikan kemurnian dan manfaatnya bagi Anda.',
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.472-2.472a3.375 3.375 0 0 0-4.773-4.773L6.75 15.17l2.472 2.472a3.375 3.375 0 0 0 4.773-4.773l-.709-.708M6.75 15.17l-2.472 2.472a3.375 3.375 0 0 0 4.773 4.773L11.42 21M12 6.375 13.808 8.183a.75.75 0 0 1 .324 1.023l-1.096 1.942a.75.75 0 0 1-1.3-.732l1.096-1.942a.75.75 0 0 1 .324-1.023L12 6.375Zm0 0L10.192 8.183a.75.75 0 0 0-.324 1.023l1.096 1.942a.75.75 0 0 0 1.3-.732l-1.096-1.942a.75.75 0 0 0-.324-1.023L12 6.375Z" /></svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#f59e0b]"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
     },
     {
         title: 'Praktis dan Mudah',
         desc: 'Dapatkan Rainbee dengan mudah melalui pemesanan online. Cukup beberapa klik, manfaat madu alami sampai ke rumah Anda.',
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#f59e0b]"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
     },
     {
         title: 'Harga Terjangkau',
         desc: 'Nikmati madu alami berkualitas tinggi dari Bondowoso dengan harga yang bersahabat.',
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V6.375c0-.621.504-1.125 1.125-1.125h.375m18 3.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75m0 0h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125h-.375m0 0h.75a.75.75 0 0 0 .75-.75v-.75a.75.75 0 0 0-.75-.75h-.75M3 12h18M3 15h18" /></svg>`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#ffa407]"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V6.375c0-.621.504-1.125 1.125-1.125h.375m18 3.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75m0 0h.375c.621 0 1.125.504 1.125 1.125v.75c0 .621-.504 1.125-1.125 1.125h-.375m0 0h.75a.75.75 0 0 0 .75-.75v-.75a.75.75 0 0 0-.75-.75h-.75M3 12h18M3 15h18" /></svg>`,
     },
     {
         title: 'Dukungan Pelanggan',
         desc: 'Tim Rainbee siap membantu Anda dengan informasi produk dan layanan kami melalui berbagai saluran komunikasi.',
-        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-indigo-600"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-2.138a.5.5 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.227V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>`,
-    },
-];
-
-const sampleReviews = [
-    {
-        name: 'Andi',
-        teks_review: 'Layanannya sangat memuaskan!',
-        rating: 5,
-        tgl_review: '2025-07-08',
-    },
-    {
-        name: 'Budi',
-        teks_review: 'Prosesnya cepat dan mudah.',
-        rating: 4,
-        tgl_review: '2025-07-07',
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#ffa407]"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-2.138a.5.5 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.227V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg>`,
     },
 ];
 
 const contactInfo = {
     whatsapp: '+62 812 3456 7890',
-    hotline: '0800-123-456',
-    social_media: '@mechaban_id',
 };
 
 interface FaqItem {
@@ -231,7 +209,7 @@ const footerData: Footer2Props = {
             ],
         },
     ],
-    copyright: '© 2024 Shadcnblocks.com. All rights reserved.',
+    copyright: '© 2025 Polije sip',
     bottomLinks: [
         { text: 'Terms and Conditions', url: '#' },
         { text: 'Privacy Policy', url: '#' },
@@ -251,15 +229,6 @@ export default function Welcome() {
 
     const toggleMobileMenu = () => {
         setMobileOpen((prev) => !prev);
-    };
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-        });
     };
 
     const whatsappNumber = contactInfo.whatsapp.replace(/[^0-9]/g, '');
@@ -328,7 +297,7 @@ export default function Welcome() {
                     {/* Mobile Menu */}
                     <nav
                         id="mobile-menu"
-                        className={`absolute top-full right-0 left-0 border-t border-[#f59e0b] bg-blue-600 py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
+                        className={`absolute top-full right-0 left-0 border-t border-[#f59e0b] bg-[#f59e0b] py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
                             mobileOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
                         }`}
                     >
@@ -359,18 +328,18 @@ export default function Welcome() {
                 </header>
 
                 <section id="home">
-                    <div className="min-h-screen bg-gray-400 bg-[url('/public/bg-web.jpg')] bg-cover bg-center bg-no-repeat py-16 bg-blend-multiply md:py-20">
+                    <div className="relative min-h-screen bg-gray-400 bg-[url('/bg-web.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply md:py-20">
                         <div className="absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-b from-transparent to-background"></div>
 
                         <div className="relative z-20"></div>
 
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
-                                <AppLogoIcon className="h-30 w-auto" />
+                                <AppLogoIcons className="h-30 w-auto" />
 
-                                <h1 className="bg-gradient-to-r from-yellow-300 via-yellow-600 to-yellow-700 bg-clip-text pb-2 text-5xl font-extrabold text-transparent md:text-6xl lg:text-7xl">
+                                {/* <h1 className="bg-gradient-to-r from-yellow-300 via-yellow-600 to-yellow-700 bg-clip-text pb-2 text-5xl font-extrabold text-transparent md:text-6xl lg:text-7xl">
                                     {siteData.appName}
-                                </h1>
+                                </h1> */}
                             </div>
 
                             <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-white md:text-xl">{siteData.tagline}</p>
@@ -422,9 +391,9 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
-                <section id="products" className="flex min-h-screen items-center justify-center py-12 md:py-16">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="mb-10 text-center md:mb-12">
+                <section id="produk" className="flex min-h-screen items-center justify-center py-12 md:py-16">
+                    <div className="flex justify-center">
+                        <div className="w-full max-w-2xl px-4 text-center sm:px-6 lg:px-8">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Produk Kami</h2>
                             <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
@@ -507,7 +476,7 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                <section id="layanan" className="py-12 md:py-16">
+                <section id="keunggulan" className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-10 text-center md:mb-12">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Mengapa Memilih Rainbee?</h2>
@@ -530,46 +499,9 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                <section id="kontak" className="flex min-h-screen items-center justify-center py-12 md:py-16">
-                    <div className="flex justify-center">
-                        <div className="w-full max-w-2xl px-4 text-center sm:px-6 lg:px-8">
-                            <div className="flex flex-col items-center gap-6">
-                                <h2 className="text-3xl font-bold text-blue-700">Hubungi Kami</h2>
-
-                                <div className="space-y-5 text-lg text-gray-900">
-                                    <div>
-                                        <span className="block text-sm font-medium tracking-wider text-gray-500 uppercase">WhatsApp</span>
-                                        <p className="mt-1">{contactInfo.whatsapp}</p>
-                                    </div>
-                                    <div>
-                                        <span className="block text-sm font-medium tracking-wider text-gray-500 uppercase">Hotline</span>
-                                        <p className="mt-1">{contactInfo.hotline}</p>
-                                    </div>
-                                    <div>
-                                        <span className="block text-sm font-medium tracking-wider text-gray-500 uppercase">Media Sosial</span>
-                                        <p className="mt-1">{contactInfo.social_media}</p>
-                                    </div>
-                                </div>
-
-                                <a
-                                    href={whatsappLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center rounded-lg bg-green-500 px-8 py-3 text-lg font-bold text-white transition duration-300 hover:bg-green-600"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="mr-2 h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.886-.001 2.269.655 4.498 1.803 6.286l-.935 3.42z" />
-                                    </svg>
-                                    Chat via WhatsApp
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section className="py-32">
+                <section id="faq" className="py-32">
                     <div className="container mx-auto min-h-screen max-w-3xl">
-                        <h1 className="mb-4 text-3xl font-semibold md:mb-11 md:text-4xl">{faqs.heading}</h1>
+                        <h1 className="mb-4 text-3xl font-semibold text-[#ffa407] md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
                             {faqs.items?.map((item, index) => (
                                 <AccordionItem key={index} value={`item-${index}`}>
@@ -583,7 +515,7 @@ export default function Welcome() {
                 <section className="bg-background py-32">
                     <div className="container mx-auto">
                         <div className="mb-14">
-                            <h1 className="mt-2 mb-3 text-3xl font-semibold text-balance md:text-4xl">{contact.title}</h1>
+                            <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>
                             <p className="max-w-xl text-lg text-muted-foreground">{contact.description}</p>
                         </div>
                         <div className="grid gap-6 md:grid-cols-2">
@@ -630,6 +562,23 @@ export default function Welcome() {
                         </div>
                     </div>
                 </section>
+                <section id="lokasi" className="flex min-h-screen items-center justify-center py-12 md:py-16">
+                    <div className="flex justify-center">
+                        <div className="w-full px-4 text-center sm:px-6 lg:px-8">
+                            <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Kunjungi Kami</h2>
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.123456789!2d106.1234567!3d-6.1234567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f123456789abc%3A0x123456789abcdef!2sLokasi%20Saya!5e0!3m2!1sen!2sid!4v1685582312345!5m2!1sen!2sid"
+                                className='w-full rounded-lg'
+                                width="100%"
+                                height="300"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                    </div>
+                </section>
                 <section className="pt-32">
                     <div className="container mx-auto">
                         <footer>
@@ -637,6 +586,7 @@ export default function Welcome() {
                                 <div className="col-span-2 mb-8 lg:mb-0">
                                     <div className="flex items-center gap-2 lg:justify-start">
                                         <PiggyBank className="size-10 text-foreground" />
+
                                         <p className="text-xl font-semibold text-foreground">{import.meta.env.VITE_APP_NAME}</p>
                                     </div>
                                     <p className="mt-4 font-bold text-muted-foreground">{footerData.tagline}</p>
