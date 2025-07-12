@@ -13,5 +13,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
+Route::get('/keranjang', function () {
+    return Inertia::render('keranjang');
+})->name('keranjang');
+
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

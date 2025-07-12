@@ -1,9 +1,10 @@
 import AppLogoIcons from '@/components/app-logo-text';
+import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { Mail, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -239,6 +240,8 @@ export default function Welcome() {
             });
     }, []);
 
+    const [openPopup, setOpenPopup] = useState(false);
+
     const handleVariantClick = (variant: number) => {
         setSelectedVariant(variant);
         console.log(`Varian '${variant}' dipilih.`);
@@ -286,7 +289,7 @@ export default function Welcome() {
                         <div className="md:hidden">
                             <button
                                 onClick={toggleMobileMenu}
-                                className="rounded p-1 text-white hover:bg-blue-500 focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
+                                className="rounded p-1 text-white hover:bg-yellow-900 focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset"
                                 aria-label="Toggle Menu"
                                 aria-expanded={mobileOpen}
                             >
@@ -295,7 +298,7 @@ export default function Welcome() {
                                 </svg>
                             </button>
                         </div>
-
+                        <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button>
                         <div className="hidden items-center space-x-4 md:flex">
                             <Link
                                 href={route('login')}
@@ -309,6 +312,7 @@ export default function Welcome() {
                             >
                                 Register
                             </Link>
+
                             <div className="relative">
                                 <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform"></span>
                             </div>
@@ -325,7 +329,7 @@ export default function Welcome() {
                         {navLinks.map((link) => {
                             const href = `#${link.toLowerCase().replace(/ /g, '-')}`;
                             return (
-                                <a key={link} href={href} className="mx-2 block rounded px-4 py-2 text-center text-white hover:bg-blue-500">
+                                <a key={link} href={href} className="mx-2 block rounded px-4 py-2 text-center text-white hover:bg-yellow-900">
                                     {link}
                                 </a>
                             );
@@ -419,7 +423,7 @@ export default function Welcome() {
                             <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
                             </p>
-                            <div className="mx-auto mt-6 flex max-w-screen items-center justify-center gap-9">
+                            <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
                                 {products.map((product) => {
                                     const selectedVariantData = product.variants.find((variant) => variant.id === selectedVariant);
 
@@ -453,15 +457,51 @@ export default function Welcome() {
                                             </CardContent>
 
                                             <CardFooter className="p-4 pt-0">
-                                                <Button className="w-full">
-                                                    <ShoppingCart className="mr-2 h-4 w-4"></ShoppingCart>
-                                                    Keranjang
+                                                <Button className="w-full" onClick={() => setOpenPopup(true)}>
+                                                    Beli sekarang
                                                 </Button>
                                             </CardFooter>
                                         </Card>
                                     );
                                 })}
                             </div>
+                            {openPopup && (
+                                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                                    <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-md bg-white p-6 shadow-lg">
+                                        <div className="mb-4 flex items-center justify-between border-b pb-2">
+                                            <h2 className="text-lg font-semibold">Detail Produk</h2>
+                                            <button
+                                                onClick={() => setOpenPopup(false)}
+                                                className="text-xl font-bold text-gray-500 hover:text-red-500"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
+                                            <div className="flex flex-col">
+                                                <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">Madu Murni</h1>
+                                                <p className="text-left text-sm text-gray-700">
+                                                    Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
+                                                </p>
+                                                <h3 className="text-left font-semibold text-gray-800">Pilih Varian:</h3>
+                                                <Badge className="mb-2">200 ml</Badge>
+                                                <QuantitySelector initialQuantity={1} min={1} max={10} />
+                                                <div className="grid grid-cols-2">
+                                                    <p className="text-left">harga</p>
+                                                    <p className="text-right font-bold text-[#f59e0b]">Rp.99.999</p>
+                                                </div>
+
+                                                <Button className="mt-5">
+                                                    <ShoppingCart></ShoppingCart>
+                                                    Tambahkan Keranjang
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
