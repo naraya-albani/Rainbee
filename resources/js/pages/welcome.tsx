@@ -4,10 +4,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Mail, Phone, PiggyBank, ShoppingCart } from 'lucide-react';
+import { Mail, Phone, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -158,11 +159,6 @@ interface MenuItem {
 }
 
 interface Footer2Props {
-    logo?: {
-        url: string;
-        src: string;
-        alt: string;
-    };
     tagline?: string;
     menuItems?: MenuItem[];
     copyright?: string;
@@ -173,12 +169,8 @@ interface Footer2Props {
 }
 
 const footerData: Footer2Props = {
-    logo: {
-        src: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/block-1.svg',
-        alt: 'blocks for shadcn/ui',
-        url: 'https://www.shadcnblocks.com',
-    },
-    tagline: 'Components made easy.',
+    tagline:
+        'Rainbee adalah madu alami asli Bondowoso yang murni, praktis untuk didapatkan, dan sangat bermanfaat bagi kesehatan Anda. Madu alami yang berkualitas tinggi, siap memberikan manfaat yang optimal.',
     menuItems: [
         {
             title: 'Product',
@@ -219,12 +211,14 @@ const footerData: Footer2Props = {
             ],
         },
     ],
-    copyright: '© 2025 Polije sip',
-    bottomLinks: [
-        { text: 'Terms and Conditions', url: '#' },
-        { text: 'Privacy Policy', url: '#' },
-    ],
 };
+
+const providers = [
+    { name: 'WhatsApp', icon: <FaWhatsapp className="h-5 w-5" />, href: 'https://www.whatsapp.com' },
+    { name: 'Instagram', icon: <FaInstagram className="h-5 w-5" />, href: 'https://www.instagram.com' },
+    { name: 'Telepon', icon: <Phone className="h-5 w-5" />, href: `tel:${contactInfo.whatsapp}` },
+    { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
+];
 
 export default function Welcome() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -242,12 +236,26 @@ export default function Welcome() {
 
     const [openPopup, setOpenPopup] = useState(false);
 
-    const handleVariantClick = (variant: number) => {
-        setSelectedVariant(variant);
-        console.log(`Varian '${variant}' dipilih.`);
+    const handleVariantClick = (productId: number, variantId: number) => {
+        setSelectedVariant((prev) => ({
+            ...prev,
+            [productId]: variantId,
+        }));
     };
-    const productsVariants = ['100ml', '50ml'];
-    const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
+
+    const [selectedVariant, setSelectedVariant] = useState<Record<number, number>>({});
+
+    useEffect(() => {
+        const initialVariants: Record<number, number> = {};
+
+        products.forEach((product) => {
+            if (product.variants.length > 0) {
+                initialVariants[product.id] = product.variants[0].id;
+            }
+        });
+
+        setSelectedVariant(initialVariants);
+    }, [products]);
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -265,10 +273,10 @@ export default function Welcome() {
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
             <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
-                <header className="bg-opacity-90 sticky top-0 z-50 bg-[#f59e0b] backdrop-blur-md dark:bg-[#1b1b18]">
+                <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
-                            <span className="hidden text-xl font-bold text-white sm:inline">{import.meta.env.VITE_APP_NAME}</span>
+                            <span className="hidden text-xl font-bold text-[#f59e0b] sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
                         <nav className="hidden flex-grow items-center justify-center space-x-4 md:flex">
@@ -278,7 +286,7 @@ export default function Welcome() {
                                     <a
                                         key={link}
                                         href={href}
-                                        className="rounded-md px-3 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-yellow-900 hover:text-white dark:text-white dark:hover:bg-yellow-600 dark:hover:text-yellow-200"
+                                        className="rounded-md px-3 py-2 text-sm font-medium text-[#f59e0b] transition-colors duration-200 hover:bg-yellow-900 hover:text-white dark:hover:bg-yellow-600 dark:hover:text-yellow-200"
                                     >
                                         {link}
                                     </a>
@@ -298,17 +306,17 @@ export default function Welcome() {
                                 </svg>
                             </button>
                         </div>
-                        <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button>
+                        {/* <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button> */}
                         <div className="hidden items-center space-x-4 md:flex">
                             <Link
                                 href={route('login')}
-                                className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                className="inline-block rounded-sm border border-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-white hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                             >
                                 Log in
                             </Link>
                             <Link
                                 href={route('register')}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                             >
                                 Register
                             </Link>
@@ -360,11 +368,7 @@ export default function Welcome() {
 
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
-                                <AppLogoIcons className="h-30 w-auto" />
-
-                                {/* <h1 className="bg-gradient-to-r from-yellow-300 via-yellow-600 to-yellow-700 bg-clip-text pb-2 text-5xl font-extrabold text-transparent md:text-6xl lg:text-7xl">
-                                    {siteData.appName}
-                                </h1> */}
+                                <AppLogoIcons className="h-30 w-auto max-lg:h-12" />
                             </div>
 
                             <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-white md:text-xl">{siteData.tagline}</p>
@@ -394,7 +398,7 @@ export default function Welcome() {
 
                                 <a
                                     href="#kontak"
-                                    className="inline-flex transform items-center justify-center rounded-md border border-[#f59e0b] px-8 py-3 text-base font-medium text-[#f59e0b] shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-[#f59e0b] hover:text-white hover:shadow-xl"
+                                    className="inline-flex transform items-center justify-center rounded-md border-2 border-white px-8 py-3 text-base font-medium text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-[#f59e0b] hover:text-white hover:shadow-xl"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -425,7 +429,8 @@ export default function Welcome() {
                             </p>
                             <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
                                 {products.map((product) => {
-                                    const selectedVariantData = product.variants.find((variant) => variant.id === selectedVariant);
+                                    const selectedVariantId = selectedVariant[product.id];
+                                    const selectedVariantData = product.variants.find((v) => v.id === selectedVariantId);
 
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
@@ -442,13 +447,13 @@ export default function Welcome() {
                                                     {product.variants.map((variant) => (
                                                         <Badge
                                                             key={variant.id}
-                                                            variant={selectedVariant === variant.id ? 'default' : 'outline'}
+                                                            variant={selectedVariantId === variant.id ? 'default' : 'outline'}
                                                             className={`cursor-pointer transition-colors duration-200 ${
-                                                                selectedVariant === variant.id
+                                                                selectedVariantId === variant.id
                                                                     ? 'bg-primary text-primary-foreground'
                                                                     : 'hover:bg-muted/80'
                                                             }`}
-                                                            onClick={() => handleVariantClick(variant.id)}
+                                                            onClick={() => handleVariantClick(product.id, variant.id)}
                                                         >
                                                             {variant.size} ml
                                                         </Badge>
@@ -510,18 +515,18 @@ export default function Welcome() {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-10 text-center md:mb-12">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Mengapa Memilih Rainbee?</h2>
-                            <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
+                            <p className="mx-auto max-w-3xl text-lg text-muted-foreground md:text-xl">
                                 Madu alami asli Bondowoso yang murni, praktis untuk didapatkan, dan sangat bermanfaat bagi kesehatan Anda.
                             </p>
                         </div>
 
                         <div className="-mx-4 flex flex-wrap justify-center">
                             {whyChooseUs.map((item, index) => (
-                                <div key={index} className="mb-6 w-full px-4 md:w-1/2 lg:w-1/3">
-                                    <div className="h-full rounded-xl bg-white p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl">
+                                <div key={index} className="mb-6 w-full rounded-lg border border-accent px-4 md:w-1/2 lg:w-1/3">
+                                    <div className="h-full rounded-xl p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl">
                                         <div dangerouslySetInnerHTML={{ __html: item.icon }} />
-                                        <h3 className="mb-2 text-lg font-semibold text-gray-800">{item.title}</h3>
-                                        <p className="text-sm leading-relaxed text-gray-600">{item.desc}</p>
+                                        <h3 className="mb-2 text-lg font-semibold text-primary">{item.title}</h3>
+                                        <p className="text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -535,7 +540,7 @@ export default function Welcome() {
                         <Accordion type="single" collapsible>
                             {faqs.items?.map((item, index) => (
                                 <AccordionItem key={index} value={`item-${index}`}>
-                                    <AccordionTrigger className="font-semibold hover:no-underline">{item.question}</AccordionTrigger>
+                                    <AccordionTrigger className="font-semibold text-primary hover:no-underline">{item.question}</AccordionTrigger>
                                     <AccordionContent className="text-muted-foreground">{item.answer}</AccordionContent>
                                 </AccordionItem>
                             ))}
@@ -551,22 +556,22 @@ export default function Welcome() {
                         <div className="grid gap-6 md:grid-cols-2">
                             <div className="rounded-lg bg-muted p-6">
                                 <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
-                                    <Mail className="h-6 w-auto" />
+                                    <Mail className="h-6 w-auto text-primary" />
                                 </span>
-                                <p className="mb-2 text-lg font-semibold">{contact.emailLabel}</p>
+                                <p className="mb-2 text-lg font-semibold text-primary">{contact.emailLabel}</p>
                                 <p className="mb-3 text-muted-foreground">{contact.emailDescription}</p>
-                                <a href={`mailto:${contact.email}`} className="font-semibold hover:underline">
+                                <a href={`mailto:${contact.email}`} className="font-semibold text-primary hover:underline">
                                     {contact.email}
                                 </a>
                             </div>
 
                             <div className="rounded-lg bg-muted p-6">
                                 <span className="mb-3 flex size-12 flex-col items-center justify-center rounded-full bg-accent">
-                                    <Phone className="h-6 w-auto" />
+                                    <Phone className="h-6 w-auto text-primary" />
                                 </span>
-                                <p className="mb-2 text-lg font-semibold">{contact.phoneLabel}</p>
+                                <p className="mb-2 text-lg font-semibold text-primary">{contact.phoneLabel}</p>
                                 <p className="mb-3 text-muted-foreground">{contact.phoneDescription}</p>
-                                <a href={`tel:${contact.phone}`} className="font-semibold hover:underline">
+                                <a href={`tel:${contact.phone}`} className="font-semibold text-primary hover:underline">
                                     {contact.phone}
                                 </a>
                             </div>
@@ -588,36 +593,36 @@ export default function Welcome() {
                     <div className="container mx-auto">
                         <footer>
                             <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-                                <div className="col-span-2 mb-8 lg:mb-0">
-                                    <div className="flex items-center gap-2 lg:justify-start">
-                                        <PiggyBank className="size-10 text-foreground" />
-
-                                        <p className="text-xl font-semibold text-foreground">{import.meta.env.VITE_APP_NAME}</p>
+                                <div className="col-span-3 mb-8 lg:mb-0">
+                                    <img src="/logo-type.png" alt="" width={240} />
+                                    <p className="my-4 font-bold text-muted-foreground">{footerData.tagline}</p>
+                                    <div className="flex gap-2">
+                                        {providers.map((provider) => (
+                                            <a key={provider.name} href={provider.href} target="_blank" rel="noopener noreferrer">
+                                                <Button
+                                                    size="icon"
+                                                    className="rounded-lg border border-gray-700 bg-black text-white hover:bg-zinc-900"
+                                                >
+                                                    {provider.icon}
+                                                </Button>
+                                            </a>
+                                        ))}
                                     </div>
-                                    <p className="mt-4 font-bold text-muted-foreground">{footerData.tagline}</p>
                                 </div>
-                                {footerData.menuItems?.map((section, sectionIdx) => (
-                                    <div key={sectionIdx}>
-                                        <h3 className="mb-4 font-bold text-foreground">{section.title}</h3>
-                                        <ul className="space-y-4 text-muted-foreground">
-                                            {section.links.map((link, linkIdx) => (
-                                                <li key={linkIdx} className="font-medium hover:text-primary">
-                                                    <a href={link.url}>{link.text}</a>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                <div className="col-span-3">
+                                    <h3 className="mb-4 text-xl font-bold text-foreground">Mau ke mana lagi?</h3>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <Button>Beranda</Button>
+                                        <Button>Produk</Button>
+                                        <Button>Keunggulan</Button>
+                                        <Button>Faq</Button>
+                                        <Button>Kontak</Button>
                                     </div>
-                                ))}
+                                </div>
                             </div>
                             <div className="mt-24 flex flex-col justify-between gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
-                                <img src="/polije.png" alt="" width={190} />
-                                <ul className="flex gap-4">
-                                    {footerData.bottomLinks?.map((link, linkIdx) => (
-                                        <li key={linkIdx} className="underline hover:text-primary">
-                                            <a href={link.url}>{link.text}</a>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <img src="/polije.png" alt="Polije" width={200} className="block dark:hidden" />
+                                <img src="/polije-dark.png" alt="Polije" width={200} className="hidden dark:block" />
                             </div>
                         </footer>
                     </div>

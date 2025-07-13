@@ -23,10 +23,9 @@ const cartItems = [
 export default function Keranjang() {
     const [items, setItems] = useState(cartItems);
     return (
-        <div className="grid min-h-screen grid-cols-1 gap-6 bg-gray-100 p-6 md:grid-cols-3">
-
+        <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
             <div className="space-y-4 md:col-span-2">
-                <header className='text-3xl font-bold text-[#f59e0b] '>Keranjang</header>
+                <header className="text-3xl font-bold text-[#f59e0b]">Keranjang</header>
 
                 <Card>
                     <CardContent className="flex items-center space-x-3 py-4">
@@ -42,14 +41,12 @@ export default function Keranjang() {
                             <img src={item.image} alt={item.title} className="h-20 w-20 rounded object-cover" />
                             <div className="flex-1">
                                 <p className="text-lg">{item.title}</p>
-                                <p className='text-sm'>200 ml</p>
+                                <p className="text-sm">200 ml</p>
                                 <div className="mt-2">
                                     <p className="text-lg font-bold text-black">Rp{item.price.toLocaleString()}</p>
-
                                 </div>
                             </div>
                         </CardContent>
-
                     </Card>
                 ))}
             </div>
@@ -63,7 +60,6 @@ export default function Keranjang() {
                             <span>Total</span>
                             <span>Rp.99.9.999.9</span>
                             <span className="font-semibold">-</span>
-
                         </div>
 
                         <Button className="w-full">Beli</Button>
