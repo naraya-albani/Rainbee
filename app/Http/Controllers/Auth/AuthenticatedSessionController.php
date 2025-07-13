@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         return redirect()->route('verification', [
-            'phone' => $request->input('phone'),
+            'phone' => "62" . $request->input('phone'),
             'remember' => $request->boolean('remember'),
         ]);
     }

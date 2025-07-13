@@ -8,7 +8,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redis;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -35,10 +34,13 @@ class RegisteredUserController extends Controller
                 'required',
                 'string',
                 'max:15',
-                'unique:users,phone',
                 'regex:/^8\d{10,14}$/',
             ],
         ]);
+
+        if (User::where('phone', '62' . $request->phone)->exists()) {
+            return back()->withErrors(['phone' => 'Nomor telepon sudah terdaftar.']);
+        }
 
         $phone = "62" . $request->phone;
 

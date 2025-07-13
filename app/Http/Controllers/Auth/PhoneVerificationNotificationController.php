@@ -21,17 +21,18 @@ class PhoneVerificationNotificationController extends Controller
             'otp' => 'required|string|max:4|regex:/^\d{4}$/',
         ]);
 
-        dd(url());
-
         $cachedOtp = Cache::get('otp_' . $request->input('phone'));
 
+        $name = $request->input('name');
+        // $remember = $request->boolean('remember');
+
         if (!$cachedOtp || $request->otp !== (string) $cachedOtp) {
-            return back()->withErrors(['otp' => 'Kode OTP tidak sesuai atau sudah kadaluarsa.']);
+            return back()->withErrors(['otp' => 'Kode OTP tidak sesuai atau sudah kedaluarsa.']);
         }
 
         Cache::forget('otp_' . $request->input('phone'));
 
-        if ($request->has(['name', 'phone'])) {
+        if ($name) {
             $user = User::create([
                 'name' => $request->input('name'),
                 'phone' => $request->input('phone'),
@@ -42,7 +43,7 @@ class PhoneVerificationNotificationController extends Controller
             Auth::login($user);
 
             return redirect()->intended(route('dashboard', absolute: false));
-        } else if ($request->has(['phone', 'remember'])) {
+        } else if (!$name) {
             $user = User::where('phone', $request->input('phone'))->first();
 
             if (!$user) {

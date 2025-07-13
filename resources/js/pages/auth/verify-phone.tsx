@@ -11,15 +11,28 @@ import AuthLayout from '@/layouts/auth-layout';
 
 type VerifyPhoneForm = {
     otp: string;
+    phone: string;
+    name: string | null;
+    remember: boolean | null;
 };
 
-export default function VerifyPhone() {
-    const { data, post, processing, setData, errors } = useForm<Required<VerifyPhoneForm>>({
+type Props = {
+    phone: string;
+    name: string | null;
+    remember: boolean | null;
+};
+
+export default function VerifyPhone({ phone, name, remember }: Props) {
+    const { data, post, processing, setData, errors } = useForm<VerifyPhoneForm>({
         otp: '',
+        phone,
+        name,
+        remember,
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        console.log('Submitting OTP:', data.otp, 'for phone:', data.phone, 'with name:', data.name, 'and remember:', data.remember);
         post(route('verification.send'));
     };
 
@@ -46,6 +59,10 @@ export default function VerifyPhone() {
                         <InputOTPSlot index={3} />
                     </InputOTPGroup>
                 </InputOTP>
+
+                <input type="hidden" name="phone" value={data.phone} />
+                <input type="hidden" name="name" value={data.name ?? ''} />
+                <input type="hidden" name="remember" value={data.remember ? '1' : ''} />
 
                 <Button type="submit" disabled={processing} variant="secondary">
                     {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
