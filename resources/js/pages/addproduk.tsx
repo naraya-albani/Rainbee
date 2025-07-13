@@ -7,18 +7,18 @@ import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Dashboard',
-        href: '/dashboard',
+        title: 'Tambah produk',
+        href: '/produk',
     },
 ];
 
-export default function Dashboard() {
+export default function Addproduk() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title="Addproduk" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                
-                <SectionCards></SectionCards>
+
+                <h2>tambah produk</h2>
             </div>
         </AppLayout>
     );

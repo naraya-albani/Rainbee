@@ -11,6 +11,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+    Route::get('produk', function () {
+        return Inertia::render('addproduk');
+    })->name('produk');
+    Route::get('laporan', function () {
+        return Inertia::render('Report');
+    })->name('laporan');
 });
 
 Route::get('/keranjang', function () {

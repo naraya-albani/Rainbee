@@ -1,6 +1,8 @@
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { SlashIcon } from 'lucide-react';
 import { useState } from 'react';
 
 const cartItems = [
@@ -26,7 +28,19 @@ export default function Keranjang() {
         <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
             <div className="space-y-4 md:col-span-2">
                 <header className="text-3xl font-bold text-[#f59e0b]">Keranjang</header>
-
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/">Welcome</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator>
+                            <SlashIcon />
+                        </BreadcrumbSeparator>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/">keranjang</BreadcrumbLink>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
                 <Card>
                     <CardContent className="flex items-center space-x-3 py-4">
                         <Checkbox />
