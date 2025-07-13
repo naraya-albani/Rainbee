@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -41,7 +43,9 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $user = User::where('phone', '62'. $this->input('phone'))->first();
+        $phone = "62" . $this->input('phone');
+
+        $user = User::where('phone', $phone)->first();
 
         if (!$user) {
             RateLimiter::hit($this->throttleKey());
@@ -51,7 +55,18 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        Auth::login($user, $this->boolean('remember'));
+        $otp = rand(1000, 9999);
+
+        Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
+
+        $response = Http::withHeaders([
+            'Authorization' => env('TOKEN_FONNTE'),
+        ])->post('https://api.fonnte.com/send', [
+            'target' => $phone,
+            'message' => '*' . $otp . '* adalah kode verifikasi Anda. Jangan berikan kode ini kepada siapa pun.',
+        ]);
+
+        logger($response->json());
 
         RateLimiter::clear($this->throttleKey());
     }

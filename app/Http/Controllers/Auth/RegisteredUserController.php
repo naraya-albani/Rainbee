@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -40,6 +41,11 @@ class RegisteredUserController extends Controller
         ]);
 
         $phone = "62" . $request->phone;
+
+        if (User::where('phone', $phone)->exists()) {
+            return redirect()->back()->withErrors(['phone' => 'Nomor telepon sudah terdaftar.']);
+        }
+
         $otp = rand(1000, 9999);
 
         Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
@@ -53,11 +59,6 @@ class RegisteredUserController extends Controller
 
         logger($response->json());
 
-        session([
-            'register_name' => $request->name,
-            'register_phone' => $phone,
-        ]);
-
-        return redirect()->route('verification');
+        return redirect()->route('verification', ['name' => $request->name, 'phone' => $phone]);
     }
 }

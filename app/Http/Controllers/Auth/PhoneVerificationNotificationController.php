@@ -21,29 +21,41 @@ class PhoneVerificationNotificationController extends Controller
             'otp' => 'required|string|max:4|regex:/^\d{4}$/',
         ]);
 
-        if (!session()->has(['register_name', 'register_phone'])) {
-            return redirect()->route('register')->withErrors(['otp' => 'Sesi Anda telah habis. Silakan daftar ulang.']);
-        }
+        dd(url());
 
-        $cachedOtp = Cache::get('otp_' . session('register_phone'));
+        $cachedOtp = Cache::get('otp_' . $request->input('phone'));
 
         if (!$cachedOtp || $request->otp !== (string) $cachedOtp) {
             return back()->withErrors(['otp' => 'Kode OTP tidak sesuai atau sudah kadaluarsa.']);
         }
 
-        Cache::forget('otp_' . session('register_phone'));
+        Cache::forget('otp_' . $request->input('phone'));
 
-        $user = User::create([
-            'name' => session('register_name'),
-            'phone' => session('register_phone'),
-        ]);
-        
-        session()->forget(['register_name', 'register_phone']);
+        if ($request->has(['name', 'phone'])) {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'phone' => $request->input('phone'),
+            ]);
 
-        event(new Registered($user));
+            event(new Registered($user));
 
-        Auth::login($user);
+            Auth::login($user);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else if ($request->has(['phone', 'remember'])) {
+            $user = User::where('phone', $request->input('phone'))->first();
+
+            if (!$user) {
+                return redirect()->back()->withErrors(['phone' => 'Pengguna tidak ditemukan.']);
+            }
+
+            Auth::login($user);
+
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            return redirect()->back()->withErrors(['otp' => 'Informasi yang diperlukan tidak lengkap.']);
+        }
     }
 }
