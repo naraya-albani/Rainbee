@@ -24,7 +24,6 @@ class PhoneVerificationNotificationController extends Controller
         $cachedOtp = Cache::get('otp_' . $request->input('phone'));
 
         $name = $request->input('name');
-        // $remember = $request->boolean('remember');
 
         if (!$cachedOtp || $request->otp !== (string) $cachedOtp) {
             return back()->withErrors(['otp' => 'Kode OTP tidak sesuai atau sudah kedaluarsa.']);

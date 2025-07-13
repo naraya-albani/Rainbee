@@ -27,4 +27,9 @@ class DetailCart extends Model
             'price' => 'decimal:0',
         ];
     }
+
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
+    }
 }

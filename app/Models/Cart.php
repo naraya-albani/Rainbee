@@ -24,4 +24,9 @@ class Cart extends Model
             'subtotal' => 'decimal:0',
         ];
     }
+
+    public function details()
+    {
+        return $this->hasMany(DetailCart::class);
+    }
 }

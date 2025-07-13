@@ -21,7 +21,7 @@ class VariantFactory extends Factory
             'size' => fake()->numberBetween(100, 500),
             'price' => fake()->randomFloat(0, 10000, 100000),
             'stock' => fake()->numberBetween(1, 50),
-            'image' => fake()->imageUrl(640, 480, 'fashion'),
+            'image' => 'https://picsum.photos/id/' . fake()->randomElement(['0', '13', '20']) . '/400/180.webp'
         ];
     }
 }

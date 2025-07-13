@@ -21,7 +21,6 @@ type Product = {
     id: number;
     name: string;
     description: string;
-    image_url: string;
     variants: ProductVariant[];
 };
 
@@ -30,6 +29,8 @@ type ProductVariant = {
     product_id: number;
     size: number;
     price: string;
+    image_url: string;
+    stock: number;
 };
 
 interface WhyChooseUsItem {
@@ -222,6 +223,12 @@ const providers = [
 
 export default function Welcome() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedVariantIdPopup, setSelectedVariantIdPopup] = useState<number | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
+    const [selectedVariant, setSelectedVariant] = useState<Record<number, number>>({});
+    const [openPopup, setOpenPopup] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
         axios
@@ -234,16 +241,12 @@ export default function Welcome() {
             });
     }, []);
 
-    const [openPopup, setOpenPopup] = useState(false);
-
     const handleVariantClick = (productId: number, variantId: number) => {
         setSelectedVariant((prev) => ({
             ...prev,
             [productId]: variantId,
         }));
     };
-
-    const [selectedVariant, setSelectedVariant] = useState<Record<number, number>>({});
 
     useEffect(() => {
         const initialVariants: Record<number, number> = {};
@@ -257,14 +260,9 @@ export default function Welcome() {
         setSelectedVariant(initialVariants);
     }, [products]);
 
-    const [mobileOpen, setMobileOpen] = useState(false);
-
     const toggleMobileMenu = () => {
         setMobileOpen((prev) => !prev);
     };
-
-    const whatsappNumber = contactInfo.whatsapp.replace(/[^0-9]/g, '');
-    const whatsappLink = `https://wa.me/${whatsappNumber}?text=Halo%20,%20saya%20ingin%20bertanya%20tentang%20layanan...`;
 
     return (
         <>
@@ -462,7 +460,14 @@ export default function Welcome() {
                                             </CardContent>
 
                                             <CardFooter className="p-4 pt-0">
-                                                <Button className="w-full" onClick={() => setOpenPopup(true)}>
+                                                <Button
+                                                    className="w-full"
+                                                    onClick={() => {
+                                                        setSelectedProduct(product);
+                                                        setSelectedVariantIdPopup(selectedVariant[product.id] || null);
+                                                        setOpenPopup(true);
+                                                    }}
+                                                >
                                                     Beli sekarang
                                                 </Button>
                                             </CardFooter>
@@ -470,7 +475,7 @@ export default function Welcome() {
                                     );
                                 })}
                             </div>
-                            {openPopup && (
+                            {openPopup && selectedProduct && (
                                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                                     <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-md bg-white p-6 shadow-lg">
                                         <div className="mb-4 flex items-center justify-between border-b pb-2">
@@ -486,16 +491,48 @@ export default function Welcome() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
                                             <div className="flex flex-col">
-                                                <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">Madu Murni</h1>
-                                                <p className="text-left text-sm text-gray-700">
-                                                    Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
-                                                </p>
+                                                <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
+                                                <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
                                                 <h3 className="text-left font-semibold text-gray-800">Pilih Varian:</h3>
-                                                <Badge className="mb-2">200 ml</Badge>
-                                                <QuantitySelector initialQuantity={1} min={1} max={10} />
+                                                <div className="flex">
+                                                    {selectedProduct.variants.map((variant) => (
+                                                        <Badge
+                                                            key={variant.id}
+                                                            onClick={() => {
+                                                                setSelectedVariantIdPopup(variant.id);
+                                                                setQuantity(1);
+                                                            }}
+                                                            variant={selectedVariantIdPopup === variant.id ? 'default' : 'outline'}
+                                                            className={`cursor-pointer transition-colors duration-200 ${
+                                                                selectedVariantIdPopup === variant.id
+                                                                    ? 'bg-primary text-primary-foreground'
+                                                                    : 'hover:bg-muted/80'
+                                                            }`}
+                                                        >
+                                                            {variant.size} ml
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                                <QuantitySelector
+                                                    value={quantity}
+                                                    min={1}
+                                                    max={selectedProduct.variants.find((v) => v.id === selectedVariantIdPopup)?.stock || 0}
+                                                    onChange={(val) => setQuantity(val)}
+                                                />
                                                 <div className="grid grid-cols-2">
                                                     <p className="text-left">harga</p>
-                                                    <p className="text-right font-bold text-[#f59e0b]">Rp.99.999</p>
+                                                    <p className="text-right font-bold text-[#f59e0b]">
+                                                        Rp
+                                                        {selectedProduct && selectedVariantIdPopup
+                                                            ? new Intl.NumberFormat('id-ID').format(
+                                                                  quantity *
+                                                                      Number(
+                                                                          selectedProduct.variants.find((v) => v.id === selectedVariantIdPopup)
+                                                                              ?.price || 0,
+                                                                      ),
+                                                              )
+                                                            : '0'}
+                                                    </p>
                                                 </div>
 
                                                 <Button className="mt-5">

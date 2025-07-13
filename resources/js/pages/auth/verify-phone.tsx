@@ -32,7 +32,6 @@ export default function VerifyPhone({ phone, name, remember }: Props) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        console.log('Submitting OTP:', data.otp, 'for phone:', data.phone, 'with name:', data.name, 'and remember:', data.remember);
         post(route('verification.send'));
     };
 
