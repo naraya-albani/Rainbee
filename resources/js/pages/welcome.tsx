@@ -1,7 +1,6 @@
 import AppLogoIcons from '@/components/app-logo-text';
 import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Head, Link } from '@inertiajs/react';
@@ -27,12 +26,6 @@ type Product = {
     id: number;
     name: string;
     description: string;
-    variants: ProductVariant[];
-};
-
-type ProductVariant = {
-    id: number;
-    product_id: number;
     size: number;
     price: string;
     image_url: string;
@@ -254,17 +247,17 @@ export default function Welcome({ user }: WelcomeProps) {
         }));
     };
 
-    useEffect(() => {
-        const initialVariants: Record<number, number> = {};
+    // useEffect(() => {
+    //     const initialVariants: Record<number, number> = {};
 
-        products.forEach((product) => {
-            if (product.variants.length > 0) {
-                initialVariants[product.id] = product.variants[0].id;
-            }
-        });
+    //     products.forEach((product) => {
+    //         if (product.variants.length > 0) {
+    //             initialVariants[product.id] = product.variants[0].id;
+    //         }
+    //     });
 
-        setSelectedVariant(initialVariants);
-    }, [products]);
+    //     setSelectedVariant(initialVariants);
+    // }, [products]);
 
     const toggleMobileMenu = () => {
         setMobileOpen((prev) => !prev);
@@ -458,7 +451,7 @@ export default function Welcome({ user }: WelcomeProps) {
                             <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
                                 {products.map((product) => {
                                     const selectedVariantId = selectedVariant[product.id];
-                                    const selectedVariantData = product.variants.find((v) => v.id === selectedVariantId);
+                                    // const selectedVariantData = product.variants.find((v) => v.id === selectedVariantId);
 
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
@@ -466,12 +459,10 @@ export default function Welcome({ user }: WelcomeProps) {
                                             <CardContent className="px-4 pb-2 text-left">
                                                 <CardTitle className="mb-1 text-xl font-semibold">{product.name}</CardTitle>
                                                 <p className="mb-4 text-2xl font-bold text-[#f59e0b]">
-                                                    {selectedVariantData
-                                                        ? `Rp${new Intl.NumberFormat('id-ID').format(Number(selectedVariantData.price))}`
-                                                        : 'Pilih varian'}
+                                                    Rp{new Intl.NumberFormat('id-ID').format(Number(product.price))}
                                                 </p>
-                                                <p className="mb-2 text-sm font-medium">Pilih Varian:</p>
-                                                <div className="flex flex-wrap gap-2">
+                                                {/* <p className="mb-2 text-sm font-medium">Pilih Varian:</p> */}
+                                                {/* <div className="flex flex-wrap gap-2">
                                                     {product.variants.map((variant) => (
                                                         <Badge
                                                             key={variant.id}
@@ -486,7 +477,7 @@ export default function Welcome({ user }: WelcomeProps) {
                                                             {variant.size} ml
                                                         </Badge>
                                                     ))}
-                                                </div>
+                                                </div> */}
                                             </CardContent>
 
                                             <CardFooter className="p-4 pt-0">
@@ -494,7 +485,8 @@ export default function Welcome({ user }: WelcomeProps) {
                                                     className="w-full"
                                                     onClick={() => {
                                                         setSelectedProduct(product);
-                                                        setSelectedVariantIdPopup(selectedVariant[product.id] || null);
+                                                        // setSelectedVariantIdPopup(selectedVariant[product.id] || null);
+                                                        setQuantity(1);
                                                         setOpenPopup(true);
                                                     }}
                                                 >
@@ -523,8 +515,8 @@ export default function Welcome({ user }: WelcomeProps) {
                                             <div className="flex flex-col">
                                                 <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
                                                 <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
-                                                <h3 className="text-left font-semibold text-gray-800">Pilih Varian:</h3>
-                                                <div className="flex">
+                                                {/* <h3 className="text-left font-semibold text-gray-800">Pilih Varian:</h3> */}
+                                                {/* <div className="flex">
                                                     {selectedProduct.variants.map((variant) => (
                                                         <Badge
                                                             key={variant.id}
@@ -542,26 +534,18 @@ export default function Welcome({ user }: WelcomeProps) {
                                                             {variant.size} ml
                                                         </Badge>
                                                     ))}
-                                                </div>
+                                                </div> */}
                                                 <QuantitySelector
                                                     value={quantity}
                                                     min={1}
-                                                    max={selectedProduct.variants.find((v) => v.id === selectedVariantIdPopup)?.stock || 0}
+                                                    max={selectedProduct.stock}
                                                     onChange={(val) => setQuantity(val)}
                                                 />
                                                 <div className="grid grid-cols-2">
                                                     <p className="text-left">harga</p>
                                                     <p className="text-right font-bold text-[#f59e0b]">
                                                         Rp
-                                                        {selectedProduct && selectedVariantIdPopup
-                                                            ? new Intl.NumberFormat('id-ID').format(
-                                                                  quantity *
-                                                                      Number(
-                                                                          selectedProduct.variants.find((v) => v.id === selectedVariantIdPopup)
-                                                                              ?.price || 0,
-                                                                      ),
-                                                              )
-                                                            : '0'}
+                                                        {new Intl.NumberFormat('id-ID').format(quantity * Number(selectedProduct.price))}
                                                     </p>
                                                 </div>
 
