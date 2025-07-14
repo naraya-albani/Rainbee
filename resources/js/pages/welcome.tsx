@@ -452,7 +452,7 @@ export default function Welcome({ user }: WelcomeProps) {
                     <div className="flex justify-center">
                         <div className="w-full px-4 text-center sm:px-6 lg:px-8">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Produk Kami</h2>
-                            <p className="mx-auto max-w-3xl text-lg text-gray-600 md:text-xl">
+                            <p className="mx-auto max-w-3xl text-lg text-primary md:text-xl">
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
                             </p>
                             <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
@@ -582,7 +582,7 @@ export default function Welcome({ user }: WelcomeProps) {
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-10 text-center md:mb-12">
                             <h2 className="mb-4 text-3xl font-bold text-[#f59e0b] md:text-4xl">Mengapa Memilih Rainbee?</h2>
-                            <p className="mx-auto max-w-3xl text-lg text-muted-foreground md:text-xl">
+                            <p className="mx-auto max-w-3xl text-lg text-primary md:text-xl">
                                 Madu alami asli Bondowoso yang murni, praktis untuk didapatkan, dan sangat bermanfaat bagi kesehatan Anda.
                             </p>
                         </div>
@@ -592,7 +592,7 @@ export default function Welcome({ user }: WelcomeProps) {
                                 <div key={index} className="mb-6 w-full rounded-lg border border-accent px-4 md:w-1/2 lg:w-1/3">
                                     <div className="h-full rounded-xl p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl">
                                         <div dangerouslySetInnerHTML={{ __html: item.icon }} />
-                                        <h3 className="mb-2 text-lg font-semibold text-primary">{item.title}</h3>
+                                        <h3 className="mb-2 text-lg font-bold text-primary">{item.title}</h3>
                                         <p className="text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
                                     </div>
                                 </div>

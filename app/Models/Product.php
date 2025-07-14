@@ -12,11 +12,23 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
-        'slug',
+        'price',
+        'stock',
+        'size',
+        'image',
     ];
 
-    public function variants()
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return $this->hasMany(Variant::class);
+        return [
+            'stock' => 'integer',
+            'size' => 'integer',
+            'price' => 'decimal:0',
+        ];
     }
 }
