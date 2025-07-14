@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return Inertia::render('welcome', ['user' => auth()->user()]);
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -19,10 +19,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('laporan');
 });
 
-Route::get('/keranjang', function () {
-    return Inertia::render('keranjang');
-})->name('keranjang');
-
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/keranjang', function () {
+        return Inertia::render('keranjang');
+    })->name('keranjang');
+});
 
 
 

@@ -10,6 +10,12 @@ import { Mail, Phone, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 
+interface WelcomeProps {
+    user: {
+        role: string;
+    } | null;
+}
+
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
     tagline: 'Tetes Murni, Energi Alami. ',
@@ -221,7 +227,7 @@ const providers = [
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
 
-export default function Welcome() {
+export default function Welcome({ user }: WelcomeProps) {
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [selectedVariantIdPopup, setSelectedVariantIdPopup] = useState<number | null>(null);
@@ -306,18 +312,42 @@ export default function Welcome() {
                         </div>
                         {/* <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button> */}
                         <div className="hidden items-center space-x-4 md:flex">
-                            <Link
-                                href={route('login')}
-                                className="inline-block rounded-sm border border-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-white hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
-                            >
-                                Log in
-                            </Link>
-                            <Link
-                                href={route('register')}
-                                className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                            >
-                                Register
-                            </Link>
+                            {user ? (
+                                <>
+                                    {user.role === 'admin' && (
+                                        <Link
+                                            href={route('dashboard')}
+                                            className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                    )}
+
+                                    {user.role === 'user' && (
+                                        <Link
+                                            href={route('keranjang')}
+                                            className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                        >
+                                            <ShoppingCart height={20} />
+                                        </Link>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={route('login')}
+                                        className="inline-block rounded-sm border border-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-white hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    >
+                                        Log in
+                                    </Link>
+                                    <Link
+                                        href={route('register')}
+                                        className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                    >
+                                        Register
+                                    </Link>
+                                </>
+                            )}
 
                             <div className="relative">
                                 <span className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 transform"></span>
