@@ -8,7 +8,7 @@ class DetailCart extends Model
 {
     protected $fillable = [
         'cart_id',
-        'variant_id',
+        'product_id',
         'quantity',
         'price',
     ];
@@ -22,7 +22,7 @@ class DetailCart extends Model
     {
         return [
             'cart_id' => 'integer',
-            'variant_id' => 'integer',
+            'product_id' => 'integer',
             'quantity' => 'integer',
             'price' => 'decimal:0',
         ];
@@ -31,5 +31,10 @@ class DetailCart extends Model
     public function cart()
     {
         return $this->belongsTo(Cart::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

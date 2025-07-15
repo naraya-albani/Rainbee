@@ -20,7 +20,7 @@ class Cart extends Model
     {
         return [
             'user_id' => 'integer',
-            'variant_id' => 'integer',
+            'product_id' => 'integer',
             'subtotal' => 'decimal:0',
         ];
     }

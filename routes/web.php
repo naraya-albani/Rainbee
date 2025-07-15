@@ -1,10 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', ['user' => auth()->user()]);
+    return Inertia::render('welcome', ['user' => Auth::user()]);
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -15,17 +16,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('addproduk');
     })->name('produk');
     Route::get('laporan', function () {
-        return Inertia::render('Report');
+        return Inertia::render('report');
     })->name('laporan');
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/keranjang', function () {
-        return Inertia::render('keranjang');
+    Route::get('keranjang', function () {
+        return Inertia::render('keranjang', ['user' => Auth::user()]);
     })->name('keranjang');
 });
-
-
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

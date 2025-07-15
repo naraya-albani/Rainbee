@@ -2,28 +2,41 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Auth } from '@/types';
 import { SlashIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const cartItems = [
-    {
-        id: 1,
-        title: 'Madu murni',
-        image: '/bg-web.jpg',
-        price: 67150,
-        quantity: 1,
-    },
-    {
-        id: 2,
-        title: 'Madu murni',
-        image: '/bg-web.jpg',
-        price: 1500000,
-        quantity: 1,
-    },
-];
+type CartItem = {
+    product_id: number;
+    product_name: string;
+    image: string;
+    size: number;
+    quantity: number;
+    price: number;
+    total: number;
+};
 
-export default function Keranjang() {
-    const [items, setItems] = useState(cartItems);
+export default function Keranjang({ user }: Auth) {
+    const [items, setItems] = useState<CartItem[]>([]);
+    const [subtotal, setSubtotal] = useState<number>(0);
+
+    useEffect(() => {
+        fetch('/api/cart/' + user.id, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setItems(data.details);
+                setSubtotal(data.subtotal);
+            })
+            .catch((err) => {
+                console.error('Gagal mengambil data keranjang:', err);
+            });
+    }, []);
+
     return (
         <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
             <div className="space-y-4 md:col-span-2">
@@ -49,13 +62,13 @@ export default function Keranjang() {
                 </Card>
 
                 {items.map((item) => (
-                    <Card key={item.id} className="relative">
+                    <Card key={item.product_id} className="relative">
                         <CardContent className="flex items-start gap-4 py-4">
                             <Checkbox />
-                            <img src={item.image} alt={item.title} className="h-20 w-20 rounded object-cover" />
+                            <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
                             <div className="flex-1">
-                                <p className="text-lg">{item.title}</p>
-                                <p className="text-sm">200 ml</p>
+                                <p className="text-lg">{item.product_name}</p>
+                                <p className="text-sm">{item.size} ml</p>
                                 <div className="mt-2">
                                     <p className="text-lg font-bold text-black">Rp{item.price.toLocaleString()}</p>
                                 </div>
@@ -72,7 +85,7 @@ export default function Keranjang() {
                         <h2 className="text-lg font-semibold">Ringkasan belanja</h2>
                         <div className="flex justify-between text-sm">
                             <span>Total</span>
-                            <span>Rp.99.9.999.9</span>
+                            <span>Rp{new Intl.NumberFormat('id-ID').format(subtotal)}</span>
                             <span className="font-semibold">-</span>
                         </div>
 

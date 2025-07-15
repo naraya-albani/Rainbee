@@ -9,11 +9,5 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('product', [ProductController::class, 'store']);
-});
-
-
-//user
-Route::get('product', [ProductController::class, 'index']);
+Route::resource('product', ProductController::class);
 Route::resource('cart', CartController::class);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DetailCart;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,47 +25,43 @@ class CartController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'items' => 'required|array|min:1',
-            'items.*.variant_id' => 'required|exists:variants,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'items.*.price' => 'required|numeric|min:0',
+            'id' => 'required|exists:users,id',
+            'product_id' => 'required|exists:products,id',
+            'quantity'   => 'required|integer|min:1',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Hitung subtotal
-            $subtotal = collect($request->items)->reduce(function ($carry, $item) {
-                return $carry + ($item['price'] * $item['quantity']);
-            }, 0);
+            $product = Product::findOrFail($request->product_id);
+            $price = $product->price * $request->quantity;
 
-            // Simpan ke tabel carts
-            $cart = Cart::create([
-                'user_id' => $request->user_id,
-                'subtotal' => $subtotal,
+            $cart = Cart::firstOrCreate(
+                ['user_id' => $request->id],
+                ['subtotal' => 0]
+            );
+
+            $detailCart = DetailCart::create([
+                'cart_id'   => $cart->id,
+                'product_id'=> $product->id,
+                'quantity'  => $request->quantity,
+                'price'     => $price,
             ]);
 
-            // Simpan detail carts
-            foreach ($request->items as $item) {
-                DetailCart::create([
-                    'cart_id' => $cart->id,
-                    'variant_id' => $item['variant_id'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                ]);
-            }
+            $cart->subtotal += $price;
+            $cart->save();
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Cart created successfully',
-                'cart' => $cart->load('details'), // Optional jika relasi sudah dibuat
+                'message' => 'Produk berhasil ditambahkan ke keranjang',
+                'cart' => $cart,
+                'detail_cart' => $detailCart,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to create cart',
+                'message' => 'Gagal menambahkan produk ke keranjang',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -75,7 +72,29 @@ class CartController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cart = Cart::where('user_id', $id)->with(['details.product'])->first();
+
+        if (!$cart) {
+            return response()->json([
+                'message' => 'Cart not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'cart_id' => $cart->id,
+            'subtotal' => $cart->subtotal,
+            'details' => $cart->details->map(function ($detail) {
+                return [
+                    'product_id' => $detail->product_id,
+                    'product_name' => $detail->product->name,
+                    'image' => $detail->product->image,
+                    'size' => $detail->product->size,
+                    'quantity' => $detail->quantity,
+                    'price' => $detail->price,
+                    'total' => $detail->price * $detail->quantity,
+                ];
+            }),
+        ]);
     }
 
     /**

@@ -21,41 +21,40 @@ class PhoneVerificationNotificationController extends Controller
             'otp' => 'required|string|max:4|regex:/^\d{4}$/',
         ]);
 
-        $cachedOtp = Cache::get('otp_' . $request->input('phone'));
-
         $name = $request->input('name');
+        $phone = $request->input('phone');
+
+        $cachedOtp = Cache::get('otp_' . $phone);
 
         if (!$cachedOtp || $request->otp !== (string) $cachedOtp) {
             return back()->withErrors(['otp' => 'Kode OTP tidak sesuai atau sudah kedaluarsa.']);
         }
 
-        Cache::forget('otp_' . $request->input('phone'));
+        Cache::forget('otp_' . $phone);
 
         if ($name) {
             $user = User::create([
-                'name' => $request->input('name'),
-                'phone' => $request->input('phone'),
+                'name' => $name,
+                'phone' => $phone,
             ]);
 
             event(new Registered($user));
 
             Auth::login($user);
-
-            return redirect()->intended(route('dashboard', absolute: false));
-        } else if (!$name) {
-            $user = User::where('phone', $request->input('phone'))->first();
-
-            if (!$user) {
-                return redirect()->back()->withErrors(['phone' => 'Pengguna tidak ditemukan.']);
-            }
-
-            Auth::login($user);
-
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard', absolute: false));
-        } else {
-            return redirect()->back()->withErrors(['otp' => 'Informasi yang diperlukan tidak lengkap.']);
+            return redirect()->intended(route('home', absolute: false));
         }
+
+        $user = User::where('phone', $phone)->first();
+
+        if (!$user) {
+            return back()->withErrors(['phone' => 'Pengguna tidak ditemukan.']);
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home', absolute: false));
     }
 }

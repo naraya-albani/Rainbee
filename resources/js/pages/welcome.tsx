@@ -3,17 +3,12 @@ import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
+import { Auth } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Mail, Phone, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
-
-interface WelcomeProps {
-    user: {
-        role: string;
-    } | null;
-}
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -220,12 +215,10 @@ const providers = [
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
 
-export default function Welcome({ user }: WelcomeProps) {
+export default function Welcome({ user }: Auth) {
     const [products, setProducts] = useState<Product[]>([]);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [selectedVariantIdPopup, setSelectedVariantIdPopup] = useState<number | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [quantity, setQuantity] = useState<number>(1);
-    const [selectedVariant, setSelectedVariant] = useState<Record<number, number>>({});
     const [openPopup, setOpenPopup] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -240,24 +233,36 @@ export default function Welcome({ user }: WelcomeProps) {
             });
     }, []);
 
-    const handleVariantClick = (productId: number, variantId: number) => {
-        setSelectedVariant((prev) => ({
-            ...prev,
-            [productId]: variantId,
-        }));
+    const handleAddToCart = async () => {
+        if (!selectedProduct) return;
+
+        try {
+            const response = await fetch('/api/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: user.id,
+                    product_id: selectedProduct.id,
+                    quantity: quantity,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Berhasil menambahkan ke keranjang');
+                setOpenPopup(false);
+            } else {
+                console.error(data);
+                alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan jaringan');
+        }
     };
-
-    // useEffect(() => {
-    //     const initialVariants: Record<number, number> = {};
-
-    //     products.forEach((product) => {
-    //         if (product.variants.length > 0) {
-    //             initialVariants[product.id] = product.variants[0].id;
-    //         }
-    //     });
-
-    //     setSelectedVariant(initialVariants);
-    // }, [products]);
 
     const toggleMobileMenu = () => {
         setMobileOpen((prev) => !prev);
@@ -450,9 +455,6 @@ export default function Welcome({ user }: WelcomeProps) {
                             </p>
                             <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
                                 {products.map((product) => {
-                                    const selectedVariantId = selectedVariant[product.id];
-                                    // const selectedVariantData = product.variants.find((v) => v.id === selectedVariantId);
-
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
                                             <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
@@ -549,8 +551,8 @@ export default function Welcome({ user }: WelcomeProps) {
                                                     </p>
                                                 </div>
 
-                                                <Button className="mt-5">
-                                                    <ShoppingCart></ShoppingCart>
+                                                <Button className="mt-5" onClick={handleAddToCart}>
+                                                    <ShoppingCart />
                                                     Tambahkan Keranjang
                                                 </Button>
                                             </div>
