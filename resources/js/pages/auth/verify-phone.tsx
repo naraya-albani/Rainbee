@@ -36,7 +36,7 @@ export default function VerifyPhone({ phone, name, remember }: Props) {
     };
 
     return (
-        <AuthLayout title="Verifikasi Nomor HP" description="Please verify your phone number by clicking on the link we just emailed to you.">
+        <AuthLayout title="Verifikasi Nomor HP" description="Masukkan kode OTP yang telah dikirimkan ke nomor HP Anda.">
             <Head title="Verifikasi Nomor HP" />
 
             <form onSubmit={submit} className="space-y-6 text-center">

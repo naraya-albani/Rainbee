@@ -128,7 +128,8 @@ interface Contact7Props {
     officeAddress?: string;
     phoneLabel?: string;
     phoneDescription?: string;
-    phone?: string;
+    phone1?: string;
+    phone2?: string;
     chatLabel?: string;
     chatDescription?: string;
     chatLink?: string;
@@ -139,10 +140,11 @@ const contact: Contact7Props = {
     description: 'Kami siap membantu Anda dengan pertanyaan atau informasi lebih lanjut.',
     emailLabel: 'Email',
     emailDescription: 'Kirimkan pertanyaan atau permintaan Anda melalui email.',
-    email: 'rainbee@gmail.com',
+    email: 'rainbee.madu@gmail.com',
     phoneLabel: 'Telfon',
     phoneDescription: 'Hubungi kami melalui telfon untuk bantuan cepat.',
-    phone: '08123456789',
+    phone1: '081249900122 (Niswa)',
+    phone2: '085158662580 (Rainbee)',
 };
 
 interface MenuItem {
@@ -210,7 +212,7 @@ const footerData: Footer2Props = {
 
 const providers = [
     { name: 'WhatsApp', icon: <FaWhatsapp className="h-5 w-5" />, href: 'https://www.whatsapp.com' },
-    { name: 'Instagram', icon: <FaInstagram className="h-5 w-5" />, href: 'https://www.instagram.com' },
+    { name: 'Instagram', icon: <FaInstagram className="h-5 w-5" />, href: 'https://www.instagram.com/rainbee.madu/' },
     { name: 'Telepon', icon: <Phone className="h-5 w-5" />, href: `tel:${contactInfo.whatsapp}` },
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
@@ -587,9 +589,10 @@ export default function Welcome({ user }: Auth) {
                                 </span>
                                 <p className="mb-2 text-lg font-semibold text-primary">{contact.phoneLabel}</p>
                                 <p className="mb-3 text-muted-foreground">{contact.phoneDescription}</p>
-                                <a href={`tel:${contact.phone}`} className="font-semibold text-primary hover:underline">
-                                    {contact.phone}
+                                <a href={`tel:${contact.phone1}`} className="font-semibold text-primary hover:underline">
+                                    {contact.phone1}
                                 </a>
+                                <p className="font-semibold text-primary hover:underline">{contact.phone2}</p>
                             </div>
                             <div className="col-span-full mt-6">
                                 <iframe
@@ -628,19 +631,19 @@ export default function Welcome({ user }: Auth) {
                                 <div className="col-span-3">
                                     <h3 className="mb-4 text-xl font-bold text-foreground">Mau ke mana lagi?</h3>
                                     <div className="grid grid-cols-3 gap-4">
-                                        <Button>Beranda</Button>
-                                        <Button>Produk</Button>
-                                        <Button>Keunggulan</Button>
-                                        <Button>Faq</Button>
-                                        <Button>Kontak</Button>
+                                        <Button asChild><a href='#beranda'>Beranda</a></Button>
+                                        <Button asChild><a href='#produk'>Produk</a></Button>
+                                        <Button asChild><a href='#keunggulan'> Keunggulan</a></Button>
+                                        <Button asChild><a href='#faq'>Faq</a></Button>
+                                        <Button asChild><a href='#kontak'>Kontak</a></Button>
                                     </div>
                                 </div>
                             </div>
                             <div className="mt-24 flex flex-col gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
                                 <img src="/polije.png" alt="Polije" width={200} className="block dark:hidden" />
                                 <img src="/polije-dark.png" alt="Polije" width={200} className="hidden dark:block" />
-                                <img src="/logo-blu.png" width={50}/>
-                                <img src="/logo_jpt.png" width={180}/>
+                                <img src="/logo-blu.png" width={50} />
+                                <img src="/logo_jpt.png" width={180} />
                             </div>
                         </footer>
                     </div>
