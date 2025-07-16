@@ -276,7 +276,7 @@ export default function Welcome({ user }: Auth) {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
+            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a] ">
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
@@ -370,7 +370,7 @@ export default function Welcome({ user }: Auth) {
                                 </a>
                             );
                         })}
-                        <hr className="mx-4 my-2 border-t border-blue-500" />
+                        <hr className="mx-4 my-2 border-t border-[#f59e0b]" />
                         <div className="mb-2 space-y-2 px-4">
                             <Link
                                 href={route('login')}
@@ -389,16 +389,12 @@ export default function Welcome({ user }: Auth) {
                 </header>
 
                 <section id="home">
-                    <div className="relative min-h-screen bg-gray-400 bg-[url('/bg-web.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply md:py-20">
+                    <div className="relative min-h-screen bg-gray-400 bg-[url('bg-web.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply md:py-20">
                         <div className="absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-b from-transparent to-background"></div>
-
-                        <div className="relative z-20"></div>
-
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
                                 <AppLogoIcons className="h-30 w-auto max-lg:h-12" />
                             </div>
-
                             <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-white md:text-xl">{siteData.tagline}</p>
 
                             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -552,7 +548,7 @@ export default function Welcome({ user }: Auth) {
                     </div>
                 </section>
 
-                <section id="faq" className="py-32">
+                <section id="faq" className="py-32 p-4 sm:p-6 lg:p-8">
                     <div className="container mx-auto min-h-screen max-w-3xl">
                         <h1 className="mb-4 text-3xl font-semibold text-[#ffa407] md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
@@ -565,7 +561,7 @@ export default function Welcome({ user }: Auth) {
                         </Accordion>
                     </div>
                 </section>
-                <section id="kontak" className="bg-background py-32">
+                <section id="kontak" className="bg-background py-32 p-4 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <div className="mb-14">
                             <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>
@@ -608,7 +604,7 @@ export default function Welcome({ user }: Auth) {
                         </div>
                     </div>
                 </section>
-                <section className="pt-32">
+                <section className="pt-32 p-4 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <footer>
                             <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">

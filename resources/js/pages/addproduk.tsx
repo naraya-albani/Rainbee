@@ -119,7 +119,7 @@ export default function Addproduk() {
             <Head title="Addproduk" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h2>tambah produk</h2>
+                    <h2 className="text-2xl font-bold">Tambah Produk</h2>
                     <Dialog>
                         <form onSubmit={handleSubmit}>
                             <DialogTrigger asChild>
@@ -205,7 +205,7 @@ export default function Addproduk() {
                             <TableHead>Deskripsi</TableHead>
                             <TableHead>Variant</TableHead>
                             <TableHead>Stok</TableHead>
-                            <TableHead>Edit</TableHead>
+                            <TableHead className='text-center'>Edit</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

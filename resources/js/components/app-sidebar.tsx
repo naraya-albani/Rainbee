@@ -20,7 +20,7 @@
         },
         {
             title: 'Laporan',
-            href: '/Report',
+            href: '/laporan',
             icon: FileIcon,
         },
 
