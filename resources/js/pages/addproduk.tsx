@@ -128,12 +128,12 @@ export default function Addproduk() {
                                     Tambahkan Produk
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[1080px]">
+                            <DialogContent className="sm:max-w-[1080px] max-h-screen flex flex-col">
                                 <DialogHeader>
                                     <DialogTitle>Tambah Produk</DialogTitle>
                                     <DialogDescription>Masukkan Detail produk disini.</DialogDescription>
                                 </DialogHeader>
-                                <div className="flex flex-col gap-6 pt-4 lg:flex-row">
+                                <div className="flex flex-col gap-6 pt-4 lg:flex-row overflow-y-auto flex-1">
                                     <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
                                         <Label>Gambar</Label>
                                         <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -187,7 +187,7 @@ export default function Addproduk() {
                                         </div>
                                     </div>
                                 </div>
-                                <DialogFooter>
+                                <DialogFooter className='border-t pt-4'>
                                     <DialogClose asChild>
                                         <Button variant="outline">Cancel</Button>
                                     </DialogClose>
@@ -211,8 +211,8 @@ export default function Addproduk() {
                     <TableBody>
                         {products.map((product) => (
                             <TableRow key={product.id}>
-                                <TableCell className="font-medium">{product.name}</TableCell>
-                                <TableCell>{product.description}</TableCell>
+                                <TableCell className="font-medium whitespace-normal break-words max-w-xs">{product.name}</TableCell>
+                                <TableCell className="whitespace-normal break-words max-w-xs">{product.description}</TableCell>
                                 <TableCell>{product.size} ml</TableCell>
                                 <TableCell className="text-left">{product.stock}</TableCell>
 

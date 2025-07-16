@@ -2,6 +2,18 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Auth } from '@/types';
 import { SlashIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -36,6 +48,78 @@ export default function Keranjang({ user }: Auth) {
                 console.error('Gagal mengambil data keranjang:', err);
             });
     }, []);
+
+    interface Province {
+        id: string;
+        name: string;
+    }
+
+    interface Regency {
+        id: string;
+        province_id: string;
+        name: string;
+    }
+    interface District {
+        id: string;
+        regency_id: string;
+        name: string;
+    }
+
+    const [provinsi, setProvinsi] = useState<Province[]>([]);
+
+    const [kabupaten, setKabupaten] = useState<Regency[]>([]);
+    const [kecamatan, setKecamatan] = useState<District[]>([]);
+
+    const [selectedProvinsi, setSelectedProvinsi] = useState('');
+    const [selectedKabupaten, setSelectedKabupaten] = useState('');
+    const [selectedKecamatan, setSelectedKecamatan] = useState('');
+
+    //data provinsi
+    useEffect(() => {
+        fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
+            .then((res) => res.json())
+            .then((data) => {
+                console.log('Provinsi:', data); // optional
+                setProvinsi(data);
+            })
+            .catch((err) => console.error('Gagal fetch provinsi:', err));
+    }, []);
+
+    //data kabupaten
+    useEffect(() => {
+        if (selectedProvinsi) {
+            fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selectedProvinsi}.json`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setKabupaten(data);
+                    setSelectedKabupaten(''); // Reset selected kabupaten when province changes
+                    setKecamatan([]); // Clear kecamatan options as well
+                    setSelectedKecamatan(''); // Reset selected kecamatan
+                })
+                .catch((err) => console.error('Gagal fetch kabupaten:', err));
+        } else {
+            setKabupaten([]); // Clear kabupaten if no province is selected
+            setSelectedKabupaten('');
+            setKecamatan([]); // Clear kecamatan options as well
+            setSelectedKecamatan(''); // Reset selected kecamatan
+        }
+    }, [selectedProvinsi]);
+
+    //data kecamatan
+   useEffect(() => {
+        if (selectedKabupaten) {
+            fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selectedKabupaten}.json`)
+                .then((res) => res.json())
+                .then((data) => {
+                    setKecamatan(data);
+                    setSelectedKecamatan(''); // Reset selected kecamatan when regency changes
+                })
+                .catch((err) => console.error('Gagal fetch kecamatan:', err));
+        } else {
+            setKecamatan([]); // Clear kecamatan if no regency is selected
+            setSelectedKecamatan('');
+        }
+    }, [selectedKabupaten]);
 
     return (
         <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
@@ -89,7 +173,91 @@ export default function Keranjang({ user }: Auth) {
                             <span className="font-semibold">-</span>
                         </div>
 
-                        <Button className="w-full">Beli</Button>
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <Button>Beli Sekarang</Button>
+                                </DialogTrigger>
+                                <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Konfirmasi Pemesanan</DialogTitle>
+                                        <DialogDescription>Jangan lupa cek kembali pesanan Anda sebelum melakukan pembayaran</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
+                                        <div className="flex w-full flex-col items-start gap-3 lg:w-1/2">
+                                            <h1>Alamat</h1>
+                                            <Label className="font-bold">Masukkan alamatmu</Label>
+                                            <Input placeholder="Alamat lengkap" />
+                                            <Label className="font-bold">Provinsi</Label>
+                                            <select
+                                                className="w-full rounded border p-2"
+                                                value={selectedProvinsi}
+                                                onChange={(e) => setSelectedProvinsi(e.target.value)}
+                                            >
+                                                <option value="">Pilih Provinsi</option>
+                                                {provinsi.map((province) => (
+                                                    <option key={province.id} value={province.id}>
+                                                        {province.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            <Label className="font-bold">Kab/Kota</Label>
+                                            <select
+                                                className="w-full rounded border p-2"
+                                                value={selectedKabupaten}
+                                                onChange={(e) => setSelectedKabupaten(e.target.value)}
+                                                disabled={!selectedProvinsi}
+                                            >
+                                                <option value="">Pilih Kab/Kota</option>
+                                                {kabupaten.map((regency) => (
+                                                    <option key={regency.id} value={regency.id}>
+                                                        {regency.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <Label className="font-bold">Kecamatan</Label>
+                                            <select
+                                                className="w-full rounded border p-2"
+                                                value={selectedKecamatan}
+                                                onChange={(e) => setSelectedKecamatan(e.target.value)}
+                                                disabled={!selectedKabupaten} // Disable until a regency is selected
+                                            >
+                                                <option value="">Pilih Kecamatan</option>
+                                                {kecamatan.map((district) => (
+                                                    <option key={district.id} value={district.id}>
+                                                        {district.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="grid w-full gap-4 lg:w-1/2">
+                                            {items.map((item) => (
+                                                <Card key={item.product_id} className="relative">
+                                                    <CardContent className="flex items-start gap-4 py-4">
+                                                        <Checkbox />
+                                                        <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
+                                                        <div className="flex-1">
+                                                            <p className="text-lg">{item.product_name}</p>
+                                                            <p className="text-sm">{item.size} ml</p>
+                                                            <div className="mt-2">
+                                                                <p className="text-lg font-bold text-black">Rp{item.price.toLocaleString()}</p>
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button variant="outline">Batal</Button>
+                                        </DialogClose>
+                                        <Button type="submit">Lakukan pembayaran</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </form>
+                        </Dialog>
                     </CardContent>
                 </Card>
             </div>

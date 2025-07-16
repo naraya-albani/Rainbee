@@ -636,9 +636,11 @@ export default function Welcome({ user }: Auth) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-24 flex flex-col justify-between gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
+                            <div className="mt-24 flex flex-col gap-4 border-t py-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
                                 <img src="/polije.png" alt="Polije" width={200} className="block dark:hidden" />
                                 <img src="/polije-dark.png" alt="Polije" width={200} className="hidden dark:block" />
+                                <img src="/logo-blu.png" width={50}/>
+                                <img src="/logo_jpt.png" width={180}/>
                             </div>
                         </footer>
                     </div>
