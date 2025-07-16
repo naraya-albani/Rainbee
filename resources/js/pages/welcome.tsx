@@ -1,6 +1,7 @@
 import AppLogoIcons from '@/components/app-logo-text';
 import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Auth } from '@/types';
@@ -256,6 +257,8 @@ export default function Welcome({ user }: Auth) {
             if (response.ok) {
                 alert('Berhasil menambahkan ke keranjang');
                 setOpenPopup(false);
+            } else if (response.status === 422) {
+                alert(data.message);
             } else {
                 console.error(data);
                 alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
@@ -461,6 +464,14 @@ export default function Welcome({ user }: Auth) {
                                                 <p className="mb-4 text-2xl font-bold text-[#f59e0b]">
                                                     Rp{new Intl.NumberFormat('id-ID').format(Number(product.price))}
                                                 </p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <Badge variant="default" className="bg-primary text-primary-foreground duration-200">
+                                                        {product.size} ml
+                                                    </Badge>
+                                                    <Badge variant="default" className="bg-primary text-primary-foreground duration-200">
+                                                        Stok: {product.stock}
+                                                    </Badge>
+                                                </div>
                                             </CardContent>
 
                                             <CardFooter className="p-4 pt-0">
@@ -468,7 +479,6 @@ export default function Welcome({ user }: Auth) {
                                                     className="w-full"
                                                     onClick={() => {
                                                         setSelectedProduct(product);
-                                                        // setSelectedVariantIdPopup(selectedVariant[product.id] || null);
                                                         setQuantity(1);
                                                         setOpenPopup(true);
                                                     }}
@@ -498,6 +508,14 @@ export default function Welcome({ user }: Auth) {
                                             <div className="flex flex-col">
                                                 <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
                                                 <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <Badge variant="default" className="bg-primary text-primary-foreground duration-200">
+                                                        {selectedProduct.size} ml
+                                                    </Badge>
+                                                    <Badge variant="default" className="bg-primary text-primary-foreground duration-200">
+                                                        Stok: {selectedProduct.stock}
+                                                    </Badge>
+                                                </div>
                                                 <QuantitySelector
                                                     value={quantity}
                                                     min={1}
