@@ -106,7 +106,7 @@ export default function Keranjang({ user }: Auth) {
     }, [selectedProvinsi]);
 
     //data kecamatan
-   useEffect(() => {
+    useEffect(() => {
         if (selectedKabupaten) {
             fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selectedKabupaten}.json`)
                 .then((res) => res.json())
@@ -134,7 +134,7 @@ export default function Keranjang({ user }: Auth) {
                             <SlashIcon />
                         </BreadcrumbSeparator>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/">keranjang</BreadcrumbLink>
+                            <BreadcrumbLink href="/keranjang">keranjang</BreadcrumbLink>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
@@ -145,21 +145,29 @@ export default function Keranjang({ user }: Auth) {
                     </CardContent>
                 </Card>
 
-                {items.map((item) => (
-                    <Card key={item.product_id} className="relative">
-                        <CardContent className="flex items-start gap-4 py-4">
-                            <Checkbox />
-                            <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
-                            <div className="flex-1">
-                                <p className="text-lg">{item.product_name}</p>
-                                <p className="text-sm">{item.size} ml</p>
-                                <div className="mt-2">
-                                    <p className="text-lg font-bold text-black">Rp{item.price.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </CardContent>
+                {items.length === 0 ? (
+                    <Card>
+                        <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
                     </Card>
-                ))}
+                ) : (
+                    items.map((item) => (
+                        <Card key={item.product_id} className="relative">
+                            <CardContent className="flex items-start gap-4 py-4">
+                                <Checkbox />
+                                <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
+                                <div className="flex-1">
+                                    <p className="text-lg">{item.product_name}</p>
+                                    <p className="text-sm">{item.size} ml</p>
+                                    <div className="mt-2">
+                                        <p className="text-lg font-bold text-[#f59e0b]">
+                                            Rp{new Intl.NumberFormat('id-ID').format(Number(item.price))}
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
             </div>
 
             {/* total belanja */}
@@ -170,7 +178,6 @@ export default function Keranjang({ user }: Auth) {
                         <div className="flex justify-between text-sm">
                             <span>Total</span>
                             <span>Rp{new Intl.NumberFormat('id-ID').format(subtotal)}</span>
-                            <span className="font-semibold">-</span>
                         </div>
 
                         <Dialog>

@@ -34,19 +34,42 @@ class CartController extends Controller
 
         try {
             $product = Product::findOrFail($request->product_id);
-            $price = $product->price * $request->quantity;
-
             $cart = Cart::firstOrCreate(
                 ['user_id' => $request->id],
                 ['subtotal' => 0]
             );
 
-            $detailCart = DetailCart::create([
-                'cart_id'   => $cart->id,
-                'product_id'=> $product->id,
-                'quantity'  => $request->quantity,
-                'price'     => $price,
-            ]);
+            // Cek apakah produk sudah ada di dalam keranjang
+            $existingDetail = DetailCart::where('cart_id', $cart->id)
+                ->where('product_id', $product->id)
+                ->first();
+
+            $existingQuantity = $existingDetail ? $existingDetail->quantity : 0;
+            $totalQuantity = $existingQuantity + $request->quantity;
+
+            if ($totalQuantity > $product->stock) {
+                return response()->json([
+                    'message' => 'Jumlah yang diminta melebihi stok yang tersedia',
+                    'available_stock' => $product->stock - $existingQuantity,
+                ], 422);
+            }
+
+            $price = $product->price * $request->quantity;
+
+            if ($existingDetail) {
+                // Update kuantitas dan harga jika produk sudah ada di keranjang
+                $existingDetail->quantity += $request->quantity;
+                $existingDetail->price += $price;
+                $existingDetail->save();
+            } else {
+                // Tambahkan produk baru ke detail keranjang
+                $existingDetail = DetailCart::create([
+                    'cart_id'    => $cart->id,
+                    'product_id' => $product->id,
+                    'quantity'   => $request->quantity,
+                    'price'      => $price,
+                ]);
+            }
 
             $cart->subtotal += $price;
             $cart->save();
@@ -56,7 +79,7 @@ class CartController extends Controller
             return response()->json([
                 'message' => 'Produk berhasil ditambahkan ke keranjang',
                 'cart' => $cart,
-                'detail_cart' => $detailCart,
+                'detail_cart' => $existingDetail,
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -76,8 +99,10 @@ class CartController extends Controller
 
         if (!$cart) {
             return response()->json([
-                'message' => 'Cart not found',
-            ], 404);
+                'cart_id' => null,
+                'subtotal' => 0,
+                'details' => [],
+            ]);
         }
 
         return response()->json([
