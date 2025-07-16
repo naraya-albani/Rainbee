@@ -463,23 +463,6 @@ export default function Welcome({ user }: Auth) {
                                                 <p className="mb-4 text-2xl font-bold text-[#f59e0b]">
                                                     Rp{new Intl.NumberFormat('id-ID').format(Number(product.price))}
                                                 </p>
-                                                {/* <p className="mb-2 text-sm font-medium">Pilih Varian:</p> */}
-                                                {/* <div className="flex flex-wrap gap-2">
-                                                    {product.variants.map((variant) => (
-                                                        <Badge
-                                                            key={variant.id}
-                                                            variant={selectedVariantId === variant.id ? 'default' : 'outline'}
-                                                            className={`cursor-pointer transition-colors duration-200 ${
-                                                                selectedVariantId === variant.id
-                                                                    ? 'bg-primary text-primary-foreground'
-                                                                    : 'hover:bg-muted/80'
-                                                            }`}
-                                                            onClick={() => handleVariantClick(product.id, variant.id)}
-                                                        >
-                                                            {variant.size} ml
-                                                        </Badge>
-                                                    ))}
-                                                </div> */}
                                             </CardContent>
 
                                             <CardFooter className="p-4 pt-0">
@@ -517,26 +500,6 @@ export default function Welcome({ user }: Auth) {
                                             <div className="flex flex-col">
                                                 <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
                                                 <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
-                                                {/* <h3 className="text-left font-semibold text-gray-800">Pilih Varian:</h3> */}
-                                                {/* <div className="flex">
-                                                    {selectedProduct.variants.map((variant) => (
-                                                        <Badge
-                                                            key={variant.id}
-                                                            onClick={() => {
-                                                                setSelectedVariantIdPopup(variant.id);
-                                                                setQuantity(1);
-                                                            }}
-                                                            variant={selectedVariantIdPopup === variant.id ? 'default' : 'outline'}
-                                                            className={`cursor-pointer transition-colors duration-200 ${
-                                                                selectedVariantIdPopup === variant.id
-                                                                    ? 'bg-primary text-primary-foreground'
-                                                                    : 'hover:bg-muted/80'
-                                                            }`}
-                                                        >
-                                                            {variant.size} ml
-                                                        </Badge>
-                                                    ))}
-                                                </div> */}
                                                 <QuantitySelector
                                                     value={quantity}
                                                     min={1}
@@ -575,7 +538,7 @@ export default function Welcome({ user }: Auth) {
 
                         <div className="-mx-4 flex flex-wrap justify-center">
                             {whyChooseUs.map((item, index) => (
-                                <div key={index} className="mb-6 w-full rounded-lg border border-accent px-4 md:w-1/2 lg:w-1/3">
+                                <div key={index} className="mb-6 w-full rounded-lg px-4 md:w-1/2 lg:w-1/3">
                                     <div className="h-full rounded-xl p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl">
                                         <div dangerouslySetInnerHTML={{ __html: item.icon }} />
                                         <h3 className="mb-2 text-lg font-bold text-primary">{item.title}</h3>

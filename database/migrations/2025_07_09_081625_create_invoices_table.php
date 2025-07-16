@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'sending', 'claimed', 'canceled'])->default('pending');
             $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
-            $table->string('payment_method')->nullable();
+            $table->string('receipt')->nullable();
             $table->timestamps();
         });
     }

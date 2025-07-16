@@ -7,16 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Address extends Model
 {
     protected $fillable = [
-        'user_id',
         'address_line',
+        'district',
         'city',
         'state',
         'postal_code',
         'phone_number',
-        'address_type',
-        'is_default',
-        'latitude',
-        'longitude',
     ];
 
     /**
@@ -27,13 +23,8 @@ class Address extends Model
     protected function casts(): array
     {
         return [
-            'user_id' => 'integer',
             'postal_code' => 'string',
             'phone_number' => 'string',
-            'address_type' => 'string',
-            'is_default' => 'boolean',
-            'latitude' => 'string',
-            'longitude' => 'string',
         ];
     }
 }

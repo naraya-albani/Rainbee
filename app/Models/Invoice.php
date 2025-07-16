@@ -10,6 +10,8 @@ class Invoice extends Model
         'cart_id',
         'total',
         'status',
+        'address_id',
+        'receipt'
     ];
 
     /**
@@ -23,6 +25,7 @@ class Invoice extends Model
             'cart_id' => 'integer',
             'status' => 'string',
             'total' => 'decimal:0',
+            'address_id' => 'integer'
         ];
     }
 }
