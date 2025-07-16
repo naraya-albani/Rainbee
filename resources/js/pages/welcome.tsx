@@ -227,7 +227,7 @@ export default function Welcome({ user }: Auth) {
 
     useEffect(() => {
         axios
-            .get('http://localhost:8000/api/product')
+            .get('/api/product')
             .then((response) => {
                 setProducts(response.data);
             })
@@ -239,34 +239,53 @@ export default function Welcome({ user }: Auth) {
     const handleAddToCart = async () => {
         if (!selectedProduct) return;
 
-        try {
-            const response = await fetch('/api/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: user.id,
-                    product_id: selectedProduct.id,
-                    quantity: quantity,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
+        axios
+            .post('/api/cart', {
+                id: user.id,
+                product_id: selectedProduct.id,
+                quantity: quantity,
+            })
+            .then(() => {
                 alert('Berhasil menambahkan ke keranjang');
                 setOpenPopup(false);
-            } else if (response.status === 422) {
-                alert(data.message);
-            } else {
-                console.error(data);
-                alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Terjadi kesalahan jaringan');
-        }
+            })
+            .catch((error) => {
+                if (error.response.status === 422) {
+                    alert(error.data.message);
+                } else {
+                    console.error(error);
+                    alert('Gagal menambahkan ke keranjang: ' + (error || 'Terjadi kesalahan'));
+                }
+            });
+
+        // try {
+        //     const response = await fetch('/api/cart', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+        //         body: JSON.stringify({
+        //             id: user.id,
+        //             product_id: selectedProduct.id,
+        //             quantity: quantity,
+        //         }),
+        //     });
+
+        //     const data = await response.json();
+
+        //     if (response.ok) {
+        //         alert('Berhasil menambahkan ke keranjang');
+        //         setOpenPopup(false);
+        //     } else if (response.status === 422) {
+        //         alert(data.message);
+        //     } else {
+        //         console.error(data);
+        //         alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
+        //     }
+        // } catch (error) {
+        //     console.error(error);
+        //     alert('Terjadi kesalahan jaringan');
+        // }
     };
 
     const toggleMobileMenu = () => {
@@ -279,7 +298,7 @@ export default function Welcome({ user }: Auth) {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
             </Head>
-            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a] ">
+            <div className="flex min-h-screen flex-col bg-[#FDFDFC] text-[#1b1b18] lg:justify-center dark:bg-[#0a0a0a]">
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
@@ -566,7 +585,7 @@ export default function Welcome({ user }: Auth) {
                     </div>
                 </section>
 
-                <section id="faq" className="py-32 p-4 sm:p-6 lg:p-8">
+                <section id="faq" className="p-4 py-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto min-h-screen max-w-3xl">
                         <h1 className="mb-4 text-3xl font-semibold text-[#ffa407] md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
@@ -579,7 +598,7 @@ export default function Welcome({ user }: Auth) {
                         </Accordion>
                     </div>
                 </section>
-                <section id="kontak" className="bg-background py-32 p-4 sm:p-6 lg:p-8">
+                <section id="kontak" className="bg-background p-4 py-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <div className="mb-14">
                             <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>
@@ -622,7 +641,7 @@ export default function Welcome({ user }: Auth) {
                         </div>
                     </div>
                 </section>
-                <section className="pt-32 p-4 sm:p-6 lg:p-8">
+                <section className="p-4 pt-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <footer>
                             <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
@@ -645,11 +664,21 @@ export default function Welcome({ user }: Auth) {
                                 <div className="col-span-3">
                                     <h3 className="mb-4 text-xl font-bold text-foreground">Mau ke mana lagi?</h3>
                                     <div className="grid grid-cols-3 gap-4">
-                                        <Button asChild><a href='#beranda'>Beranda</a></Button>
-                                        <Button asChild><a href='#produk'>Produk</a></Button>
-                                        <Button asChild><a href='#keunggulan'> Keunggulan</a></Button>
-                                        <Button asChild><a href='#faq'>Faq</a></Button>
-                                        <Button asChild><a href='#kontak'>Kontak</a></Button>
+                                        <Button asChild>
+                                            <a href="#beranda">Beranda</a>
+                                        </Button>
+                                        <Button asChild>
+                                            <a href="#produk">Produk</a>
+                                        </Button>
+                                        <Button asChild>
+                                            <a href="#keunggulan"> Keunggulan</a>
+                                        </Button>
+                                        <Button asChild>
+                                            <a href="#faq">Faq</a>
+                                        </Button>
+                                        <Button asChild>
+                                            <a href="#kontak">Kontak</a>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

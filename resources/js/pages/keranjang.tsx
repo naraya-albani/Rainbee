@@ -28,14 +28,36 @@ type CartItem = {
     total: number;
 };
 
+interface Province {
+    id: string;
+    name: string;
+}
+
+interface Regency {
+    id: string;
+    province_id: string;
+    name: string;
+}
+interface District {
+    id: string;
+    regency_id: string;
+    name: string;
+}
+
 export default function Keranjang({ user }: Auth) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [subtotal, setSubtotal] = useState<number>(0);
     const [cartId, setCartId] = useState('');
     const [alamatLengkap, setAlamatLengkap] = useState('');
+    const [provinsi, setProvinsi] = useState<Province[]>([]);
+    const [kabupaten, setKabupaten] = useState<Regency[]>([]);
+    const [kecamatan, setKecamatan] = useState<District[]>([]);
     const [selectedProvinsi, setSelectedProvinsi] = useState('');
+    const [selectedProvinsiName, setSelectedProvinsiName] = useState('');
     const [selectedKabupaten, setSelectedKabupaten] = useState('');
+    const [selectedKabupatenName, setSelectedKabupatenName] = useState('');
     const [selectedKecamatan, setSelectedKecamatan] = useState('');
+    const [selectedKecamatanName, setSelectedKecamatanName] = useState('');
     const [kodePos, setKodePos] = useState('');
     const [nomorTelepon, setNomorTelepon] = useState(user.phone || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,6 +80,27 @@ export default function Keranjang({ user }: Auth) {
             });
     }, []);
 
+    const toTitleCaseSmart = (str: string) => {
+        const exceptions: Record<string, string> = {
+            dki: 'DKI',
+            diy: 'DIY',
+            'kab.': 'Kab.',
+            kota: 'Kota',
+            'adm.': 'Adm.',
+            kepulauan: 'Kepulauan',
+            daerah: 'Daerah',
+            istimewa: 'Istimewa',
+            yogyakarta: 'Yogyakarta',
+            aceh: 'Aceh',
+        };
+
+        return str
+            .toLowerCase()
+            .split(' ')
+            .map((word) => exceptions[word] || word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    };
+
     const handleSubmit = async () => {
         setIsSubmitting(true);
 
@@ -68,13 +111,14 @@ export default function Keranjang({ user }: Auth) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    phone: user.phone,
                     cart_id: cartId,
                     total: subtotal,
                     address: {
                         address_line: alamatLengkap,
-                        district: selectedKecamatan,
-                        city: selectedKabupaten,
-                        state: selectedProvinsi,
+                        district: toTitleCaseSmart(selectedKecamatanName),
+                        city: toTitleCaseSmart(selectedKabupatenName),
+                        state: toTitleCaseSmart(selectedProvinsiName),
                         postal_code: kodePos,
                         phone_number: nomorTelepon,
                     },
@@ -95,26 +139,6 @@ export default function Keranjang({ user }: Auth) {
             setIsSubmitting(false);
         }
     };
-
-    interface Province {
-        id: string;
-        name: string;
-    }
-
-    interface Regency {
-        id: string;
-        province_id: string;
-        name: string;
-    }
-    interface District {
-        id: string;
-        regency_id: string;
-        name: string;
-    }
-
-    const [provinsi, setProvinsi] = useState<Province[]>([]);
-    const [kabupaten, setKabupaten] = useState<Regency[]>([]);
-    const [kecamatan, setKecamatan] = useState<District[]>([]);
 
     //data provinsi
     useEffect(() => {
@@ -244,7 +268,12 @@ export default function Keranjang({ user }: Auth) {
                                             <select
                                                 className="w-full rounded border p-2"
                                                 value={selectedProvinsi}
-                                                onChange={(e) => setSelectedProvinsi(e.target.value)}
+                                                onChange={(e) => {
+                                                    const id = e.target.value;
+                                                    setSelectedProvinsi(id);
+                                                    const provinsiTerpilih = provinsi.find((p) => p.id === id);
+                                                    setSelectedProvinsiName(provinsiTerpilih?.name || '');
+                                                }}
                                             >
                                                 <option value="">Pilih Provinsi</option>
                                                 {provinsi.map((province) => (
@@ -258,7 +287,12 @@ export default function Keranjang({ user }: Auth) {
                                             <select
                                                 className="w-full rounded border p-2"
                                                 value={selectedKabupaten}
-                                                onChange={(e) => setSelectedKabupaten(e.target.value)}
+                                                onChange={(e) => {
+                                                    const id = e.target.value;
+                                                    setSelectedKabupaten(id);
+                                                    const kabTerpilih = kabupaten.find((k) => k.id === id);
+                                                    setSelectedKabupatenName(kabTerpilih?.name || '');
+                                                }}
                                                 disabled={!selectedProvinsi}
                                             >
                                                 <option value="">Pilih Kab/Kota</option>
@@ -272,7 +306,12 @@ export default function Keranjang({ user }: Auth) {
                                             <select
                                                 className="w-full rounded border p-2"
                                                 value={selectedKecamatan}
-                                                onChange={(e) => setSelectedKecamatan(e.target.value)}
+                                                onChange={(e) => {
+                                                    const id = e.target.value;
+                                                    setSelectedKecamatan(id);
+                                                    const kecTerpilih = kecamatan.find((k) => k.id === id);
+                                                    setSelectedKecamatanName(kecTerpilih?.name || '');
+                                                }}
                                                 disabled={!selectedKabupaten} // Disable until a regency is selected
                                             >
                                                 <option value="">Pilih Kecamatan</option>

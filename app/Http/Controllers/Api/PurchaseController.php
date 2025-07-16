@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\Cart;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class PurchaseController extends Controller
 {
@@ -15,7 +17,7 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Invoice::all());
     }
 
     /**
@@ -24,6 +26,7 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'phone' => 'required|string|max:15|exists:users,phone',
             'cart_id' => 'required|exists:carts,id',
             'total' => 'required|numeric|min:0',
             'address.address_line' => 'required|string|max:255',
@@ -56,7 +59,30 @@ class PurchaseController extends Controller
                 'address_id' => $address->id,
             ]);
 
+            Cart::where('id', $request->cart_id)->update(['is_active' => false]);
+
             DB::commit();
+
+            $message = "*🧾 Invoice Pemesanan*\n\n"
+                . "*ID Invoice:* {$invoiceId}\n"
+                . "*Total:* Rp" . number_format($invoice->total, 0, ',', '.') . "\n"
+                . "*Alamat Pengiriman:*\n"
+                . "{$address->address_line}, {$address->district}, {$address->city}, {$address->state} {$address->postal_code}\n"
+                . "*No. Telepon:* +{$address->phone_number}\n\n"
+                . "✅ Pesanan Anda telah berhasil dibuat. Silakan lakukan pembayaran sesuai dengan instruksi berikut:\n\n"
+                . "*Metode Pembayaran:* Transfer Bank\n"
+                . "*Bank:* BCA\n"
+                . "*No. Rekening:* 1234567890\n"
+                . "*Atas Nama:* PT Contoh Online\n\n"
+                . "Mohon konfirmasi setelah melakukan pembayaran.\n"
+                . "Terima kasih telah berbelanja di *Rainbee*!";
+
+            Http::withHeaders([
+                'Authorization' => env('TOKEN_FONNTE'),
+            ])->post('https://api.fonnte.com/send', [
+                'target' => $request->phone,
+                'message' => $message,
+            ]);
 
             return response()->json([
                 'message' => 'Invoice created successfully',

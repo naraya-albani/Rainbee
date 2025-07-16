@@ -23,6 +23,7 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'id' => 'string',
             'cart_id' => 'integer',
             'status' => 'string',
             'total' => 'decimal:0',

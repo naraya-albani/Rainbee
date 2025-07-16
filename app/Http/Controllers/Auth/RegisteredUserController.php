@@ -50,17 +50,21 @@ class RegisteredUserController extends Controller
 
         $otp = rand(1000, 9999);
 
-        Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
+        try {
+            Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
 
-        $response = Http::withHeaders([
-            'Authorization' => env('TOKEN_FONNTE'),
-        ])->post('https://api.fonnte.com/send', [
-            'target' => $phone,
-            'message' => '*' . $otp . '* adalah kode verifikasi Anda. Jangan berikan kode ini kepada siapa pun.',
-        ]);
+            $response = Http::withHeaders([
+                'Authorization' => env('TOKEN_FONNTE'),
+            ])->post('https://api.fonnte.com/send', [
+                'target' => $phone,
+                'message' => '*' . $otp . '* adalah kode verifikasi Anda. Jangan berikan kode ini kepada siapa pun.',
+            ]);
 
-        logger($response->json());
+            logger($response->json());
 
-        return redirect()->route('verification', ['name' => $request->name, 'phone' => $phone]);
+            return redirect()->route('verification', ['name' => $request->name, 'phone' => $phone]);
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['otp' => 'Terjadi kesalahan']);
+        }
     }
 }
