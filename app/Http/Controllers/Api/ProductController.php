@@ -21,7 +21,6 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -32,26 +31,23 @@ class ProductController extends Controller
         ]);
 
         try{
-        //gambar
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('produk', 'public');
-            $validated['image'] = $path;
-        }
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('produk', 'public');
+                $validated['image'] = $path;
+            }
 
-        $product = Product::create($validated);
+            $product = Product::create($validated);
 
-        return response()->json([
-            'message' => 'Produk berhasil ditambahkan',
-            'data' => $product
-        ], 201);
-    }
-        catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Produk berhasil ditambahkan',
+                'data' => $product
+            ], 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Gagal menambahkan produk',
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
 
     /**

@@ -40,4 +40,5 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
+    phone: string;
 }

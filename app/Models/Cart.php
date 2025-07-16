@@ -9,6 +9,7 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'subtotal',
+        'is_active'
     ];
 
     /**
@@ -20,8 +21,8 @@ class Cart extends Model
     {
         return [
             'user_id' => 'integer',
-            'product_id' => 'integer',
             'subtotal' => 'decimal:0',
+            'is_active' => 'boolean'
         ];
     }
 

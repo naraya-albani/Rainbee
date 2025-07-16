@@ -31,6 +31,14 @@ type CartItem = {
 export default function Keranjang({ user }: Auth) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [subtotal, setSubtotal] = useState<number>(0);
+    const [cartId, setCartId] = useState('');
+    const [alamatLengkap, setAlamatLengkap] = useState('');
+    const [selectedProvinsi, setSelectedProvinsi] = useState('');
+    const [selectedKabupaten, setSelectedKabupaten] = useState('');
+    const [selectedKecamatan, setSelectedKecamatan] = useState('');
+    const [kodePos, setKodePos] = useState('');
+    const [nomorTelepon, setNomorTelepon] = useState(user.phone || '');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         fetch('/api/cart/' + user.id, {
@@ -41,6 +49,7 @@ export default function Keranjang({ user }: Auth) {
         })
             .then((res) => res.json())
             .then((data) => {
+                setCartId(data.cart_id);
                 setItems(data.details);
                 setSubtotal(data.subtotal);
             })
@@ -48,6 +57,44 @@ export default function Keranjang({ user }: Auth) {
                 console.error('Gagal mengambil data keranjang:', err);
             });
     }, []);
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+
+        try {
+            const res = await fetch('/api/purchase', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cart_id: cartId,
+                    total: subtotal,
+                    address: {
+                        address_line: alamatLengkap,
+                        district: selectedKecamatan,
+                        city: selectedKabupaten,
+                        state: selectedProvinsi,
+                        postal_code: kodePos,
+                        phone_number: nomorTelepon,
+                    },
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                alert('Pemesanan berhasil dibuat');
+            } else {
+                alert(data.message || 'Gagal membuat pesanan');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan saat membuat invoice' + error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     interface Province {
         id: string;
@@ -66,20 +113,14 @@ export default function Keranjang({ user }: Auth) {
     }
 
     const [provinsi, setProvinsi] = useState<Province[]>([]);
-
     const [kabupaten, setKabupaten] = useState<Regency[]>([]);
     const [kecamatan, setKecamatan] = useState<District[]>([]);
-
-    const [selectedProvinsi, setSelectedProvinsi] = useState('');
-    const [selectedKabupaten, setSelectedKabupaten] = useState('');
-    const [selectedKecamatan, setSelectedKecamatan] = useState('');
 
     //data provinsi
     useEffect(() => {
         fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
             .then((res) => res.json())
             .then((data) => {
-                console.log('Provinsi:', data); // optional
                 setProvinsi(data);
             })
             .catch((err) => console.error('Gagal fetch provinsi:', err));
@@ -181,11 +222,11 @@ export default function Keranjang({ user }: Auth) {
                         </div>
 
                         <Dialog>
-                            <form>
-                                <DialogTrigger asChild>
-                                    <Button>Beli Sekarang</Button>
-                                </DialogTrigger>
-                                <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
+                            <DialogTrigger asChild>
+                                <Button>Beli Sekarang</Button>
+                            </DialogTrigger>
+                            <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
+                                <form onSubmit={handleSubmit}>
                                     <DialogHeader>
                                         <DialogTitle>Konfirmasi Pemesanan</DialogTitle>
                                         <DialogDescription>Jangan lupa cek kembali pesanan Anda sebelum melakukan pembayaran</DialogDescription>
@@ -194,7 +235,11 @@ export default function Keranjang({ user }: Auth) {
                                         <div className="flex w-full flex-col items-start gap-3 lg:w-1/2">
                                             <h1>Alamat</h1>
                                             <Label className="font-bold">Masukkan alamatmu</Label>
-                                            <Input placeholder="Alamat lengkap" />
+                                            <Input
+                                                placeholder="Alamat lengkap"
+                                                value={alamatLengkap}
+                                                onChange={(e) => setAlamatLengkap(e.target.value)}
+                                            />
                                             <Label className="font-bold">Provinsi</Label>
                                             <select
                                                 className="w-full rounded border p-2"
@@ -237,6 +282,30 @@ export default function Keranjang({ user }: Auth) {
                                                     </option>
                                                 ))}
                                             </select>
+                                            <Label className="font-bold">Masukkan kode posmu</Label>
+                                            <Input
+                                                placeholder="Kode pos"
+                                                value={kodePos}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+
+                                                    if (numericValue.length <= 5) {
+                                                        setKodePos(numericValue);
+                                                    }
+                                                }}
+                                            />
+                                            <Label className="font-bold">Masukkan nomor telepon</Label>
+                                            <Input
+                                                placeholder="Nomor telepon"
+                                                value={nomorTelepon}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+
+                                                    if (numericValue.length <= 15) {
+                                                        setNomorTelepon(numericValue);
+                                                    }
+                                                }}
+                                            />
                                         </div>
                                         <div className="grid w-full gap-4 lg:w-1/2">
                                             {items.map((item) => (
@@ -248,7 +317,9 @@ export default function Keranjang({ user }: Auth) {
                                                             <p className="text-lg">{item.product_name}</p>
                                                             <p className="text-sm">{item.size} ml</p>
                                                             <div className="mt-2">
-                                                                <p className="text-lg font-bold text-black">Rp{item.price.toLocaleString()}</p>
+                                                                <p className="text-lg font-bold text-[#f59e0b]">
+                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.price)}
+                                                                </p>
                                                             </div>
                                                         </div>
                                                     </CardContent>
@@ -260,10 +331,12 @@ export default function Keranjang({ user }: Auth) {
                                         <DialogClose asChild>
                                             <Button variant="outline">Batal</Button>
                                         </DialogClose>
-                                        <Button type="submit">Lakukan pembayaran</Button>
+                                        <Button type="submit" disabled={isSubmitting}>
+                                            Lakukan pembayaran
+                                        </Button>
                                     </DialogFooter>
-                                </DialogContent>
-                            </form>
+                                </form>
+                            </DialogContent>
                         </Dialog>
                     </CardContent>
                 </Card>

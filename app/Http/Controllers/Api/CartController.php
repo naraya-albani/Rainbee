@@ -34,12 +34,18 @@ class CartController extends Controller
 
         try {
             $product = Product::findOrFail($request->product_id);
-            $cart = Cart::firstOrCreate(
-                ['user_id' => $request->id],
-                ['subtotal' => 0]
-            );
+            $cart = Cart::where('user_id', $request->id)
+                    ->where('is_active', true)
+                    ->first();
 
-            // Cek apakah produk sudah ada di dalam keranjang
+            if (!$cart) {
+                $cart = Cart::create([
+                    'user_id' => $request->id,
+                    'subtotal' => 0,
+                    'is_active' => true
+                ]);
+            }
+
             $existingDetail = DetailCart::where('cart_id', $cart->id)
                 ->where('product_id', $product->id)
                 ->first();
@@ -57,12 +63,10 @@ class CartController extends Controller
             $price = $product->price * $request->quantity;
 
             if ($existingDetail) {
-                // Update kuantitas dan harga jika produk sudah ada di keranjang
                 $existingDetail->quantity += $request->quantity;
                 $existingDetail->price += $price;
                 $existingDetail->save();
             } else {
-                // Tambahkan produk baru ke detail keranjang
                 $existingDetail = DetailCart::create([
                     'cart_id'    => $cart->id,
                     'product_id' => $product->id,
@@ -95,7 +99,7 @@ class CartController extends Controller
      */
     public function show(string $id)
     {
-        $cart = Cart::where('user_id', $id)->with(['details.product'])->first();
+        $cart = Cart::where('user_id', $id)->where('is_active', true)->with(['details.product'])->first();
 
         if (!$cart) {
             return response()->json([
