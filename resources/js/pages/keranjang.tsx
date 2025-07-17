@@ -219,7 +219,7 @@ export default function Keranjang({ user }: Auth) {
                         <Card key={item.product_id} className="relative">
                             <CardContent className="flex items-start gap-4 py-4">
                                 <Checkbox />
-                                <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
+                                <img src={`/storage/${item.image}`} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
                                 <div className="flex-1">
                                     <p className="text-lg">{item.product_name}</p>
                                     <p className="text-sm">{item.size} ml</p>
@@ -351,7 +351,11 @@ export default function Keranjang({ user }: Auth) {
                                                 <Card key={item.product_id} className="relative">
                                                     <CardContent className="flex items-start gap-4 py-4">
                                                         <Checkbox />
-                                                        <img src={item.image} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
+                                                        <img
+                                                            src={`/storage/${item.image}`}
+                                                            alt={item.product_name}
+                                                            className="h-20 w-20 rounded object-cover"
+                                                        />
                                                         <div className="flex-1">
                                                             <p className="text-lg">{item.product_name}</p>
                                                             <p className="text-sm">{item.size} ml</p>

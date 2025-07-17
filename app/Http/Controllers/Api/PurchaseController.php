@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Cart;
+use App\Models\DetailCart;
 use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -59,13 +61,36 @@ class PurchaseController extends Controller
                 'address_id' => $address->id,
             ]);
 
+            // Ambil semua item dari keranjang
+            $items = DetailCart::where('cart_id', $request->cart_id)->get();
+
+            $produkList = "*🛒 Rincian Produk:*\n";
+            foreach ($items as $item) {
+                $product = Product::find($item->product_id);
+
+                if ($product) {
+                    if ($product->stock < $item->quantity) {
+                        throw new \Exception("Stok produk '{$product->name}' tidak mencukupi.");
+                    }
+
+                    // Kurangi stok
+                    $product->stock -= $item->quantity;
+                    $product->save();
+
+                    // Tambahkan ke pesan produk
+                    $produkList .= "- {$product->name} ({$item->quantity}x) @ Rp" . number_format($product->price, 0, ',', '.') . "\n";
+                }
+            }
+
+            // Nonaktifkan keranjang
             Cart::where('id', $request->cart_id)->update(['is_active' => false]);
 
             DB::commit();
 
             $message = "*🧾 Invoice Pemesanan*\n\n"
                 . "*ID Invoice:* {$invoiceId}\n"
-                . "*Total:* Rp" . number_format($invoice->total, 0, ',', '.') . "\n"
+                . "*Total:* Rp" . number_format($invoice->total, 0, ',', '.') . "\n\n"
+                . $produkList . "\n"
                 . "*Alamat Pengiriman:*\n"
                 . "{$address->address_line}, {$address->district}, {$address->city}, {$address->state} {$address->postal_code}\n"
                 . "*No. Telepon:* +{$address->phone_number}\n\n"

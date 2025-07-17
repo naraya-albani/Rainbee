@@ -121,19 +121,19 @@ export default function Addproduk() {
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Tambah Produk</h2>
                     <Dialog>
-                        <form onSubmit={handleSubmit}>
-                            <DialogTrigger asChild>
-                                <Button>
-                                    <Plus></Plus>
-                                    Tambahkan Produk
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[1080px] max-h-screen flex flex-col">
+                        <DialogTrigger asChild>
+                            <Button>
+                                <Plus />
+                                Tambahkan Produk
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
+                            <form onSubmit={handleSubmit}>
                                 <DialogHeader>
                                     <DialogTitle>Tambah Produk</DialogTitle>
                                     <DialogDescription>Masukkan Detail produk disini.</DialogDescription>
                                 </DialogHeader>
-                                <div className="flex flex-col gap-6 pt-4 lg:flex-row overflow-y-auto flex-1">
+                                <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
                                     <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
                                         <Label>Gambar</Label>
                                         <input type="file" accept="image/*" onChange={handleImageChange} />
@@ -187,14 +187,14 @@ export default function Addproduk() {
                                         </div>
                                     </div>
                                 </div>
-                                <DialogFooter className='border-t pt-4'>
+                                <DialogFooter className="border-t pt-4">
                                     <DialogClose asChild>
                                         <Button variant="outline">Cancel</Button>
                                     </DialogClose>
                                     <Button type="submit">Save changes</Button>
                                 </DialogFooter>
-                            </DialogContent>
-                        </form>
+                            </form>
+                        </DialogContent>
                     </Dialog>
                 </div>
                 <Table>
@@ -205,14 +205,14 @@ export default function Addproduk() {
                             <TableHead>Deskripsi</TableHead>
                             <TableHead>Variant</TableHead>
                             <TableHead>Stok</TableHead>
-                            <TableHead className='text-center'>Edit</TableHead>
+                            <TableHead className="text-center">Edit</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {products.map((product) => (
                             <TableRow key={product.id}>
-                                <TableCell className="font-medium whitespace-normal break-words max-w-xs">{product.name}</TableCell>
-                                <TableCell className="whitespace-normal break-words max-w-xs">{product.description}</TableCell>
+                                <TableCell className="max-w-xs font-medium break-words whitespace-normal">{product.name}</TableCell>
+                                <TableCell className="max-w-xs break-words whitespace-normal">{product.description}</TableCell>
                                 <TableCell>{product.size} ml</TableCell>
                                 <TableCell className="text-left">{product.stock}</TableCell>
 

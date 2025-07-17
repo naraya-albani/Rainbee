@@ -24,7 +24,7 @@ type Product = {
     description: string;
     size: number;
     price: string;
-    image_url: string;
+    image: string;
     stock: number;
 };
 
@@ -458,7 +458,11 @@ export default function Welcome({ user }: Auth) {
                                 {products.map((product) => {
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
-                                            <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
+                                            <img
+                                                src={`/storage/${product.image}`}
+                                                alt={product.name}
+                                                className="h-[180px] w-full rounded-t-lg object-cover"
+                                            />
                                             <CardContent className="px-4 pb-2 text-left">
                                                 <CardTitle className="mb-1 text-xl font-semibold">{product.name}</CardTitle>
                                                 <p className="mb-4 text-2xl font-bold text-[#f59e0b]">
@@ -504,7 +508,11 @@ export default function Welcome({ user }: Auth) {
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
-                                            <img src="/bg-web.jpg" alt="Madu Alami" className="h-[180px] w-full rounded-t-lg object-cover" />
+                                            <img
+                                                src={`/storage/${selectedProduct.image}`}
+                                                alt="Madu Alami"
+                                                className="h-[180px] w-full rounded-t-lg object-cover"
+                                            />
                                             <div className="flex flex-col">
                                                 <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
                                                 <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
