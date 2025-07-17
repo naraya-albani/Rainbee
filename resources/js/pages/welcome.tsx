@@ -4,6 +4,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Auth } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
@@ -327,14 +328,24 @@ export default function Welcome({ user }: Auth) {
                                     )}
 
                                     {user.role === 'user' && (
-                                        
                                         <Link
                                             href={route('keranjang')}
                                             className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                         >
-                                            <ShoppingCart height={20}/>
+                                            <Select>
+                                                <SelectTrigger className="w-[120px] rounded-sm bg-[#f59e0b] text-[#1b1b18] dark:text-[#EDEDEC]">
+                                                    <SelectValue placeholder={<ShoppingCart size={20} />} />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="keranjang">
+                                                        <Link href={route('keranjang')}>Lihat Keranjang</Link>
+                                                    </SelectItem>
+                                                    <SelectItem value="checkout">
+                                                        <Link href={route('checkout')}>Checkout</Link>
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                         </Link>
-
                                     )}
                                 </>
                             ) : (

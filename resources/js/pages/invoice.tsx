@@ -21,12 +21,12 @@ export default function Component() {
                 setPreview(URL.createObjectURL(file));
             }
         };
-       
+
 
 
     return (
         <div className="flex h-screen flex-col">
-            <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-white p-6">
+            <header className="sticky top-0 z-10 flex items-center justify-between border-b p-6">
                 <h1 className="text-2xl font-bold text-[#f59e0b]">RAINBEE.</h1>
                 <div>
                     <h2 className="text-xl font-semibold">Invoice #INV001</h2>
@@ -107,6 +107,11 @@ export default function Component() {
                         </CardContent>
                     </Card>
 
+
+                </main>
+
+                <div className="md:flex-col flex flex-row w-full items-center justify-start gap-2 border-t md:border-l md:border-t-0 p-6 md:w-1/4 fixed bottom-0 md:static">
+                <div className="flex flex-col gap-4 w-full">
                     <Card>
                         <CardHeader className='mt-2'>
                             <CardTitle>Total Pembelian</CardTitle>
@@ -119,10 +124,6 @@ export default function Component() {
                             </div>
                         </CardContent>
                     </Card>
-                </main>
-
-                <div className="md:flex-col flex flex-row w-full items-center justify-start gap-2 border-t md:border-l md:border-t-0 bg-white p-6 md:w-1/4 fixed bottom-0 md:static">
-                <div className="flex flex-col gap-4 w-full">
                     <Dialog>
                         <form >
                             <div className='w-full'>
