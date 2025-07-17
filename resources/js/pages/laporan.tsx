@@ -191,16 +191,17 @@ export default function Laporan() {
                                                         </main>
                                                     </div>
                                                     {/* kanan */}
-                                                    <div className="flex w-full flex-col items-start gap-4 lg:w-1/2"></div>
-                                                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+
+                                                    <div className="flex w-full h-full items-center justify-center lg:w-1/2">
                                                         <img src={'QRIS.png'} className="h-auto w-full rounded-lg object-cover"></img>
                                                     </div>
+
                                                 </div>
                                                 <DialogFooter className="border-t pt-4">
                                                     <DialogClose asChild>
-                                                        <Button variant="outline">Cancel</Button>
+                                                        <Button variant="outline">Batal</Button>
                                                     </DialogClose>
-                                                    <Button type="submit">Save changes</Button>
+                                                    <Button type="submit">Konfirmsi Pembayaran</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>

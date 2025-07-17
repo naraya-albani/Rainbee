@@ -1,3 +1,4 @@
+import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Auth } from '@/types';
-import { SlashIcon } from 'lucide-react';
+import { SlashIcon, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type CartItem = {
@@ -157,16 +158,16 @@ export default function Keranjang({ user }: Auth) {
                 .then((response) => response.json())
                 .then((data) => {
                     setKabupaten(data);
-                    setSelectedKabupaten(''); // Reset selected kabupaten when province changes
-                    setKecamatan([]); // Clear kecamatan options as well
-                    setSelectedKecamatan(''); // Reset selected kecamatan
+                    setSelectedKabupaten('');
+                    setKecamatan([]);
+                    setSelectedKecamatan('');
                 })
                 .catch((err) => console.error('Gagal fetch kabupaten:', err));
         } else {
-            setKabupaten([]); // Clear kabupaten if no province is selected
+            setKabupaten([]);
             setSelectedKabupaten('');
-            setKecamatan([]); // Clear kecamatan options as well
-            setSelectedKecamatan(''); // Reset selected kecamatan
+            setKecamatan([]);
+            setSelectedKecamatan('');
         }
     }, [selectedProvinsi]);
 
@@ -177,11 +178,11 @@ export default function Keranjang({ user }: Auth) {
                 .then((res) => res.json())
                 .then((data) => {
                     setKecamatan(data);
-                    setSelectedKecamatan(''); // Reset selected kecamatan when regency changes
+                    setSelectedKecamatan('');
                 })
                 .catch((err) => console.error('Gagal fetch kecamatan:', err));
         } else {
-            setKecamatan([]); // Clear kecamatan if no regency is selected
+            setKecamatan([]);
             setSelectedKecamatan('');
         }
     }, [selectedKabupaten]);
@@ -213,15 +214,21 @@ export default function Keranjang({ user }: Auth) {
                     items.map((item) => (
                         <Card key={item.product_id} className="relative">
                             <CardContent className="flex items-start gap-4 py-4">
-                                <Checkbox />
+
                                 <img src={`/storage/${item.image}`} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
                                 <div className="flex-1">
                                     <p className="text-lg">{item.product_name}</p>
                                     <p className="text-sm">{item.size} ml</p>
-                                    <div className="mt-2">
+                                    <div className="mt-2 flex flex-row items-center justify-between">
                                         <p className="text-lg font-bold text-[#f59e0b]">
                                             Rp{new Intl.NumberFormat('id-ID').format(Number(item.price))}
                                         </p>
+                                        <div className='gap-2 flex items-center'>
+                                        <QuantitySelector></QuantitySelector>
+                                        <Button className='bg-red-500 hover:bg-red-600 text-white'>
+                                            <Trash></Trash>
+                                        </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>

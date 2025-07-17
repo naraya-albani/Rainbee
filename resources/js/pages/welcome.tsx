@@ -5,12 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { Auth } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { Mail, Phone, ShoppingCart, User } from 'lucide-react';
+import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { FaInstagram, FaPerson, FaPersonArrowUpFromLine, FaWhatsapp } from 'react-icons/fa6';
+import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -226,6 +227,13 @@ export default function Welcome({ user }: Auth) {
     const [openPopup, setOpenPopup] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    const cleanup = useMobileNavigation();
+
+    const handleLogout = () => {
+            cleanup();
+            router.flushAll();
+        };
+
     useEffect(() => {
         axios
             .get('/api/product')
@@ -339,10 +347,29 @@ export default function Welcome({ user }: Auth) {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem asChild>
-                                                    <Link href={route('keranjang')}>Lihat Keranjang</Link>
+                                                    <Link href={route('keranjang')}>
+                                                        <ShoppingCart></ShoppingCart>
+                                                        Lihat Keranjang
+                                                    </Link>
                                                 </DropdownMenuItem>
-                                                
-
+                                                <DropdownMenuItem asChild>
+                                                    <Link href={route('riwayat')}>
+                                                        <History></History>
+                                                        Riwayat
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
+                                                    <Link
+                                                        className="block w-full"
+                                                        method="post"
+                                                        href={route('logout')}
+                                                        as="button"
+                                                        onClick={handleLogout}
+                                                    >
+                                                        <LogOut className="mr-2" />
+                                                        Log out
+                                                    </Link>
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     )}
