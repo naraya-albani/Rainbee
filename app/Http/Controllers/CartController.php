@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\DetailCart;
 use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'id' => 'required|exists:users,id',
@@ -42,43 +43,55 @@ class CartController extends Controller
             $totalQuantity = $existingQuantity + $request->quantity;
 
             if ($totalQuantity > $product->stock) {
-                return response()->json([
-                    'message' => 'Jumlah yang diminta melebihi stok yang tersedia',
-                    'available_stock' => $product->stock - $existingQuantity,
-                ], 422);
-            }
-
-            $price = $product->price * $request->quantity;
-
-            if ($existingDetail) {
-                $existingDetail->quantity += $request->quantity;
-                $existingDetail->price += $price;
-                $existingDetail->save();
-            } else {
-                $existingDetail = DetailCart::create([
-                    'cart_id'    => $cart->id,
-                    'product_id' => $product->id,
-                    'quantity'   => $request->quantity,
-                    'price'      => $price,
+                return redirect()->back()->withErrors([
+                    'quantity' => 'Jumlah melebihi stok tersedia. Tersisa ' . ($product->stock - $existingQuantity)
                 ]);
             }
 
-            $cart->subtotal += $price;
-            $cart->save();
+            if ($existingDetail) {
+                $existingDetail->update([
+                    'quantity' => $totalQuantity,
+                ]);
+            } else {
+                DetailCart::create([
+                    'cart_id'    => $cart->id,
+                    'product_id' => $product->id,
+                    'quantity'   => $request->quantity,
+                ]);
+            }
 
             DB::commit();
 
-            return response()->json([
-                'message' => 'Produk berhasil ditambahkan ke keranjang',
-                'cart' => $cart,
-                'detail_cart' => $existingDetail,
-            ], 201);
+            return redirect()->back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => 'Gagal menambahkan produk ke keranjang',
-                'error' => $e->getMessage(),
-            ], 500);
+            return redirect()->back()->with('error', 'Gagal menambahkan produk ke keranjang');
+        }
+    }
+
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'cart_id'    => 'required|exists:detail_carts,cart_id',
+            'product_id' => 'required|exists:detail_carts,product_id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $detail = DetailCart::where('cart_id', $request->cart_id)
+                    ->where('product_id', $request->product_id)
+                    ->first();
+
+            $detail->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()->back()->withErrors('error', 'Gagal menghapus produk dari keranjang.');
         }
     }
 }

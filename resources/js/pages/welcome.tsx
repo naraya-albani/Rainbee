@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { Auth, Product } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Auth, CartForm, Product } from '@/types';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
-import { useState } from 'react';
+import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 import { toast } from 'sonner';
 const siteData = {
@@ -220,6 +220,22 @@ export default function Welcome({ auth, product }: Props) {
     const [quantity, setQuantity] = useState<number>(1);
     const [openPopup, setOpenPopup] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+
+    const { setData, post, processing } = useForm<Required<CartForm>>({
+        id: 0,
+        product_id: 0,
+        quantity: 0,
+    });
+
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post(route('keranjang'), {
+            onSuccess: () => {
+                setOpenPopup(false);
+                router.reload({ only: ['product'] });
+            },
+        });
+    };
 
     const cleanup = useMobileNavigation();
 
@@ -504,6 +520,11 @@ export default function Welcome({ auth, product }: Props) {
                                                 <Button
                                                     className="w-full"
                                                     onClick={() => {
+                                                        setData({
+                                                            id: auth.user.id,
+                                                            product_id: product.id,
+                                                            quantity: 1,
+                                                        });
                                                         setSelectedProduct(product);
                                                         setQuantity(1);
                                                         setOpenPopup(true);
@@ -550,7 +571,13 @@ export default function Welcome({ auth, product }: Props) {
                                                     value={quantity}
                                                     min={1}
                                                     max={selectedProduct.stock}
-                                                    onChange={(val) => setQuantity(val)}
+                                                    onChange={(val) => {
+                                                        setQuantity(val);
+                                                        setData((prev) => ({
+                                                            ...prev,
+                                                            quantity: val,
+                                                        }));
+                                                    }}
                                                 />
                                                 <div className="grid grid-cols-2">
                                                     <p className="text-left">harga</p>
@@ -560,7 +587,7 @@ export default function Welcome({ auth, product }: Props) {
                                                     </p>
                                                 </div>
 
-                                                <Button className="mt-5" onClick={handleAddToCart}>
+                                                <Button className="mt-5" onClick={submit} disabled={processing}>
                                                     <ShoppingCart />
                                                     Tambahkan Keranjang
                                                 </Button>

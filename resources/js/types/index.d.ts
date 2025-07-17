@@ -88,3 +88,9 @@ export interface Product {
     price: number;
     stock: number;
 }
+
+export interface CartForm {
+    id: number;
+    product_id: number;
+    quantity: number;
+}

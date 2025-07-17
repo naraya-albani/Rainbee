@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Auth, Cart, DetailCart } from '@/types';
+import { router, usePage } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -55,6 +56,17 @@ export default function Keranjang({ auth, cart }: Props) {
     const [kodePos, setKodePos] = useState('');
     const [nomorTelepon, setNomorTelepon] = useState(auth.user.phone || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const { errors } = usePage().props;
+
+    const handleDelete = (cart_id: number, product_id: number) => {
+        router.delete(route('keranjang.detail.destroy'), {
+            data: { cart_id, product_id },
+            onSuccess: () => {
+                router.reload({ only: ['cart'] });
+            },
+        });
+    };
 
     const toTitleCaseSmart = (str: string) => {
         const exceptions: Record<string, string> = {
@@ -180,6 +192,8 @@ export default function Keranjang({ auth, cart }: Props) {
                     </BreadcrumbList>
                 </Breadcrumb>
 
+                {errors.error && <p className="text-red-500">{errors.error}</p>}
+
                 {items.length === 0 ? (
                     <Card>
                         <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
@@ -198,7 +212,10 @@ export default function Keranjang({ auth, cart }: Props) {
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <QuantitySelector></QuantitySelector>
-                                            <Button className="bg-red-500 text-white hover:bg-red-600">
+                                            <Button
+                                                onClick={() => handleDelete(item.cart_id, item.product.id)}
+                                                className="bg-red-500 text-white hover:bg-red-600"
+                                            >
                                                 <Trash></Trash>
                                             </Button>
                                         </div>

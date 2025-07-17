@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\CartController;
 use App\Models\Cart;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -32,11 +33,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = Auth::user();
         $cart = Cart::where('user_id', $user->id)->where('is_active', true)->with(['details.product'])->first();
 
+        if (!$cart) {
+            $cart = (object)[
+                'id' => null,
+                'user_id' => $user->id,
+                'subtotal' => 0,
+                'is_active' => true,
+                'details' => []
+            ];
+        }
+
         return Inertia::render('keranjang', [
             'user' => $user,
             'cart' => $cart
         ]);
     })->name('keranjang');
+    Route::post('keranjang', [CartController::class, 'store']);
+    Route::delete('keranjang/detail', [CartController::class, 'destroy'])->name('keranjang.detail.destroy');
     Route::get('invoice/{id}', function ($id) {
         $invoice = Invoice::with([
             'cart.user',
