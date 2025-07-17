@@ -98,8 +98,8 @@ export function SectionCards() {
 
             <Card>
                 <CardHeader className="mt-2">
-                    <CardTitle className="text-[#f59e0b]">Grafik Invoice Claimed</CardTitle>
-                    <CardDescription>Statistik invoice yang sudah claimed per bulan</CardDescription>
+                    <CardTitle className="text-[#f59e0b]">Grafik Penjualan</CardTitle>
+                    <CardDescription>Statistik Penjualan selama satu minggu</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ResponsiveContainer width="100%" height={250}>
