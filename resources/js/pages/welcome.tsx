@@ -327,12 +327,14 @@ export default function Welcome({ user }: Auth) {
                                     )}
 
                                     {user.role === 'user' && (
+                                        
                                         <Link
                                             href={route('keranjang')}
                                             className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
                                         >
-                                            <ShoppingCart height={20} />
+                                            <ShoppingCart height={20}/>
                                         </Link>
+
                                     )}
                                 </>
                             ) : (

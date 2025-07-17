@@ -45,7 +45,6 @@ export default function Addproduk() {
     const [size, setSize] = useState('');
     const [stock, setStock] = useState('');
     const [price, setPrice] = useState('');
-
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
 

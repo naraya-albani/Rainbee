@@ -203,12 +203,7 @@ export default function Keranjang({ user }: Auth) {
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-                <Card>
-                    <CardContent className="flex items-center space-x-3 py-4">
-                        <Checkbox />
-                        <span className="font-medium">Pilih Semua ({items.length})</span>
-                    </CardContent>
-                </Card>
+
 
                 {items.length === 0 ? (
                     <Card>

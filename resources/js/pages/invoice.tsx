@@ -1,9 +1,29 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useState } from 'react';
+
+
+
 
 export default function Component() {
+
+    const [image, setImage] = useState<File | null>(null);
+        const [preview, setPreview] = useState<string | null>(null);
+
+        const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                setImage(file);
+                setPreview(URL.createObjectURL(file));
+            }
+        };
+       
+
+
     return (
         <div className="flex h-screen flex-col">
             <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-white p-6">
@@ -19,8 +39,10 @@ export default function Component() {
                     <Card>
                         <CardHeader className='mt-2'>
                             <CardTitle>Detail Pelanggan</CardTitle>
+
                         </CardHeader>
                         <CardContent className="space-y-2 mb-2">
+                            <p>nama pelanggan</p>
                             <div>
                                 <span className="font-semibold">Alamat Pengiriman:</span>
                                 <p>jember, 1112030, 1112, 11 12345</p>
@@ -99,12 +121,43 @@ export default function Component() {
                     </Card>
                 </main>
 
-                <aside className="flex w-full flex-col items-center justify-start gap-4 border-l bg-white p-6 md:w-1/4">
-                    <Button className="w-full">Konfirmasi Pembayaran</Button>
+                <div className="md:flex-col flex flex-row w-full items-center justify-start gap-2 border-t md:border-l md:border-t-0 bg-white p-6 md:w-1/4 fixed bottom-0 md:static">
+                <div className="flex flex-col gap-4 w-full">
+                    <Dialog>
+                        <form >
+                            <div className='w-full'>
+                            <DialogTrigger asChild className='w-full'>
+                                <Button className='w-full'>
+                                    Bayar
+                                </Button>
+                            </DialogTrigger>
+                            </div>
+                            <DialogContent className=" max-h-screen ">
+                                <DialogHeader>
+                                    <DialogTitle>Bukti Pembayaran</DialogTitle>
+                                    <DialogDescription>Kirim Bukti Pembayaran disini.</DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-col gap-6 pt-4 lg:flex-row overflow-y-auto flex-1">
+                                    <div className="flex w-full flex-col items-center gap-3 ">
+                                        <Label className="text-lg font-semibold">Upload Bukti Pembayaran</Label>
+                                        <input type="file" accept="image/*" onChange={handleImageChange} />
+                                        {preview && <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />}
+                                        <Button >
+                                            Kirim Gambar
+                                        </Button>
+                                    </div>
+
+                                </div>
+
+                            </DialogContent>
+
+                        </form>
+                    </Dialog>
+                    </div>
                     <Button variant="outline" className="w-full">
                         Batal
                     </Button>
-                </aside>
+                </div>
             </div>
         </div>
     );
