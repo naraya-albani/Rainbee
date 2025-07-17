@@ -1,7 +1,7 @@
 // Components
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
@@ -30,9 +30,30 @@ export default function VerifyPhone({ phone, name, remember }: Props) {
         remember,
     });
 
+    const [countdown, setCountdown] = useState<number>(300);
+    const [canResend, setCanResend] = useState<boolean>(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+
+        if (countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        } else {
+            setCanResend(true);
+        }
+
+        return () => clearTimeout(timer);
+    }, [countdown]);
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         post(route('verification.send'));
+    };
+
+    const handleResend = () => {
+        post(route('verification.send'));
+        setCountdown(300);
+        setCanResend(false);
     };
 
     return (
@@ -67,6 +88,16 @@ export default function VerifyPhone({ phone, name, remember }: Props) {
                     {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                     Kirim OTP
                 </Button>
+
+                <div className="mt-4 text-sm">
+                    {canResend ? (
+                        <Button type="button" onClick={handleResend} className="hover:underline">
+                            Kirim ulang kode
+                        </Button>
+                    ) : (
+                        <span className="text-gray-500">Kirim ulang dalam {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')} menit</span>
+                    )}
+                </div>
 
                 <TextLink href={route('login')} className="mx-auto block text-sm">
                     Log out

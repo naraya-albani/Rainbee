@@ -21,6 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('keranjang', function () {
         return Inertia::render('keranjang', ['user' => Auth::user()]);
     })->name('keranjang');
+     Route::get('invoice', function () {
+        return Inertia::render('invoice', ['user' => Auth::user()]);
+    })->name('invoice');
 });
 
 require __DIR__.'/settings.php';

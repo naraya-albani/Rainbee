@@ -668,6 +668,7 @@ export default function Welcome({ user }: Auth) {
                                 <img src="/polije-dark.png" alt="Polije" width={200} className="hidden dark:block" />
                                 <img src="/logo-blu.png" width={50} />
                                 <img src="/logo_jpt.png" width={180} />
+                                <img src="/logo-jti.png" width={130} />
                             </div>
                         </footer>
                     </div>
