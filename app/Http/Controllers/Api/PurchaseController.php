@@ -127,7 +127,36 @@ class PurchaseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Ambil data invoice lengkap
+        $invoice = Invoice::with([
+            'cart.user',
+            'cart.details.product',
+            'address'
+        ])->findOrFail($id);
+
+        // Format response
+        return response()->json([
+            'invoice' => [
+                'id' => $invoice->id,
+                'total' => $invoice->total,
+                'status' => $invoice->status,
+                'created_at' => $invoice->created_at,
+            ],
+            'user' => [
+                'id' => $invoice->cart->user->id,
+                'name' => $invoice->cart->user->name,
+                'phone' => $invoice->cart->user->phone,
+            ],
+            'address' => $invoice->address,
+            'cart_details' => $invoice->cart->details->map(function ($item) {
+                return [
+                    'product_name' => $item->product->name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->price,
+                    'subtotal' => $item->price * $item->quantity,
+                ];
+            }),
+        ]);
     }
 
     /**

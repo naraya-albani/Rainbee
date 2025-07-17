@@ -30,4 +30,14 @@ class Invoice extends Model
             'address_id' => 'integer'
         ];
     }
+
+    public function cart()
+    {
+        return $this->belongsTo(Cart::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
 }

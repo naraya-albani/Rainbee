@@ -15,18 +15,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Auth } from '@/types';
+import { Auth, Cart, DetailCart } from '@/types';
 import { SlashIcon, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-type CartItem = {
-    product_id: number;
-    product_name: string;
-    image: string;
-    size: number;
-    quantity: number;
-    price: number;
-    total: number;
+type Props = {
+    auth: Auth;
+    cart: Cart;
 };
 
 interface Province {
@@ -45,10 +40,8 @@ interface District {
     name: string;
 }
 
-export default function Keranjang({ user }: Auth) {
-    const [items, setItems] = useState<CartItem[]>([]);
-    const [subtotal, setSubtotal] = useState<number>(0);
-    const [cartId, setCartId] = useState('');
+export default function Keranjang({ auth, cart }: Props) {
+    const [items, setItems] = useState<DetailCart[]>(cart.details);
     const [alamatLengkap, setAlamatLengkap] = useState('');
     const [provinsi, setProvinsi] = useState<Province[]>([]);
     const [kabupaten, setKabupaten] = useState<Regency[]>([]);
@@ -60,26 +53,8 @@ export default function Keranjang({ user }: Auth) {
     const [selectedKecamatan, setSelectedKecamatan] = useState('');
     const [selectedKecamatanName, setSelectedKecamatanName] = useState('');
     const [kodePos, setKodePos] = useState('');
-    const [nomorTelepon, setNomorTelepon] = useState(user.phone || '');
+    const [nomorTelepon, setNomorTelepon] = useState(auth.user.phone || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        fetch('/api/cart/' + user.id, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setCartId(data.cart_id);
-                setItems(data.details);
-                setSubtotal(data.subtotal);
-            })
-            .catch((err) => {
-                console.error('Gagal mengambil data keranjang:', err);
-            });
-    }, []);
 
     const toTitleCaseSmart = (str: string) => {
         const exceptions: Record<string, string> = {
@@ -112,9 +87,9 @@ export default function Keranjang({ user }: Auth) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    phone: user.phone,
-                    cart_id: cartId,
-                    total: subtotal,
+                    phone: auth.user.phone,
+                    cart_id: cart.id,
+                    total: cart.subtotal,
                     address: {
                         address_line: alamatLengkap,
                         district: toTitleCaseSmart(selectedKecamatanName),
@@ -129,7 +104,7 @@ export default function Keranjang({ user }: Auth) {
             const data = await res.json();
 
             if (res.ok) {
-                alert('Pemesanan berhasil dibuat');
+                route('invoice/' + data.invoice.id);
             } else {
                 alert(data.message || 'Gagal membuat pesanan');
             }
@@ -205,29 +180,27 @@ export default function Keranjang({ user }: Auth) {
                     </BreadcrumbList>
                 </Breadcrumb>
 
-
                 {items.length === 0 ? (
                     <Card>
                         <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
                     </Card>
                 ) : (
                     items.map((item) => (
-                        <Card key={item.product_id} className="relative">
+                        <Card key={item.product.id} className="relative">
                             <CardContent className="flex items-start gap-4 py-4">
-
-                                <img src={`/storage/${item.image}`} alt={item.product_name} className="h-20 w-20 rounded object-cover" />
+                                <img src={`/storage/${item.product.image}`} alt={item.product.name} className="h-20 w-20 rounded object-cover" />
                                 <div className="flex-1">
-                                    <p className="text-lg">{item.product_name}</p>
-                                    <p className="text-sm">{item.size} ml</p>
+                                    <p className="text-lg">{item.product.name}</p>
+                                    <p className="text-sm">{item.product.size} ml</p>
                                     <div className="mt-2 flex flex-row items-center justify-between">
                                         <p className="text-lg font-bold text-[#f59e0b]">
-                                            Rp{new Intl.NumberFormat('id-ID').format(Number(item.price))}
+                                            Rp{new Intl.NumberFormat('id-ID').format(Number(item.product.price * item.quantity))}
                                         </p>
-                                        <div className='gap-2 flex items-center'>
-                                        <QuantitySelector></QuantitySelector>
-                                        <Button className='bg-red-500 hover:bg-red-600 text-white'>
-                                            <Trash></Trash>
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <QuantitySelector></QuantitySelector>
+                                            <Button className="bg-red-500 text-white hover:bg-red-600">
+                                                <Trash></Trash>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -244,7 +217,7 @@ export default function Keranjang({ user }: Auth) {
                         <h2 className="text-lg font-semibold">Ringkasan belanja</h2>
                         <div className="flex justify-between text-sm">
                             <span>Total</span>
-                            <span>Rp{new Intl.NumberFormat('id-ID').format(subtotal)}</span>
+                            <span>Rp{new Intl.NumberFormat('id-ID').format(cart.subtotal)}</span>
                         </div>
 
                         <Dialog>
@@ -350,20 +323,20 @@ export default function Keranjang({ user }: Auth) {
                                         </div>
                                         <div className="grid w-full gap-4 lg:w-1/2">
                                             {items.map((item) => (
-                                                <Card key={item.product_id} className="relative">
+                                                <Card key={item.product.id} className="relative">
                                                     <CardContent className="flex items-start gap-4 py-4">
                                                         <Checkbox />
                                                         <img
-                                                            src={`/storage/${item.image}`}
-                                                            alt={item.product_name}
+                                                            src={`/storage/${item.product.image}`}
+                                                            alt={item.product.name}
                                                             className="h-20 w-20 rounded object-cover"
                                                         />
                                                         <div className="flex-1">
-                                                            <p className="text-lg">{item.product_name}</p>
-                                                            <p className="text-sm">{item.size} ml</p>
+                                                            <p className="text-lg">{item.product.name}</p>
+                                                            <p className="text-sm">{item.product.size} ml</p>
                                                             <div className="mt-2">
                                                                 <p className="text-lg font-bold text-[#f59e0b]">
-                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.price)}
+                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.product.price)}
                                                                 </p>
                                                             </div>
                                                         </div>

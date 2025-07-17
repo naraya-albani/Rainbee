@@ -42,3 +42,49 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties...
     phone: string;
 }
+
+export interface Invoice {
+    invoice_id: string;
+    total: number;
+    status: string;
+    cart: Cart;
+    address: Address;
+    receipt: string;
+    created_at: string;
+}
+
+export interface Address {
+    address_id: number;
+    address_line: string;
+    district: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    phone_number: string;
+}
+
+export interface Cart {
+    id: number;
+    details: DetailCart[];
+    user_id: number;
+    user: User;
+    subtotal: number;
+    is_active: boolean;
+}
+
+export interface DetailCart {
+    cart_id: number;
+    product: Product;
+    quantity: number;
+    price: number;
+}
+
+export interface Product {
+    id: number;
+    name: string;
+    description: string | null;
+    image: string;
+    size: number;
+    price: number;
+    stock: number;
+}

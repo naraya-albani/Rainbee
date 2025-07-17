@@ -1,11 +1,17 @@
 <?php
 
+use App\Models\Cart;
+use App\Models\Invoice;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', ['user' => Auth::user()]);
+    return Inertia::render('welcome', [
+        'user' => Auth::user(),
+        'product' => Product::all()
+    ]);
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -19,10 +25,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('laporan');
     })->name('laporan');
     Route::get('keranjang', function () {
-        return Inertia::render('keranjang', ['user' => Auth::user()]);
+        $user = Auth::user();
+        $cart = Cart::where('user_id', $user->id)->where('is_active', true)->with(['details.product'])->first();
+
+        return Inertia::render('keranjang', [
+            'user' => $user,
+            'cart' => $cart
+        ]);
     })->name('keranjang');
-     Route::get('invoice', function () {
-        return Inertia::render('invoice', ['user' => Auth::user()]);
+    Route::get('invoice/{id}', function ($id) {
+        $invoice = Invoice::with([
+            'cart.user',
+            'cart.details.product',
+            'address'
+        ])->findOrFail($id);
+
+        $user = Auth::user();
+
+        if ($invoice->cart->user_id !== $user->id) {
+            abort(403, 'Unauthorized access to this invoice.');
+        }
+
+        return Inertia::render('invoice', [
+            'invoice' => $invoice,
+        ]);
     })->name('invoice');
     Route::get('riwayat', function () {
         return Inertia::render('riwayat', ['user' => Auth::user()]);

@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { Auth } from '@/types';
+import { Auth, Product } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import axios from 'axios';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 
 const siteData = {
@@ -20,14 +19,9 @@ const siteData = {
 
 const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq', 'Kontak'];
 
-type Product = {
-    id: number;
-    name: string;
-    description: string;
-    size: number;
-    price: string;
-    image: string;
-    stock: number;
+type Props = {
+    auth: Auth;
+    product: Product[];
 };
 
 interface WhyChooseUsItem {
@@ -220,8 +214,8 @@ const providers = [
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
 
-export default function Welcome({ user }: Auth) {
-    const [products, setProducts] = useState<Product[]>([]);
+export default function Welcome({ auth, product }: Props) {
+    const [products, setProducts] = useState<Product[]>(product);
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [quantity, setQuantity] = useState<number>(1);
     const [openPopup, setOpenPopup] = useState(false);
@@ -230,20 +224,9 @@ export default function Welcome({ user }: Auth) {
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
-            cleanup();
-            router.flushAll();
-        };
-
-    useEffect(() => {
-        axios
-            .get('/api/product')
-            .then((response) => {
-                setProducts(response.data);
-            })
-            .catch((error) => {
-                console.error('Error fetching products:', error);
-            });
-    }, []);
+        cleanup();
+        router.flushAll();
+    };
 
     const handleAddToCart = async () => {
         if (!selectedProduct) return;
@@ -255,7 +238,7 @@ export default function Welcome({ user }: Auth) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id: user.id,
+                    id: auth.user.id,
                     product_id: selectedProduct.id,
                     quantity: quantity,
                 }),
@@ -324,9 +307,9 @@ export default function Welcome({ user }: Auth) {
                         </div>
                         {/* <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button> */}
                         <div className="hidden items-center space-x-4 md:flex">
-                            {user ? (
+                            {auth.user ? (
                                 <>
-                                    {user.role === 'admin' && (
+                                    {auth.user.role === 'admin' && (
                                         <Link
                                             href={route('dashboard')}
                                             className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
@@ -335,7 +318,7 @@ export default function Welcome({ user }: Auth) {
                                         </Link>
                                     )}
 
-                                    {user.role === 'user' && (
+                                    {auth.user.role === 'user' && (
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button

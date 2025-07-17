@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\DetailCart;
 use App\Models\Product;
@@ -11,17 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -92,55 +80,5 @@ class CartController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $cart = Cart::where('user_id', $id)->where('is_active', true)->with(['details.product'])->first();
-
-        if (!$cart) {
-            return response()->json([
-                'cart_id' => null,
-                'subtotal' => 0,
-                'details' => [],
-            ]);
-        }
-
-        // return response()->json([
-        //     'cart_id' => $cart->id,
-        //     'subtotal' => $cart->subtotal,
-        //     'details' => $cart->details->map(function ($detail) {
-        //         return [
-        //             'product_id' => $detail->product_id,
-        //             'name' => $detail->product->name,
-        //             'image' => $detail->product->image,
-        //             'size' => $detail->product->size,
-        //             'quantity' => $detail->quantity,
-        //             'price' => $detail->price,
-        //             'total' => $detail->price * $detail->quantity,
-        //         ];
-        //     }),
-        // ]);
-
-        return response()->json($cart);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
