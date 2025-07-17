@@ -11,7 +11,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
 import { useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
-
+import { toast } from 'sonner';
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
     tagline: 'Tetes Murni, Energi Alami. ',
@@ -247,7 +247,7 @@ export default function Welcome({ auth, product }: Props) {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Berhasil menambahkan ke keranjang');
+                toast.success('Berhasil menambahkan ke keranjang');
                 setOpenPopup(false);
             } else if (response.status === 422) {
                 alert(data.message);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProdukController;
 use App\Models\Cart;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -21,6 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('produk', function () {
         return Inertia::render('addproduk');
     })->name('produk');
+    Route::put('produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+    Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+
     Route::get('laporan', function () {
         return Inertia::render('laporan');
     })->name('laporan');
