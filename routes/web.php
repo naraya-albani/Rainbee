@@ -17,60 +17,75 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-    Route::get('produk', function () {
-        return Inertia::render('addproduk');
-    })->name('produk');
-    Route::put('produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
-    Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+    Route::middleware('checkrole:admin')->group(function () {
+        Route::get('dashboard', fn () => inertia('dashboard'))->name('dashboard');
+        Route::get('produk', fn () => inertia('addproduk'))->name('produk');
+        Route::put('produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
+        Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
+        Route::get('laporan', fn () => inertia('laporan'))->name('laporan');
+    });
 
-    Route::get('laporan', function () {
-        return Inertia::render('laporan');
-    })->name('laporan');
-    Route::get('keranjang', function () {
-        $user = Auth::user();
-        $cart = Cart::where('user_id', $user->id)->where('is_active', true)->with(['details.product'])->first();
+    Route::middleware('checkrole:user')->group(function () {
+        Route::get('keranjang', function () {
+            $user = Auth::user();
+            $cart = Cart::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->with(['details.product'])
+                ->first();
 
-        if (!$cart) {
-            $cart = (object)[
-                'id' => null,
-                'user_id' => $user->id,
-                'subtotal' => 0,
-                'is_active' => true,
-                'details' => []
-            ];
-        }
+            if (!$cart) {
+                $cart = (object)[
+                    'id' => null,
+                    'user_id' => $user->id,
+                    'subtotal' => 0,
+                    'is_active' => true,
+                    'details' => []
+                ];
+            }
 
-        return Inertia::render('keranjang', [
-            'user' => $user,
-            'cart' => $cart
-        ]);
-    })->name('keranjang');
-    Route::post('keranjang', [CartController::class, 'store']);
-    Route::delete('keranjang/detail/{id}', [CartController::class, 'destroy'])->name('keranjang.detail.destroy');
-    Route::put('keranjang/detail/{id}', [CartController::class, 'update'])->name('keranjang.detail.update');
-    Route::get('invoice/{id}', function ($id) {
-        $invoice = Invoice::with([
-            'cart.user',
-            'cart.details.product',
-            'address'
-        ])->findOrFail($id);
+            return inertia('keranjang', [
+                'user' => $user,
+                'cart' => $cart
+            ]);
+        })->name('keranjang');
 
-        $user = Auth::user();
+        Route::post('keranjang', [CartController::class, 'store']);
 
-        if ($invoice->cart->user_id !== $user->id) {
-            abort(403, 'Unauthorized access to this invoice.');
-        }
+        Route::get('riwayat', function () {
+            $user = Auth::user();
 
-        return Inertia::render('invoice', [
-            'invoice' => $invoice,
-        ]);
-    })->name('invoice');
-    Route::get('riwayat', function () {
-        return Inertia::render('riwayat', ['user' => Auth::user()]);
-    })->name('riwayat');
+            $invoices = Invoice::whereHas('cart', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with([
+                'cart.user',
+                'cart.details.product',
+                'address',
+                'cart'
+            ])
+            ->latest()
+            ->get();
+
+            return inertia('riwayat', [
+                'invoices' => $invoices,
+            ]);
+        })->name('riwayat');
+
+        Route::get('invoice/{id}', function ($id) {
+            $invoice = Invoice::with([
+                'cart.user',
+                'cart.details.product',
+                'address'
+            ])->findOrFail($id);
+
+            $user = Auth::user();
+            if ($invoice->cart->user_id !== $user->id) {
+                abort(403, 'Unauthorized access to this invoice.');
+            }
+
+            return inertia('invoice', ['invoice' => $invoice]);
+        })->name('invoice');
+    });    
 });
 
 require __DIR__.'/settings.php';

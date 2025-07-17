@@ -11,7 +11,6 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
-import { toast } from 'sonner';
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
     tagline: 'Tetes Murni, Energi Alami. ',
@@ -247,39 +246,6 @@ export default function Welcome({ auth, product }: Props) {
         router.flushAll();
     };
 
-    const handleAddToCart = async () => {
-        if (!selectedProduct) return;
-
-        try {
-            const response = await fetch('/api/cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: auth.user.id,
-                    product_id: selectedProduct.id,
-                    quantity: quantity,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success('Berhasil menambahkan ke keranjang');
-                setOpenPopup(false);
-            } else if (response.status === 422) {
-                alert(data.message);
-            } else {
-                console.error(data);
-                alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Terjadi kesalahan jaringan');
-        }
-    };
-
     const toggleMobileMenu = () => {
         setMobileOpen((prev) => !prev);
     };
@@ -420,13 +386,13 @@ export default function Welcome({ auth, product }: Props) {
                                 <>
                                     <Link
                                         href={route('keranjang')}
-                                        className="block w-full rounded  px-4 py-2 text-sm text-white hover:bg-yellow-200 text-center"
+                                        className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
                                     >
                                         Keranjang
                                     </Link>
                                     <Link
                                         href={route('riwayat')}
-                                        className="block w-full rounded px-4 py-2 text-sm text-white hover:bg-yellow-200 text-center"
+                                        className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
                                     >
                                         Riwayat
                                     </Link>

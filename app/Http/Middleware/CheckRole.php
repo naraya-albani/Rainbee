@@ -17,8 +17,13 @@ class CheckRole
     {
         $user = $request->user();
 
-        // Jika belum login
-        if (! $user || ! in_array($user->role, $roles)) {
+        // Jika belum login, redirect ke halaman login
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        // Jika role tidak sesuai
+        if (! in_array($user->role, $roles)) {
             abort(403, 'Unauthorized');
         }
 

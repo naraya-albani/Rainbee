@@ -1,31 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Cart;
 use App\Models\DetailCart;
 use App\Models\Invoice;
 use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class PurchaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return response()->json(Invoice::all());
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'phone' => 'required|string|max:15|exists:users,phone',
@@ -105,69 +94,10 @@ class PurchaseController extends Controller
                 'message' => $message,
             ]);
 
-            return response()->json([
-                'message' => 'Invoice created successfully',
-                'invoice' => $invoice,
-            ], 201);
+            return redirect()->intended(route('invoice', ['id' => $invoiceId], absolute: false));
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to create invoice',
-                'error' => $e->getMessage(),
-            ], 500);
+            return redirect()->back()->withErrors(['imvoice' => 'Terjadi kesalahan: ' . $e]);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        // Ambil data invoice lengkap
-        $invoice = Invoice::with([
-            'cart.user',
-            'cart.details.product',
-            'address'
-        ])->findOrFail($id);
-
-        // Format response
-        return response()->json([
-            'invoice' => [
-                'id' => $invoice->id,
-                'total' => $invoice->total,
-                'status' => $invoice->status,
-                'created_at' => $invoice->created_at,
-            ],
-            'user' => [
-                'id' => $invoice->cart->user->id,
-                'name' => $invoice->cart->user->name,
-                'phone' => $invoice->cart->user->phone,
-            ],
-            'address' => $invoice->address,
-            'cart_details' => $invoice->cart->details->map(function ($item) {
-                return [
-                    'product_name' => $item->product->name,
-                    'quantity' => $item->quantity,
-                    'price' => $item->price,
-                    'subtotal' => $item->price * $item->quantity,
-                ];
-            }),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

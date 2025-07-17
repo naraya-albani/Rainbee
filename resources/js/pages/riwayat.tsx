@@ -13,12 +13,16 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Invoice } from '@/types';
 import { PenBox, SlashIcon, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Riwayat() {
+type Prop = {
+    invoices: Invoice[];
+};
+
+export default function Riwayat({ invoices }: Prop) {
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
@@ -78,122 +82,119 @@ export default function Riwayat() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow>
-                            <TableCell className="font-medium">No Invoice</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Produk</TableCell>
-                            <TableCell>Total</TableCell>
-                            <TableCell className="flex justify-center space-x-2">
-                                <Dialog>
-                                    <form>
+                        {invoices.map((invoice) => (
+                            <TableRow key={invoice.id}>
+                                <TableCell className="font-medium">{invoice.id}</TableCell>
+
+                                {/* Nama produk, bisa lebih dari satu */}
+                                <TableCell>
+                                    <ul className="space-y-1">
+                                        {invoice.cart.details.map((item, idx) => (
+                                            <li key={idx}>
+                                                {item.product.name} x {item.quantity}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </TableCell>
+
+                                <TableCell>{invoice.status}</TableCell>
+                                <TableCell>Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</TableCell>
+
+                                {/* Tombol Detail & Batalkan */}
+                                <TableCell className="flex justify-center space-x-2">
+                                    {/* === Dialog Detail Pesanan === */}
+                                    <Dialog>
                                         <DialogTrigger asChild>
-                                            <Button variant={'outline'}>
-                                                <PenBox></PenBox>
+                                            <Button variant="outline">
+                                                <PenBox />
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
                                             <DialogHeader>
                                                 <DialogTitle>Detail Pesanan</DialogTitle>
-                                                <DialogDescription>Cek data sebelum konfirmasi</DialogDescription>
+                                                <DialogDescription>No Invoice: {invoice.id}</DialogDescription>
                                             </DialogHeader>
-                                            {/* kiri */}
                                             <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
+                                                {/* KIRI */}
                                                 <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
                                                     <main className="flex-1 space-y-6 overflow-y-auto p-6">
+                                                        {/* Pelanggan */}
                                                         <Card>
                                                             <CardHeader className="mt-2">
                                                                 <CardTitle>Detail Pelanggan</CardTitle>
                                                             </CardHeader>
                                                             <CardContent className="mb-2 space-y-2">
-                                                                <p>nama pelanggan</p>
+                                                                <p>{invoice.cart.user.name}</p>
                                                                 <div>
                                                                     <span className="font-semibold">Alamat Pengiriman:</span>
-                                                                    <p>jember, 1112030, 1112, 11 12345</p>
+                                                                    <p>
+                                                                        {invoice.address.address_line}, {invoice.address.district},{' '}
+                                                                        {invoice.address.city}, {invoice.address.state} {invoice.address.postal_code}
+                                                                    </p>
                                                                 </div>
                                                                 <div>
-                                                                    <span className="font-semibold">Nomor Telefon:</span>
-                                                                    <p>02397489289748</p>
+                                                                    <span className="font-semibold">Nomor Telepon:</span>
+                                                                    <p>{invoice.address.phone_number}</p>
                                                                 </div>
                                                             </CardContent>
                                                         </Card>
 
+                                                        {/* Produk */}
                                                         <Card>
                                                             <CardHeader className="mt-2">
-                                                                <CardTitle>Produk Madu</CardTitle>
+                                                                <CardTitle>Produk</CardTitle>
                                                             </CardHeader>
                                                             <CardContent className="mb-2">
                                                                 <Table>
                                                                     <TableHeader>
                                                                         <TableRow>
-                                                                            <TableHead>Nama Madu</TableHead>
-                                                                            <TableHead>Jumlah barang</TableHead>
-                                                                            <TableHead>Harga Madu</TableHead>
+                                                                            <TableHead>Nama</TableHead>
+                                                                            <TableHead>Jumlah</TableHead>
+                                                                            <TableHead>Harga</TableHead>
                                                                             <TableHead>Total</TableHead>
                                                                         </TableRow>
                                                                     </TableHeader>
                                                                     <TableBody>
-                                                                        <TableRow>
-                                                                            <TableCell>Item 1</TableCell>
-                                                                            <TableCell>2</TableCell>
-                                                                            <TableCell>$100</TableCell>
-                                                                            <TableCell>$200</TableCell>
-                                                                        </TableRow>
-                                                                        <TableRow>
-                                                                            <TableCell>Item 2</TableCell>
-                                                                            <TableCell>1</TableCell>
-                                                                            <TableCell>$150</TableCell>
-                                                                            <TableCell>$150</TableCell>
-                                                                        </TableRow>
+                                                                        {invoice.cart.details.map((item, idx) => (
+                                                                            <TableRow key={idx}>
+                                                                                <TableCell>{item.product.name}</TableCell>
+                                                                                <TableCell>{item.quantity}</TableCell>
+                                                                                <TableCell>
+                                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.product.price)}
+                                                                                </TableCell>
+                                                                                <TableCell>
+                                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.price)}
+                                                                                </TableCell>
+                                                                            </TableRow>
+                                                                        ))}
                                                                     </TableBody>
                                                                 </Table>
                                                             </CardContent>
                                                         </Card>
 
+                                                        {/* Total */}
                                                         <Card>
-                                                            <CardHeader className="mt-2">
-                                                                <CardTitle>Pembayaran</CardTitle>
-                                                            </CardHeader>
-                                                            <CardContent className="mb-2 space-y-2">
-                                                                <div>
-                                                                    <span className="font-semibold">Bank:</span>
-                                                                    <p>BCA</p>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-semibold">No Rekening:</span>
-                                                                    <p>02397489289748</p>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="font-semibold">Atas Nama:</span>
-                                                                    <p>Rainbee</p>
-                                                                </div>
-                                                                <p className="font-black">
-                                                                    Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja di
-                                                                    TokoKami!
-                                                                </p>
-                                                            </CardContent>
-                                                        </Card>
-
-                                                        <Card>
-                                                            <CardHeader className="mt-2">
+                                                            <CardHeader>
                                                                 <CardTitle>Total Pembelian</CardTitle>
                                                             </CardHeader>
-                                                            <CardContent className="mb-2 grid gap-2">
-                                                                <Separator />
+                                                            <CardContent>
                                                                 <div className="flex items-center font-medium">
                                                                     <div>Total</div>
-                                                                    <div className="ml-auto">$385.00</div>
+                                                                    <div className="ml-auto">
+                                                                        Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}
+                                                                    </div>
                                                                 </div>
                                                             </CardContent>
                                                         </Card>
                                                     </main>
                                                 </div>
 
-                                                {/* kanan */}
+                                                {/* KANAN */}
                                                 <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                    <Label>Upload bukti pembayaran</Label>
+                                                    <Label>Upload Bukti Pembayaran</Label>
                                                     <input type="file" accept="image/*" onChange={handleImageChange} />
-                                                    {preview && <img src={preview} alt="Preview" className="h-48 w-48 rounded object-contain" />}
-                                                    <Button type="button" onClick={handleRemoveImage} className="mt-2 w-full" variant="destructive">
+                                                    {preview && <img src={preview} className="h-48 w-48 rounded object-contain" />}
+                                                    <Button onClick={handleRemoveImage} className="mt-2 w-full" variant="destructive">
                                                         Hapus Gambar
                                                     </Button>
                                                 </div>
@@ -205,35 +206,35 @@ export default function Riwayat() {
                                                 <Button type="submit">Save changes</Button>
                                             </DialogFooter>
                                         </DialogContent>
-                                    </form>
-                                </Dialog>
-                                <Dialog>
-                                    <form>
+                                    </Dialog>
+
+                                    {/* === Dialog Batalkan Pesanan === */}
+                                    <Dialog>
                                         <DialogTrigger asChild>
                                             <Button className="bg-red-500 text-white hover:bg-red-600">
-                                                <Trash2></Trash2>
+                                                <Trash2 />
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[425px]">
                                             <DialogHeader>
                                                 <DialogTitle>Batalkan Pesanan</DialogTitle>
-                                                <DialogDescription>Yakin untuk membatalkan pesnan?.</DialogDescription>
+                                                <DialogDescription>Yakin ingin membatalkan pesanan ini?</DialogDescription>
                                             </DialogHeader>
                                             <DialogFooter>
                                                 <DialogClose asChild>
-                                                    <Button variant="outline">tidak</Button>
+                                                    <Button variant="outline">Tidak</Button>
                                                 </DialogClose>
                                                 <Button className="bg-red-500 text-white hover:bg-red-600" type="submit">
-                                                    ya
+                                                    Ya
                                                 </Button>
                                             </DialogFooter>
                                         </DialogContent>
-                                    </form>
-                                </Dialog>
-                              
-                            </TableCell>
-                        </TableRow>
+                                    </Dialog>
+                                </TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
+
                     <TableFooter></TableFooter>
                 </Table>
             </div>

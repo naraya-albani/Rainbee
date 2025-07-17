@@ -44,7 +44,7 @@ export interface User {
 }
 
 export interface Invoice {
-    invoice_id: string;
+    id: string;
     total: number;
     status: string;
     cart: Cart;
