@@ -239,53 +239,34 @@ export default function Welcome({ user }: Auth) {
     const handleAddToCart = async () => {
         if (!selectedProduct) return;
 
-        axios
-            .post('/api/cart', {
-                id: user.id,
-                product_id: selectedProduct.id,
-                quantity: quantity,
-            })
-            .then(() => {
-                alert('Berhasil menambahkan ke keranjang');
-                setOpenPopup(false);
-            })
-            .catch((error) => {
-                if (error.response.status === 422) {
-                    alert(error.data.message);
-                } else {
-                    console.error(error);
-                    alert('Gagal menambahkan ke keranjang: ' + (error || 'Terjadi kesalahan'));
-                }
+        try {
+            const response = await fetch('/api/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: user.id,
+                    product_id: selectedProduct.id,
+                    quantity: quantity,
+                }),
             });
 
-        // try {
-        //     const response = await fetch('/api/cart', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //         },
-        //         body: JSON.stringify({
-        //             id: user.id,
-        //             product_id: selectedProduct.id,
-        //             quantity: quantity,
-        //         }),
-        //     });
+            const data = await response.json();
 
-        //     const data = await response.json();
-
-        //     if (response.ok) {
-        //         alert('Berhasil menambahkan ke keranjang');
-        //         setOpenPopup(false);
-        //     } else if (response.status === 422) {
-        //         alert(data.message);
-        //     } else {
-        //         console.error(data);
-        //         alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
-        //     }
-        // } catch (error) {
-        //     console.error(error);
-        //     alert('Terjadi kesalahan jaringan');
-        // }
+            if (response.ok) {
+                alert('Berhasil menambahkan ke keranjang');
+                setOpenPopup(false);
+            } else if (response.status === 422) {
+                alert(data.message);
+            } else {
+                console.error(data);
+                alert('Gagal menambahkan ke keranjang: ' + (data.error || 'Terjadi kesalahan'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan jaringan');
+        }
     };
 
     const toggleMobileMenu = () => {

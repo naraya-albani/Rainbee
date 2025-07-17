@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetailCart extends Model
 {
+    protected $primaryKey = null;
+    public $incrementing = false;
+    public $timestamps = true;
+
     protected $fillable = [
         'cart_id',
         'product_id',
