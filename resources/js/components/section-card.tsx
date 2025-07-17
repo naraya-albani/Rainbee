@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { LineChart } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type PurchaseItem = {
     id: string;
@@ -16,6 +16,7 @@ type PurchaseItem = {
 export function SectionCards() {
     const [items, setItems] = useState<PurchaseItem[]>([]);
     const [pendingInvoiceCount, setPendingInvoiceCount] = useState(0);
+    const [chartData, setChartData] = useState<any[]>([]);
 
     useEffect(() => {
         fetch('/api/purchase', {
@@ -27,7 +28,44 @@ export function SectionCards() {
             .then((res) => res.json())
             .then((data) => {
                 setItems(data);
+                const claimedInvoices = data.filter((item: PurchaseItem) => item.status === 'claimed');
+
                 setPendingInvoiceCount(data.filter((item: PurchaseItem) => item.status === 'pending').length);
+
+                //hari ini
+                const today = new Date();
+                //hari lalu
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(today.getDate() - 6);
+
+                //7 hari terakhir
+                const grouped: Record<string, number> = {};
+                claimedInvoices.forEach((item: PurchaseItem) => {
+                    const date = new Date(item.created_at);
+                    // Filter hanya invoice dalam 7 hari terakhir
+                    if (date >= sevenDaysAgo && date <= today) {
+                        const day = date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        if (!grouped[day]) {
+                            grouped[day] = 0;
+                        }
+                        grouped[day] += 1;
+                    }
+                });
+                // Buat array tanggal 7 hari terakhir
+                const daysArr: string[] = [];
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date(sevenDaysAgo);
+                    d.setDate(sevenDaysAgo.getDate() + i);
+                    daysArr.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }));
+                }
+
+
+                const chartArr = daysArr.map((day) => ({
+                    day,
+                    claimed: grouped[day] || 0,
+                }));
+
+                setChartData(chartArr);
             })
             .catch((err) => {
                 console.error('Gagal mengambil data keranjang:', err);
@@ -39,7 +77,7 @@ export function SectionCards() {
             <div className="flex flex-col gap-4 lg:flex-row lg:gap-6">
                 <Card className="flex-1">
                     <CardHeader className="mt-2">
-                        <CardDescription className="font-bold">Total pengguna</CardDescription>
+                        <CardDescription className="font-bold">Menunggu Konfirmasi</CardDescription>
                         <CardTitle className="text-2xl font-semibold text-[#f59e0b] tabular-nums">{pendingInvoiceCount}</CardTitle>
                     </CardHeader>
                     <CardFooter className="mb-2 flex-col items-start gap-1.5 text-sm">
@@ -60,11 +98,19 @@ export function SectionCards() {
 
             <Card>
                 <CardHeader className="mt-2">
-                    <CardTitle className="text-[#f59e0b]">Grafik Pengguna</CardTitle>
-                    <CardDescription>Statistik pengguna per bulan</CardDescription>
+                    <CardTitle className="text-[#f59e0b]">Grafik Invoice Claimed</CardTitle>
+                    <CardDescription>Statistik invoice yang sudah claimed per bulan</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[300px]">
-                    <LineChart></LineChart>
+                <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={chartData}>
+                            <XAxis dataKey="day" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="claimed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Invoice Claimed" />
+                        </BarChart>
+                    </ResponsiveContainer>
                 </CardContent>
             </Card>
         </div>

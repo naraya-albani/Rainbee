@@ -402,7 +402,7 @@ export default function Welcome({ auth, product }: Props) {
                     {/* Mobile Menu */}
                     <nav
                         id="mobile-menu"
-                        className={`absolute top-full right-0 left-0 border-t border-[#f59e0b] bg-[#f59e0b] py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
+                        className={`absolute top-full right-0 left-0 border-t border-[#1b1b18] bg-[#1b1b18] py-2 shadow-lg transition-all duration-300 ease-in-out md:hidden ${
                             mobileOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
                         }`}
                     >
@@ -414,20 +414,48 @@ export default function Welcome({ auth, product }: Props) {
                                 </a>
                             );
                         })}
-                        <hr className="mx-4 my-2 border-t border-[#f59e0b]" />
+                        <hr className="mx-4 my-2 border-t border-black" />
                         <div className="mb-2 space-y-2 px-4">
-                            <Link
-                                href={route('login')}
-                                className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
-                            >
-                                Log in
-                            </Link>
-                            <Link
-                                href={route('register')}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
-                            >
-                                Register
-                            </Link>
+                            {auth.user ? (
+                                <>
+                                    <Link
+                                        href={route('keranjang')}
+                                        className="block w-full rounded  px-4 py-2 text-sm text-white hover:bg-yellow-200 text-center"
+                                    >
+                                        Keranjang
+                                    </Link>
+                                    <Link
+                                        href={route('riwayat')}
+                                        className="block w-full rounded px-4 py-2 text-sm text-white hover:bg-yellow-200 text-center"
+                                    >
+                                        Riwayat
+                                    </Link>
+                                    <Link
+                                        method="post"
+                                        href={route('logout')}
+                                        as="button"
+                                        onClick={handleLogout}
+                                        className="block w-full rounded bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600"
+                                    >
+                                        Logout
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link
+                                        href={route('login')}
+                                        className="block w-full rounded bg-white px-4 py-2 text-sm text-[#1b1b18] hover:bg-yellow-200"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        href={route('register')}
+                                        className="block w-full rounded bg-white px-4 py-2 text-sm text-[#1b1b18] hover:bg-yellow-200"
+                                    >
+                                        Register
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </nav>
                 </header>

@@ -18,6 +18,7 @@ import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { PenBox, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -350,22 +351,29 @@ export default function Addproduk() {
                                         </Button>
                                         <Button
                                             className="w-full bg-red-500 text-white hover:bg-red-600"
-                                            onClick={async () => {
-                                                if (window.confirm('Yakin ingin menghapus produk ini?')) {
-                                                    try {
-                                                        await axios.delete(route('produk.destroy', product.id), {
-                                                            withCredentials: true,
-                                                        });
-                                                        // Refresh data setelah delete
-                                                        const refreshed = await axios.get(route('/api/product'), { withCredentials: true });
-                                                        setProducts(refreshed.data);
-                                                    } catch (err) {
-                                                        console.error('Gagal menghapus produk:', err);
-                                                    }
-                                                }
+                                            onClick={() => {
+                                                toast('Yakin ingin menghapus produk ini?', {
+                                                    action: {
+                                                        label: 'Hapus',
+                                                        onClick: async () => {
+                                                            try {
+                                                                await axios.delete(route('produk.destroy', product.id), {
+                                                                    withCredentials: true,
+                                                                });
+                                                                toast.success('Produk berhasil dihapus');
+                                                                // Refresh data setelah delete
+                                                                const refreshed = await axios.get('/api/product', { withCredentials: true });
+                                                                setProducts(refreshed.data);
+                                                            } catch (err) {
+                                                                toast.error('Gagal menghapus produk');
+                                                                console.error('Gagal menghapus produk:', err);
+                                                            }
+                                                        },
+                                                    },
+                                                });
                                             }}
                                         >
-                                            <Trash2></Trash2>
+                                            <Trash2 />
                                         </Button>
                                     </div>
                                 </TableCell>
