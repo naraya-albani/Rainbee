@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
@@ -74,7 +75,7 @@ class ProdukController extends Controller
         try {
             if ($request->has('remove_image') && $request->remove_image == '1') {
                 if ($product->image) {
-                    \Storage::disk('public')->delete($product->image);
+                    Storage::disk('public')->delete($product->image);
                     $product->image = null;
                 }
             }
@@ -82,7 +83,7 @@ class ProdukController extends Controller
             if ($request->hasFile('image')) {
 
                 if ($product->image) {
-                    \Storage::disk('public')->delete($product->image);
+                    Storage::disk('public')->delete($product->image);
                 }
                 $path = $request->file('image')->store('produk', 'public');
                 $validated['image'] = $path;
@@ -109,7 +110,7 @@ class ProdukController extends Controller
         try {
 
             if ($product->image) {
-                \Storage::disk('public')->delete($product->image);
+                Storage::disk('public')->delete($product->image);
             }
             $product->delete();
 

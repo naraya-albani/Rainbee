@@ -16,9 +16,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Auth, Cart, DetailCart } from '@/types';
-import { router, usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 
 type Props = {
     auth: Auth;
@@ -57,15 +57,42 @@ export default function Keranjang({ auth, cart }: Props) {
     const [nomorTelepon, setNomorTelepon] = useState(auth.user.phone || '');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { errors } = usePage().props;
+    const submitDelete =
+        (id: number): FormEventHandler =>
+        (e) => {
+            e.preventDefault();
 
-    const handleDelete = (cart_id: number, product_id: number) => {
-        router.delete(route('keranjang.detail.destroy'), {
-            data: { cart_id, product_id },
-            onSuccess: () => {
-                router.reload({ only: ['cart'] });
-            },
-        });
+            router.delete(route('keranjang.detail.destroy', id), {
+                onSuccess: () => {
+                    router.visit(route('keranjang'), {
+                        preserveScroll: true,
+                        preserveState: false,
+                    });
+                },
+                onError: () => {
+                    alert('Gagal menghapus produk.');
+                },
+            });
+        };
+
+    const handleQuantityChange = (id: number, val: number) => {
+        if (val === 0) {
+            router.delete(route('keranjang.detail.destroy', id), {
+                preserveScroll: true,
+                preserveState: false,
+            });
+        } else {
+            router.put(
+                route('keranjang.detail.update', id),
+                {
+                    quantity: val,
+                },
+                {
+                    preserveScroll: true,
+                    preserveState: false,
+                },
+            );
+        }
     };
 
     const toTitleCaseSmart = (str: string) => {
@@ -192,8 +219,6 @@ export default function Keranjang({ auth, cart }: Props) {
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                {errors.error && <p className="text-red-500">{errors.error}</p>}
-
                 {items.length === 0 ? (
                     <Card>
                         <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
@@ -211,11 +236,13 @@ export default function Keranjang({ auth, cart }: Props) {
                                             Rp{new Intl.NumberFormat('id-ID').format(Number(item.product.price * item.quantity))}
                                         </p>
                                         <div className="flex items-center gap-2">
-                                            <QuantitySelector></QuantitySelector>
-                                            <Button
-                                                onClick={() => handleDelete(item.cart_id, item.product.id)}
-                                                className="bg-red-500 text-white hover:bg-red-600"
-                                            >
+                                            <QuantitySelector
+                                                value={item.quantity}
+                                                min={0}
+                                                max={item.product.stock}
+                                                onChange={(val: number) => handleQuantityChange(item.id, val)}
+                                            />
+                                            <Button onClick={submitDelete(item.id)} className="bg-red-500 text-white hover:bg-red-600">
                                                 <Trash></Trash>
                                             </Button>
                                         </div>

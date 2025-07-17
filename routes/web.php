@@ -49,7 +49,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('keranjang');
     Route::post('keranjang', [CartController::class, 'store']);
-    Route::delete('keranjang/detail', [CartController::class, 'destroy'])->name('keranjang.detail.destroy');
+    Route::delete('keranjang/detail/{id}', [CartController::class, 'destroy'])->name('keranjang.detail.destroy');
+    Route::put('keranjang/detail/{id}', [CartController::class, 'update'])->name('keranjang.detail.update');
     Route::get('invoice/{id}', function ($id) {
         $invoice = Invoice::with([
             'cart.user',

@@ -69,23 +69,12 @@ class CartController extends Controller
         }
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
-        $request->validate([
-            'cart_id'    => 'required|exists:detail_carts,cart_id',
-            'product_id' => 'required|exists:detail_carts,product_id',
-        ]);
-
-        DB::beginTransaction();
+        $detail = DetailCart::findOrFail($id);
 
         try {
-            $detail = DetailCart::where('cart_id', $request->cart_id)
-                    ->where('product_id', $request->product_id)
-                    ->first();
-
             $detail->delete();
-
-            DB::commit();
 
             return redirect()->back()->with('success', 'Produk berhasil dihapus dari keranjang.');
         } catch (\Exception $e) {
@@ -93,5 +82,18 @@ class CartController extends Controller
 
             return redirect()->back()->withErrors('error', 'Gagal menghapus produk dari keranjang.');
         }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $detail = DetailCart::findOrFail($id);
+        $detail->quantity = $request->quantity;
+        $detail->save();
+
+        return back(); // atau response khusus jika kamu pakai API
     }
 }

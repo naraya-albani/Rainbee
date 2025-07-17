@@ -232,7 +232,10 @@ export default function Welcome({ auth, product }: Props) {
         post(route('keranjang'), {
             onSuccess: () => {
                 setOpenPopup(false);
-                router.reload({ only: ['product'] });
+                router.visit(route('home'), {
+                    preserveScroll: true,
+                    preserveState: false,
+                });
             },
         });
     };

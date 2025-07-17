@@ -73,6 +73,7 @@ export interface Cart {
 }
 
 export interface DetailCart {
+    id: number;
     cart_id: number;
     product: Product;
     quantity: number;
