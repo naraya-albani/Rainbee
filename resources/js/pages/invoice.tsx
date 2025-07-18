@@ -4,27 +4,51 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Invoice } from '@/types';
+import { useForm } from '@inertiajs/react';
+import axios from 'axios';
 import { useState } from 'react';
 
-interface Invoice {
-    id: string;
-    total: number;
-    status: string;
-    cart_id: number;
-    address_id: number;
-    receipt: string;
-    created_at: string;
-}
+type Prop = {
+    invoice: Invoice;
+};
 
-export default function Invoice() {
-    const [image, setImage] = useState<File | null>(null);
+export default function Purchase({ invoice }: Prop) {
     const [preview, setPreview] = useState<string | null>(null);
+
+    const { put, data, setData, processing } = useForm<{
+        receipt: File | null;
+    }>({
+        receipt: null,
+    });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setImage(file);
+            setData('receipt', file);
             setPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!data.receipt) {
+            alert('Mohon pilih gambar terlebih dahulu.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('receipt', data.receipt);
+
+        try {
+            await axios.post(route('purchase.update', invoice.id), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            alert('Berhasil mengunggah bukti');
+        } catch (error) {
+            console.error('Upload gagal:', error);
+            alert('Gagal mengunggah bukti');
         }
     };
 
@@ -45,14 +69,17 @@ export default function Invoice() {
                             <CardTitle>Detail Pelanggan</CardTitle>
                         </CardHeader>
                         <CardContent className="mb-2 space-y-2">
-                            <p>nama pelanggan</p>
+                            <p>{invoice.cart.user.name}</p>
                             <div>
                                 <span className="font-semibold">Alamat Pengiriman:</span>
-                                <p>jember, 1112030, 1112, 11 12345</p>
+                                <p>
+                                    {invoice.address.address_line}, {invoice.address.district}, {invoice.address.city}, {invoice.address.state}{' '}
+                                    {invoice.address.postal_code}
+                                </p>
                             </div>
                             <div>
                                 <span className="font-semibold">Nomor Telefon:</span>
-                                <p>02397489289748</p>
+                                <p>{invoice.address.phone_number}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -72,18 +99,14 @@ export default function Invoice() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>Item 1</TableCell>
-                                        <TableCell>2</TableCell>
-                                        <TableCell>$100</TableCell>
-                                        <TableCell>$200</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>Item 2</TableCell>
-                                        <TableCell>1</TableCell>
-                                        <TableCell>$150</TableCell>
-                                        <TableCell>$150</TableCell>
-                                    </TableRow>
+                                    {invoice.cart.details.map((item, idx) => (
+                                        <TableRow key={idx}>
+                                            <TableCell>{item.product.name}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>Rp{new Intl.NumberFormat('id-ID').format(item.product.price)}</TableCell>
+                                            <TableCell>Rp{new Intl.NumberFormat('id-ID').format(item.price)}</TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </CardContent>
@@ -121,32 +144,34 @@ export default function Invoice() {
                                 <Separator />
                                 <div className="flex items-center font-medium">
                                     <div>Total</div>
-                                    <div className="ml-auto">$385.00</div>
+                                    <div className="ml-auto">Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</div>
                                 </div>
                             </CardContent>
                         </Card>
                         <Dialog>
-                            <form>
-                                <div className="w-full">
-                                    <DialogTrigger asChild className="w-full">
-                                        <Button className="w-full">Bayar</Button>
-                                    </DialogTrigger>
-                                </div>
-                                <DialogContent className="max-h-screen">
-                                    <DialogHeader>
-                                        <DialogTitle>Bukti Pembayaran</DialogTitle>
-                                        <DialogDescription>Kirim Bukti Pembayaran disini.</DialogDescription>
-                                    </DialogHeader>
+                            <div className="w-full">
+                                <DialogTrigger asChild className="w-full">
+                                    <Button className="w-full">Bayar</Button>
+                                </DialogTrigger>
+                            </div>
+                            <DialogContent className="max-h-screen">
+                                <DialogHeader>
+                                    <DialogTitle>Bukti Pembayaran</DialogTitle>
+                                    <DialogDescription>Kirim Bukti Pembayaran disini.</DialogDescription>
+                                </DialogHeader>
+                                <form onSubmit={handleSubmit}>
                                     <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
                                         <div className="flex w-full flex-col items-center gap-3">
                                             <Label className="text-lg font-semibold">Upload Bukti Pembayaran</Label>
-                                            <input type="file" accept="image/*" onChange={handleImageChange} />
+                                            <input type="file" name="receipt" accept="image/*" onChange={handleImageChange} />
                                             {preview && <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />}
-                                            <Button>Kirim Gambar</Button>
+                                            <Button type="submit" disabled={processing}>
+                                                Kirim Gambar
+                                            </Button>
                                         </div>
                                     </div>
-                                </DialogContent>
-                            </form>
+                                </form>
+                            </DialogContent>
                         </Dialog>
                     </div>
                     <Button variant="outline" className="w-full">

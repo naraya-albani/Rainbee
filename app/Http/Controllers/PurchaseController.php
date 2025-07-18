@@ -11,6 +11,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
@@ -99,5 +101,40 @@ class PurchaseController extends Controller
             DB::rollBack();
             return redirect()->back()->withErrors(['imvoice' => 'Terjadi kesalahan: ' . $e]);
         }
+    }
+
+    public function update(Request $request, $id)
+    {
+        Log::info('File uploaded?', [$request->hasFile('receipt')]);
+    Log::info('All request:', $request->all());
+
+        $request->validate([
+            'receipt' => 'nullable|image|max:2048',
+            'status' => 'nullable|string|in:waiting,approved,rejected',
+        ]);
+
+        $invoice = Invoice::findOrFail($id);
+
+        // Jika ada file receipt yang diunggah
+        if ($request->hasFile('receipt')) {
+            // Hapus file lama jika ada
+            if ($invoice->receipt && Storage::exists($invoice->receipt)) {
+                Storage::delete($invoice->receipt);
+            }
+
+            // Simpan file baru
+            $path = $request->file('receipt')->store('receipts', 'public');
+
+            // Update receipt
+            $invoice->receipt = $path;
+
+            // Set status ke 'waiting' (mengoverride status manual jika ada)
+            $invoice->status = 'waiting';
+        } elseif ($request->filled('status')) {
+            // Kalau hanya update status (dan tidak upload receipt)
+            $invoice->status = $request->input('status');
+        }
+
+        $invoice->save();
     }
 }

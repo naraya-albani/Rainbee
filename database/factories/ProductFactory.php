@@ -18,12 +18,12 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->words(3, true),
-            'description' => fake()->paragraph(),
-            'size' => fake()->numberBetween(100, 500),
-            'price' => fake()->randomFloat(0, 10000, 100000),
-            'stock' => fake()->numberBetween(1, 50),
-            'image' => 'https://picsum.photos/id/' . fake()->randomElement(['0', '13', '20']) . '/400/180.webp'
+            'name' => "Madu hutan Apis cerana",
+            'description' => null,
+            'size' => 100,
+            'price' => 50000,
+            'stock' => 100,
+            'image' => 'produk.jpg'
         ];
     }
 }

@@ -15,14 +15,28 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Auth, Cart, DetailCart } from '@/types';
-import { router } from '@inertiajs/react';
+import { Auth, Cart } from '@/types';
+import { router, useForm } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 
 type Props = {
     auth: Auth;
     cart: Cart;
+};
+
+type InvoiceForm = {
+    phone: string;
+    cart_id: number;
+    total: number;
+    address: {
+        address_line: string;
+        district: string;
+        city: string;
+        state: string;
+        postal_code: string;
+        phone_number: string;
+    };
 };
 
 interface Province {
@@ -42,20 +56,12 @@ interface District {
 }
 
 export default function Keranjang({ auth, cart }: Props) {
-    const [items, setItems] = useState<DetailCart[]>(cart.details);
-    const [alamatLengkap, setAlamatLengkap] = useState('');
     const [provinsi, setProvinsi] = useState<Province[]>([]);
     const [kabupaten, setKabupaten] = useState<Regency[]>([]);
     const [kecamatan, setKecamatan] = useState<District[]>([]);
     const [selectedProvinsi, setSelectedProvinsi] = useState('');
-    const [selectedProvinsiName, setSelectedProvinsiName] = useState('');
     const [selectedKabupaten, setSelectedKabupaten] = useState('');
-    const [selectedKabupatenName, setSelectedKabupatenName] = useState('');
     const [selectedKecamatan, setSelectedKecamatan] = useState('');
-    const [selectedKecamatanName, setSelectedKecamatanName] = useState('');
-    const [kodePos, setKodePos] = useState('');
-    const [nomorTelepon, setNomorTelepon] = useState(auth.user.phone || '');
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const submitDelete =
         (id: number): FormEventHandler =>
@@ -64,9 +70,8 @@ export default function Keranjang({ auth, cart }: Props) {
 
             router.delete(route('keranjang.detail.destroy', id), {
                 onSuccess: () => {
-                    router.visit(route('keranjang'), {
-                        preserveScroll: true,
-                        preserveState: false,
+                    router.reload({
+                        only: ['cart'],
                     });
                 },
                 onError: () => {
@@ -78,8 +83,11 @@ export default function Keranjang({ auth, cart }: Props) {
     const handleQuantityChange = (id: number, val: number) => {
         if (val === 0) {
             router.delete(route('keranjang.detail.destroy', id), {
-                preserveScroll: true,
-                preserveState: false,
+                onSuccess: () => {
+                    router.reload({
+                        only: ['cart'],
+                    });
+                },
             });
         } else {
             router.put(
@@ -88,8 +96,11 @@ export default function Keranjang({ auth, cart }: Props) {
                     quantity: val,
                 },
                 {
-                    preserveScroll: true,
-                    preserveState: false,
+                    onSuccess: () => {
+                        router.reload({
+                            only: ['cart'],
+                        });
+                    },
                 },
             );
         }
@@ -116,44 +127,70 @@ export default function Keranjang({ auth, cart }: Props) {
             .join(' ');
     };
 
-    const handleSubmit = async () => {
-        setIsSubmitting(true);
+    const { data, setData, post, processing, errors } = useForm<Required<InvoiceForm>>({
+        phone: auth.user.phone,
+        cart_id: cart.id,
+        total: cart.subtotal,
+        address: {
+            address_line: '',
+            district: '',
+            city: '',
+            state: '',
+            postal_code: '',
+            phone_number: auth.user.phone || '',
+        },
+    });
 
-        try {
-            const res = await fetch('/api/purchase', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phone: auth.user.phone,
-                    cart_id: cart.id,
-                    total: cart.subtotal,
-                    address: {
-                        address_line: alamatLengkap,
-                        district: toTitleCaseSmart(selectedKecamatanName),
-                        city: toTitleCaseSmart(selectedKabupatenName),
-                        state: toTitleCaseSmart(selectedProvinsiName),
-                        postal_code: kodePos,
-                        phone_number: nomorTelepon,
-                    },
-                }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                route('invoice/' + data.invoice.id);
-            } else {
-                alert(data.message || 'Gagal membuat pesanan');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('Terjadi kesalahan saat membuat invoice' + error);
-        } finally {
-            setIsSubmitting(false);
-        }
+    const handleSubmit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post(route('purchase.store'), {
+            onSuccess: () => {
+                console.log('Berhasil dikirim!');
+            },
+            onError: (err) => {
+                console.error('Gagal mengirim:', err);
+            },
+        });
     };
+
+    // const handleSubmit = async () => {
+    //     setIsSubmitting(true);
+
+    //     try {
+    //         const res = await fetch('/api/purchase', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 phone: auth.user.phone,
+    //                 cart_id: cart.id,
+    //                 total: cart.subtotal,
+    //                 address: {
+    //                     address_line: alamatLengkap,
+    //                     district: toTitleCaseSmart(selectedKecamatanName),
+    //                     city: toTitleCaseSmart(selectedKabupatenName),
+    //                     state: toTitleCaseSmart(selectedProvinsiName),
+    //                     postal_code: kodePos,
+    //                     phone_number: nomorTelepon,
+    //                 },
+    //             }),
+    //         });
+
+    //         const data = await res.json();
+
+    //         if (res.ok) {
+    //             route('invoice/' + data.invoice.id);
+    //         } else {
+    //             alert(data.message || 'Gagal membuat pesanan');
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert('Terjadi kesalahan saat membuat invoice' + error);
+    //     } finally {
+    //         setIsSubmitting(false);
+    //     }
+    // };
 
     //data provinsi
     useEffect(() => {
@@ -219,12 +256,12 @@ export default function Keranjang({ auth, cart }: Props) {
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                {items.length === 0 ? (
+                {cart.details.length === 0 ? (
                     <Card>
                         <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
                     </Card>
                 ) : (
-                    items.map((item) => (
+                    cart.details.map((item) => (
                         <Card key={item.product.id} className="relative">
                             <CardContent className="flex items-start gap-4 py-4">
                                 <img src={`/storage/${item.product.image}`} alt={item.product.name} className="h-20 w-20 rounded object-cover" />
@@ -280,8 +317,8 @@ export default function Keranjang({ auth, cart }: Props) {
                                             <Label className="font-bold">Masukkan alamatmu</Label>
                                             <Input
                                                 placeholder="Alamat lengkap"
-                                                value={alamatLengkap}
-                                                onChange={(e) => setAlamatLengkap(e.target.value)}
+                                                value={data.address.address_line}
+                                                onChange={(e) => setData('address', { ...data.address, address_line: e.target.value })}
                                             />
                                             <Label className="font-bold">Provinsi</Label>
                                             <select
@@ -291,7 +328,14 @@ export default function Keranjang({ auth, cart }: Props) {
                                                     const id = e.target.value;
                                                     setSelectedProvinsi(id);
                                                     const provinsiTerpilih = provinsi.find((p) => p.id === id);
-                                                    setSelectedProvinsiName(provinsiTerpilih?.name || '');
+                                                    const provinsiName = toTitleCaseSmart(provinsiTerpilih?.name || '');
+
+                                                    setData('address', {
+                                                        ...data.address,
+                                                        state: provinsiName,
+                                                        city: '',
+                                                        district: '',
+                                                    });
                                                 }}
                                             >
                                                 <option value="">Pilih Provinsi</option>
@@ -310,7 +354,13 @@ export default function Keranjang({ auth, cart }: Props) {
                                                     const id = e.target.value;
                                                     setSelectedKabupaten(id);
                                                     const kabTerpilih = kabupaten.find((k) => k.id === id);
-                                                    setSelectedKabupatenName(kabTerpilih?.name || '');
+                                                    const kabupatenName = toTitleCaseSmart(kabTerpilih?.name || '');
+
+                                                    setData('address', {
+                                                        ...data.address,
+                                                        city: kabupatenName,
+                                                        district: '',
+                                                    });
                                                 }}
                                                 disabled={!selectedProvinsi}
                                             >
@@ -329,9 +379,14 @@ export default function Keranjang({ auth, cart }: Props) {
                                                     const id = e.target.value;
                                                     setSelectedKecamatan(id);
                                                     const kecTerpilih = kecamatan.find((k) => k.id === id);
-                                                    setSelectedKecamatanName(kecTerpilih?.name || '');
+                                                    const kecamatanName = toTitleCaseSmart(kecTerpilih?.name || '');
+
+                                                    setData('address', {
+                                                        ...data.address,
+                                                        district: kecamatanName,
+                                                    });
                                                 }}
-                                                disabled={!selectedKabupaten} // Disable until a regency is selected
+                                                disabled={!selectedKabupaten}
                                             >
                                                 <option value="">Pilih Kecamatan</option>
                                                 {kecamatan.map((district) => (
@@ -343,30 +398,28 @@ export default function Keranjang({ auth, cart }: Props) {
                                             <Label className="font-bold">Masukkan kode posmu</Label>
                                             <Input
                                                 placeholder="Kode pos"
-                                                value={kodePos}
+                                                value={data.address.postal_code}
                                                 onChange={(e) => {
                                                     const numericValue = e.target.value.replace(/\D/g, '');
-
                                                     if (numericValue.length <= 5) {
-                                                        setKodePos(numericValue);
+                                                        setData('address', { ...data.address, postal_code: numericValue });
                                                     }
                                                 }}
                                             />
                                             <Label className="font-bold">Masukkan nomor telepon</Label>
                                             <Input
                                                 placeholder="Nomor telepon"
-                                                value={nomorTelepon}
+                                                value={data.address.phone_number}
                                                 onChange={(e) => {
                                                     const numericValue = e.target.value.replace(/\D/g, '');
-
                                                     if (numericValue.length <= 15) {
-                                                        setNomorTelepon(numericValue);
+                                                        setData('address', { ...data.address, phone_number: numericValue });
                                                     }
                                                 }}
                                             />
                                         </div>
                                         <div className="grid w-full gap-4 lg:w-1/2">
-                                            {items.map((item) => (
+                                            {cart.details.map((item) => (
                                                 <Card key={item.product.id} className="relative">
                                                     <CardContent className="flex items-start gap-4 py-4">
                                                         <Checkbox />
@@ -380,7 +433,7 @@ export default function Keranjang({ auth, cart }: Props) {
                                                             <p className="text-sm">{item.product.size} ml</p>
                                                             <div className="mt-2">
                                                                 <p className="text-lg font-bold text-[#f59e0b]">
-                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.product.price)}
+                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.product.price * item.quantity)}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -393,7 +446,7 @@ export default function Keranjang({ auth, cart }: Props) {
                                         <DialogClose asChild>
                                             <Button variant="outline">Batal</Button>
                                         </DialogClose>
-                                        <Button type="submit" disabled={isSubmitting}>
+                                        <Button type="submit" disabled={processing}>
                                             Lakukan pembayaran
                                         </Button>
                                     </DialogFooter>

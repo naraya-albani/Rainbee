@@ -25,6 +25,9 @@ type Prop = {
 export default function Riwayat({ invoices }: Prop) {
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
+    const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+
+    const filteredInvoices = statusFilter ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -56,15 +59,17 @@ export default function Riwayat({ invoices }: Prop) {
                     </BreadcrumbList>
                 </Breadcrumb>
                 <div className="items-right flex justify-end">
-                    <Select>
+                    <Select onValueChange={(value) => setStatusFilter(value || undefined)}>
                         <SelectTrigger className="w-[180px] bg-[#f59e0b] text-white [&>span]:text-white [&>span]:opacity-100 [&>svg]:text-white">
                             <SelectValue placeholder="Filter" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="pending">Menunggu konfirmasi</SelectItem>
+                                <SelectItem value="pending">Menunggu Pembayaran</SelectItem>
+                                <SelectItem value="waiting">Menunggu Konfirmasi</SelectItem>
                                 <SelectItem value="approved">Disetujui</SelectItem>
-                                <SelectItem value="claimed">Diterima</SelectItem>
+                                <SelectItem value="sending">Dalam Perjalanan</SelectItem>
+                                <SelectItem value="claimed">Selesai</SelectItem>
                                 <SelectItem value="cancelled">Dibatalkan</SelectItem>
                             </SelectGroup>
                         </SelectContent>
@@ -82,11 +87,9 @@ export default function Riwayat({ invoices }: Prop) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {invoices.map((invoice) => (
+                        {filteredInvoices.map((invoice) => (
                             <TableRow key={invoice.id}>
                                 <TableCell className="font-medium">{invoice.id}</TableCell>
-
-                                {/* Nama produk, bisa lebih dari satu */}
                                 <TableCell>
                                     <ul className="space-y-1">
                                         {invoice.cart.details.map((item, idx) => (
@@ -96,8 +99,21 @@ export default function Riwayat({ invoices }: Prop) {
                                         ))}
                                     </ul>
                                 </TableCell>
-
-                                <TableCell>{invoice.status}</TableCell>
+                                <TableCell>
+                                    {invoice.status === 'pending'
+                                        ? 'Menunggu Pembayaran'
+                                        : invoice.status === 'waiting'
+                                          ? 'Menunggu Konfirmasi'
+                                          : invoice.status === 'approved'
+                                            ? 'Disetujui'
+                                            : invoice.status === 'sending'
+                                              ? 'Dalam Perjalanan'
+                                              : invoice.status === 'claimed'
+                                                ? 'Selesai'
+                                                : invoice.status === 'cancelled'
+                                                  ? 'Dibatalkan'
+                                                  : invoice.status}
+                                </TableCell>
                                 <TableCell>Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</TableCell>
 
                                 {/* Tombol Detail & Batalkan */}

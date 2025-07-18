@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PurchaseController;
 use App\Models\Cart;
 use App\Models\Invoice;
 use App\Models\Product;
@@ -50,6 +51,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         })->name('keranjang');
 
         Route::post('keranjang', [CartController::class, 'store']);
+
+        Route::delete('keranjang/detail/{id}', [CartController::class, 'destroy'])->name('keranjang.detail.destroy');
+
+        Route::put('keranjang/detail/{id}', [CartController::class, 'update'])->name('keranjang.detail.update');
+
+        Route::post('purchase', [PurchaseController::class, 'store'])->name('purchase.store');
+
+        Route::post('purchase/{id}', [PurchaseController::class, 'update'])->name('purchase.update');
 
         Route::get('riwayat', function () {
             $user = Auth::user();

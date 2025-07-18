@@ -11,6 +11,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
+
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
     tagline: 'Tetes Murni, Energi Alami. ',
@@ -214,7 +215,6 @@ const providers = [
 ];
 
 export default function Welcome({ auth, product }: Props) {
-    const [products, setProducts] = useState<Product[]>(product);
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [quantity, setQuantity] = useState<number>(1);
     const [openPopup, setOpenPopup] = useState(false);
@@ -231,9 +231,8 @@ export default function Welcome({ auth, product }: Props) {
         post(route('keranjang'), {
             onSuccess: () => {
                 setOpenPopup(false);
-                router.visit(route('home'), {
-                    preserveScroll: true,
-                    preserveState: false,
+                router.reload({
+                    only: ['product'],
                 });
             },
         });
@@ -334,7 +333,7 @@ export default function Welcome({ auth, product }: Props) {
                                                         as="button"
                                                         onClick={handleLogout}
                                                     >
-                                                        <LogOut className="mr-2" />
+                                                        <LogOut />
                                                         Log out
                                                     </Link>
                                                 </DropdownMenuItem>
@@ -490,7 +489,7 @@ export default function Welcome({ auth, product }: Props) {
                                 Madu alami berkualitas tinggi dari Bondowoso, siap memberikan manfaat yang optimal.
                             </p>
                             <div className="mx-auto mt-6 flex max-w-screen flex-wrap items-center justify-center gap-9">
-                                {products.map((product) => {
+                                {product.map((product) => {
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
                                             <img

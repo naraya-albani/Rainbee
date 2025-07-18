@@ -22,6 +22,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        Product::factory(2)->create();
+        Product::factory(1)->create();
     }
 }

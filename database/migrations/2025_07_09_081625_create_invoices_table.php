@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->decimal('total', 10, 0);
-            $table->enum('status', ['pending', 'approved', 'sending', 'claimed', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'waiting', 'approved', 'sending', 'claimed', 'canceled'])->default('pending');
             $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
             $table->string('receipt')->nullable();
