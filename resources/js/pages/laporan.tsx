@@ -5,11 +5,13 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
+import { Invoice, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { PenBox } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,6 +19,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/laporan',
     },
 ];
+
+type Prop = {
+    invoice: Invoice[];
+};
 
 type PurchaseItem = {
     id: string;
@@ -29,25 +35,26 @@ type PurchaseItem = {
     updated_at: string;
 };
 
-export default function Laporan() {
-    const [invoices, setInvoices] = useState<PurchaseItem[]>([]);
+export default function Laporan({ invoice }: Prop) {
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice>();
+    const [dialogOpen, setDialogOpen] = useState(false);
 
-    useEffect(() => {
-        fetch('/api/purchase', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setInvoices(data);
-            })
-            .catch((err) => {
-                console.error('Gagal mengambil data keranjang:', err);
-            });
-    }, []);
-
+    const handleApprove = async () => {
+    if (!selectedInvoice) return;
+    try {
+        await axios.post(
+            `/purchase/${selectedInvoice.id}`,
+            { status: 'approved' },
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+        toast.success('Status berhasil diubah menjadi approved');
+        setDialogOpen(false);
+        // Optional: reload halaman atau fetch ulang data invoice
+        window.location.reload();
+    } catch  (err) {
+        console.error('Gagal mengubah status'+err);
+    }
+};
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Laporan" />
@@ -72,25 +79,31 @@ export default function Laporan() {
                     <TableCaption>A list of your recent invoices.</TableCaption>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">Pembeli</TableHead>
-                            <TableHead>Barang</TableHead>
+                            <TableHead className="w-[100px]">No Invoice</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Total</TableHead>
+
                             <TableHead className="flex justify-center">Detail</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {invoices.map((invoice) => (
+                        {invoice.map((invoice) => (
                             <TableRow key={invoice.id}>
                                 <TableCell className="font-medium">{invoice.id}</TableCell>
                                 <TableCell>{invoice.status}</TableCell>
-                                <TableCell>{invoice.status}</TableCell>
+
                                 <TableCell>{invoice.total}</TableCell>
                                 <TableCell className="flex justify-center space-x-2">
-                                    <Dialog>
+                                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                                         <form>
                                             <DialogTrigger asChild>
-                                                <Button variant={'outline'}>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setSelectedInvoice(invoice);
+                                                        setDialogOpen(true);
+                                                    }}
+                                                >
                                                     <PenBox></PenBox>
                                                 </Button>
                                             </DialogTrigger>
@@ -108,14 +121,20 @@ export default function Laporan() {
                                                                     <CardTitle>Detail Pelanggan</CardTitle>
                                                                 </CardHeader>
                                                                 <CardContent className="mb-2 space-y-2">
-                                                                    <p>nama pelanggan</p>
+                                                                    <p>{selectedInvoice?.cart?.user?.name ?? '-'}</p>
                                                                     <div>
                                                                         <span className="font-semibold">Alamat Pengiriman:</span>
-                                                                        <p>jember, 1112030, 1112, 11 12345</p>
+                                                                        <p>
+                                                                            {selectedInvoice?.address?.address_line ?? '-'},{' '}
+                                                                            {selectedInvoice?.address?.district ?? '-'},{' '}
+                                                                            {selectedInvoice?.address?.city ?? '-'},{' '}
+                                                                            {selectedInvoice?.address?.state ?? '-'}{' '}
+                                                                            {selectedInvoice?.address?.postal_code ?? '-'}
+                                                                        </p>
                                                                     </div>
                                                                     <div>
                                                                         <span className="font-semibold">Nomor Telefon:</span>
-                                                                        <p>02397489289748</p>
+                                                                        <p>{selectedInvoice?.address?.phone_number ?? '-'}</p>
                                                                     </div>
                                                                 </CardContent>
                                                             </Card>
@@ -135,18 +154,18 @@ export default function Laporan() {
                                                                             </TableRow>
                                                                         </TableHeader>
                                                                         <TableBody>
-                                                                            <TableRow>
-                                                                                <TableCell>Item 1</TableCell>
-                                                                                <TableCell>2</TableCell>
-                                                                                <TableCell>$100</TableCell>
-                                                                                <TableCell>$200</TableCell>
-                                                                            </TableRow>
-                                                                            <TableRow>
-                                                                                <TableCell>Item 2</TableCell>
-                                                                                <TableCell>1</TableCell>
-                                                                                <TableCell>$150</TableCell>
-                                                                                <TableCell>$150</TableCell>
-                                                                            </TableRow>
+                                                                            {selectedInvoice?.cart?.details.map((item, idx) => (
+                                                                                <TableRow key={idx}>
+                                                                                    <TableCell>{item.product.name}</TableCell>
+                                                                                    <TableCell>{item.quantity}</TableCell>
+                                                                                    <TableCell>
+                                                                                        Rp{new Intl.NumberFormat('id-ID').format(item.product.price)}
+                                                                                    </TableCell>
+                                                                                    <TableCell>
+                                                                                        Rp{new Intl.NumberFormat('id-ID').format(item.price)}
+                                                                                    </TableCell>
+                                                                                </TableRow>
+                                                                            ))}
                                                                         </TableBody>
                                                                     </Table>
                                                                 </CardContent>
@@ -184,7 +203,9 @@ export default function Laporan() {
                                                                     <Separator />
                                                                     <div className="flex items-center font-medium">
                                                                         <div>Total</div>
-                                                                        <div className="ml-auto">$385.00</div>
+                                                                        <div className="ml-auto">
+                                                                            Rp{selectedInvoice?.total?.toLocaleString('id-ID') ?? '0'}
+                                                                        </div>
                                                                     </div>
                                                                 </CardContent>
                                                             </Card>
@@ -192,16 +213,21 @@ export default function Laporan() {
                                                     </div>
                                                     {/* kanan */}
 
-                                                    <div className="flex w-full h-full items-center justify-center lg:w-1/2">
-                                                        <img src={'QRIS.png'} className="h-auto w-full rounded-lg object-cover"></img>
+                                                    <div className="flex h-full w-full items-center justify-center lg:w-1/2">
+                                                        {selectedInvoice?.receipt && (
+                                                            <img
+                                                                src={`/storage/${selectedInvoice.receipt}`}
+                                                                alt="Bukti Pembayaran"
+                                                                className="mt-4 h-auto w-full rounded-lg object-cover"
+                                                            />
+                                                        )}
                                                     </div>
-
                                                 </div>
                                                 <DialogFooter className="border-t pt-4">
                                                     <DialogClose asChild>
                                                         <Button variant="outline">Batal</Button>
                                                     </DialogClose>
-                                                    <Button type="submit">Konfirmsi Pembayaran</Button>
+                                                    <Button type="button" onClick={handleApprove}>Konfirmsi Pembayaran</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>

@@ -5,9 +5,10 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Invoice } from '@/types';
-import { useForm } from '@inertiajs/react';
+import { Link, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Prop = {
     invoice: Invoice;
@@ -45,7 +46,8 @@ export default function Purchase({ invoice }: Prop) {
             await axios.post(route('purchase.update', invoice.id), formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            alert('Berhasil mengunggah bukti');
+            toast.success('Berhasil mengunggah bukti');
+            router.visit('/riwayat');
         } catch (error) {
             console.error('Upload gagal:', error);
             alert('Gagal mengunggah bukti');
@@ -174,9 +176,11 @@ export default function Purchase({ invoice }: Prop) {
                             </DialogContent>
                         </Dialog>
                     </div>
+                    <Link href="/riwayat" className="w-full">
                     <Button variant="outline" className="w-full">
                         Batal
                     </Button>
+                    </Link>
                 </div>
             </div>
         </div>

@@ -11,6 +11,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
+import { toast } from 'sonner';
 
 const siteData = {
     appName: import.meta.env.VITE_APP_NAME,
@@ -234,6 +235,7 @@ export default function Welcome({ auth, product }: Props) {
                 router.reload({
                     only: ['product'],
                 });
+                toast.success('Pesanan berhasil masuk ke keranjang!');
             },
         });
     };

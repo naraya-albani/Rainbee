@@ -19,6 +19,7 @@ import { Auth, Cart } from '@/types';
 import { router, useForm } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 type Props = {
     auth: Auth;
@@ -72,10 +73,12 @@ export default function Keranjang({ auth, cart }: Props) {
                 onSuccess: () => {
                     router.reload({
                         only: ['cart'],
+
                     });
+                    toast.success('Produk berhasil dihapus dari keranjang');
                 },
                 onError: () => {
-                    alert('Gagal menghapus produk.');
+                    toast.error('Gagal menghapus produk.');
                 },
             });
         };
@@ -145,52 +148,14 @@ export default function Keranjang({ auth, cart }: Props) {
         e.preventDefault();
         post(route('purchase.store'), {
             onSuccess: () => {
-                console.log('Berhasil dikirim!');
+                toast.success('Berhasil dikirim!');
             },
             onError: (err) => {
-                console.error('Gagal mengirim:', err);
+                toast.error('Gagal mengirim:', err);
             },
         });
     };
 
-    // const handleSubmit = async () => {
-    //     setIsSubmitting(true);
-
-    //     try {
-    //         const res = await fetch('/api/purchase', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 phone: auth.user.phone,
-    //                 cart_id: cart.id,
-    //                 total: cart.subtotal,
-    //                 address: {
-    //                     address_line: alamatLengkap,
-    //                     district: toTitleCaseSmart(selectedKecamatanName),
-    //                     city: toTitleCaseSmart(selectedKabupatenName),
-    //                     state: toTitleCaseSmart(selectedProvinsiName),
-    //                     postal_code: kodePos,
-    //                     phone_number: nomorTelepon,
-    //                 },
-    //             }),
-    //         });
-
-    //         const data = await res.json();
-
-    //         if (res.ok) {
-    //             route('invoice/' + data.invoice.id);
-    //         } else {
-    //             alert(data.message || 'Gagal membuat pesanan');
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         alert('Terjadi kesalahan saat membuat invoice' + error);
-    //     } finally {
-    //         setIsSubmitting(false);
-    //     }
-    // };
 
     //data provinsi
     useEffect(() => {

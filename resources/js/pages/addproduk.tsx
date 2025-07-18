@@ -48,6 +48,7 @@ export default function Addproduk() {
     const [preview, setPreview] = useState<string | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editProduct, setEditProduct] = useState<Product | null>(null);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -109,6 +110,8 @@ export default function Addproduk() {
             // refresh produk
             const refreshed = await axios.get('/api/product');
             setProducts(refreshed.data);
+            toast.success('Produk berhasil ditambahkan');
+            setAddDialogOpen(false);
         } catch (err) {
             console.error('Gagal menambahkan produk:', err);
         }
@@ -161,6 +164,8 @@ export default function Addproduk() {
             // refresh produk
             const refreshed = await axios.get('/api/product');
             setProducts(refreshed.data);
+
+            toast.success('Produk berhasil diperbarui');
         } catch (err) {
             console.error('Gagal update produk:', err);
         }
@@ -172,7 +177,7 @@ export default function Addproduk() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Tambah Produk</h2>
-                    <Dialog>
+                    <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                         <DialogTrigger asChild>
                             <Button>
                                 <Plus />

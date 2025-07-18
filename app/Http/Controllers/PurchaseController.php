@@ -16,6 +16,20 @@ use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
+
+
+    public function index()
+    {
+        $invoices = Invoice::with([
+            'cart.user', // Tambahkan relasi user dari cart
+            'cart.detailCarts.product', // Ambil produk dari detail cart
+            'address'
+        ])->latest()->get();
+
+        return inertia('Invoice/Index', [
+            'invoices' => $invoices,
+        ]);
+    }
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -92,9 +106,9 @@ class PurchaseController extends Controller
             Http::withHeaders([
                 'Authorization' => env('TOKEN_FONNTE'),
             ])->post('https://api.fonnte.com/send', [
-                'target' => $request->phone,
-                'message' => $message,
-            ]);
+                        'target' => $request->phone,
+                        'message' => $message,
+                    ]);
 
             return redirect()->intended(route('invoice', ['id' => $invoiceId], absolute: false));
         } catch (\Exception $e) {
@@ -106,8 +120,8 @@ class PurchaseController extends Controller
     public function update(Request $request, $id)
     {
         Log::info('File uploaded?', [$request->hasFile('receipt')]);
-    Log::info('All request:', $request->all());
-
+        Log::info('All request:', $request->all());
+        
         $request->validate([
             'receipt' => 'nullable|image|max:2048',
             'status' => 'nullable|string|in:waiting,approved,rejected',
