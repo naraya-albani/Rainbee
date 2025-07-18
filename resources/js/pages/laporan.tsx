@@ -8,9 +8,9 @@ import AppLayout from '@/layouts/app-layout';
 import { Invoice, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { PenBox } from 'lucide-react';
-import { useState } from 'react';
 import axios from 'axios';
+import { PenBox, SendIcon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -38,38 +38,55 @@ type PurchaseItem = {
 export default function Laporan({ invoice }: Prop) {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice>();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [statusFilter, setStatusFilter] = useState("all");
+
+
+    const filteredInvoices = statusFilter === 'all' ? invoice : invoice.filter((invoice) => invoice.status === statusFilter);
 
     const handleApprove = async () => {
-    if (!selectedInvoice) return;
-    try {
-        await axios.post(
-            `/purchase/${selectedInvoice.id}`,
-            { status: 'approved' },
-            { headers: { 'Content-Type': 'application/json' } }
-        );
-        toast.success('Status berhasil diubah menjadi approved');
-        setDialogOpen(false);
-        // Optional: reload halaman atau fetch ulang data invoice
-        window.location.reload();
-    } catch  (err) {
-        console.error('Gagal mengubah status'+err);
-    }
-};
+        if (!selectedInvoice) return;
+        try {
+            await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'approved' }, { headers: { 'Content-Type': 'application/json' } });
+            toast.success('Status berhasil diubah menjadi approved');
+            setDialogOpen(false);
+
+            window.location.reload();
+        } catch (err) {
+            console.error('Gagal mengubah status' + err);
+        }
+    };
+
+    const handleSending = async () => {
+        if (!selectedInvoice) return;
+        try {
+            await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'sending' }, { headers: { 'Content-Type': 'application/json' } });
+            toast.success('Barang telah dikirim');
+            setDialogOpen(false);
+
+            window.location.reload();
+        } catch (err) {
+            console.error('Gagal mengubah status' + err);
+        }
+    };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Laporan" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Laporan</h2>
-                    <Select>
+                    <Select onValueChange={(value) => setStatusFilter(value)}>
                         <SelectTrigger className="w-[180px] bg-[#f59e0b] text-white [&>span]:text-white [&>span]:opacity-100 [&>svg]:text-white">
-                            <SelectValue placeholder="Filter" />
+                            <SelectValue placeholder="Filter Status" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
-                                <SelectItem value="pending">Menunggu konfirmasi</SelectItem>
+                                <SelectItem value="all">Semua</SelectItem>
+
+                                <SelectItem value="pending">Menunggu Pembayaran</SelectItem>
+                                <SelectItem value="waiting">Menunggu Konfirmasi</SelectItem>
                                 <SelectItem value="approved">Disetujui</SelectItem>
-                                <SelectItem value="claimed">Diterima</SelectItem>
+                                <SelectItem value="sending">Dalam Perjalanan</SelectItem>
+                                <SelectItem value="claimed">Selesai</SelectItem>
                                 <SelectItem value="cancelled">Dibatalkan</SelectItem>
                             </SelectGroup>
                         </SelectContent>
@@ -87,10 +104,24 @@ export default function Laporan({ invoice }: Prop) {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {invoice.map((invoice) => (
+                        {filteredInvoices.map((invoice) => (
                             <TableRow key={invoice.id}>
                                 <TableCell className="font-medium">{invoice.id}</TableCell>
-                                <TableCell>{invoice.status}</TableCell>
+                                <TableCell>
+                                    {invoice.status === 'pending'
+                                        ? 'Menunggu Pembayaran'
+                                        : invoice.status === 'waiting'
+                                          ? 'Menunggu Konfirmasi'
+                                          : invoice.status === 'approved'
+                                            ? 'Disetujui'
+                                            : invoice.status === 'sending'
+                                              ? 'Dalam Perjalanan'
+                                              : invoice.status === 'claimed'
+                                                ? 'Selesai'
+                                                : invoice.status === 'cancelled'
+                                                  ? 'Dibatalkan'
+                                                  : invoice.status}
+                                </TableCell>
 
                                 <TableCell>{invoice.total}</TableCell>
                                 <TableCell className="flex justify-center space-x-2">
@@ -227,11 +258,24 @@ export default function Laporan({ invoice }: Prop) {
                                                     <DialogClose asChild>
                                                         <Button variant="outline">Batal</Button>
                                                     </DialogClose>
-                                                    <Button type="button" onClick={handleApprove}>Konfirmsi Pembayaran</Button>
+                                                    <Button type="button" onClick={handleApprove}>
+                                                        Konfirmsi Pembayaran
+                                                    </Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>
                                     </Dialog>
+                                    {invoice.status === 'approved' && (
+                                        <Button
+                                            variant="default"
+                                            onClick={async () => {
+                                                setSelectedInvoice(invoice);
+                                                await handleSending();
+                                            }}
+                                        >
+                                            <SendIcon></SendIcon>
+                                        </Button>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

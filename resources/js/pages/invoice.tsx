@@ -17,7 +17,7 @@ type Prop = {
 export default function Purchase({ invoice }: Prop) {
     const [preview, setPreview] = useState<string | null>(null);
 
-    const { put, data, setData, processing } = useForm<{
+    const { data, setData, processing } = useForm<{
         receipt: File | null;
     }>({
         receipt: null,

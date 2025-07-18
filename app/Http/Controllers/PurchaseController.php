@@ -121,10 +121,10 @@ class PurchaseController extends Controller
     {
         Log::info('File uploaded?', [$request->hasFile('receipt')]);
         Log::info('All request:', $request->all());
-        
+
         $request->validate([
             'receipt' => 'nullable|image|max:2048',
-            'status' => 'nullable|string|in:waiting,approved,rejected',
+            'status' => 'nullable|string|in:waiting,approved,rejected,sending,claimed',
         ]);
 
         $invoice = Invoice::findOrFail($id);
