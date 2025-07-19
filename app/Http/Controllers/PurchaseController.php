@@ -22,7 +22,7 @@ class PurchaseController extends Controller
     {
         $invoices = Invoice::with([
             'cart.user', // Tambahkan relasi user dari cart
-            'cart.detailCarts.product', // Ambil produk dari detail cart
+            'cart.details.product', // Ambil produk dari detail cart
             'address'
         ])->latest()->get();
 
@@ -74,10 +74,6 @@ class PurchaseController extends Controller
                 $product = Product::find($item->product_id);
 
                 if ($product) {
-                    if ($product->stock < $item->quantity) {
-                        throw new \Exception("Stok produk '{$product->name}' tidak mencukupi.");
-                    }
-
                     // Tambahkan ke pesan produk
                     $produkList .= "- {$product->name} ({$item->quantity}x) @ Rp" . number_format($product->price, 0, ',', '.') . "\n";
                 }
@@ -99,8 +95,9 @@ class PurchaseController extends Controller
                 . "*Metode Pembayaran:* Transfer Bank\n"
                 . "*Bank:* BCA\n"
                 . "*No. Rekening:* 1234567890\n"
-                . "*Atas Nama:* PT Contoh Online\n\n"
-                . "Mohon konfirmasi setelah melakukan pembayaran.\n"
+                . "*Atas Nama:* Rainbee\n\n"
+                . "Mohon konfirmasi setelah melakukan pembayaran dengan mengirim bukti pembayaran ke tautan berikut.\n"
+                . env('APP_URL') . "/invoice/" . $invoiceId . "\n\n"
                 . "Terima kasih telah berbelanja di *Rainbee*!";
 
             Http::withHeaders([
@@ -119,12 +116,9 @@ class PurchaseController extends Controller
 
     public function update(Request $request, $id)
     {
-        Log::info('File uploaded?', [$request->hasFile('receipt')]);
-        Log::info('All request:', $request->all());
-
         $request->validate([
             'receipt' => 'nullable|image|max:2048',
-            'status' => 'nullable|string|in:waiting,approved,rejected,sending,claimed',
+            'status' => 'nullable|string|in:waiting,approved,sending,claimed,canceled',
         ]);
 
         $invoice = Invoice::findOrFail($id);

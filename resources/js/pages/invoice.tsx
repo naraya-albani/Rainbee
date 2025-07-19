@@ -1,3 +1,4 @@
+import AppLogoIcons from '@/components/app-logo-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -57,7 +58,7 @@ export default function Purchase({ invoice }: Prop) {
     return (
         <div className="flex h-screen flex-col">
             <header className="sticky top-0 z-10 flex items-center justify-between border-b p-6">
-                <h1 className="text-2xl font-bold text-[#f59e0b]">RAINBEE.</h1>
+                <AppLogoIcons className="h-8" />
                 <div>
                     <h2 className="text-xl font-semibold">Invoice #INV001</h2>
                     <p className="text-gray-500">Tanggal: 12/12/2023</p>
@@ -131,7 +132,7 @@ export default function Purchase({ invoice }: Prop) {
                                 <span className="font-semibold">Atas Nama:</span>
                                 <p>Rainbee</p>
                             </div>
-                            <p className="font-black">Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja di TokoKami!</p>
+                            <p className="font-black">Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja di Rainbee!</p>
                         </CardContent>
                     </Card>
                 </main>
@@ -177,9 +178,9 @@ export default function Purchase({ invoice }: Prop) {
                         </Dialog>
                     </div>
                     <Link href="/riwayat" className="w-full">
-                    <Button variant="outline" className="w-full">
-                        Batal
-                    </Button>
+                        <Button variant="outline" className="w-full">
+                            Batal
+                        </Button>
                     </Link>
                 </div>
             </div>

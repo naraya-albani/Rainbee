@@ -38,8 +38,7 @@ type PurchaseItem = {
 export default function Laporan({ invoice }: Prop) {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice>();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [statusFilter, setStatusFilter] = useState("all");
-
+    const [statusFilter, setStatusFilter] = useState('all');
 
     const filteredInvoices = statusFilter === 'all' ? invoice : invoice.filter((invoice) => invoice.status === statusFilter);
 
@@ -87,7 +86,7 @@ export default function Laporan({ invoice }: Prop) {
                                 <SelectItem value="approved">Disetujui</SelectItem>
                                 <SelectItem value="sending">Dalam Perjalanan</SelectItem>
                                 <SelectItem value="claimed">Selesai</SelectItem>
-                                <SelectItem value="cancelled">Dibatalkan</SelectItem>
+                                <SelectItem value="canceled">Dibatalkan</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -118,7 +117,7 @@ export default function Laporan({ invoice }: Prop) {
                                               ? 'Dalam Perjalanan'
                                               : invoice.status === 'claimed'
                                                 ? 'Selesai'
-                                                : invoice.status === 'cancelled'
+                                                : invoice.status === 'canceled'
                                                   ? 'Dibatalkan'
                                                   : invoice.status}
                                 </TableCell>
@@ -199,30 +198,6 @@ export default function Laporan({ invoice }: Prop) {
                                                                             ))}
                                                                         </TableBody>
                                                                     </Table>
-                                                                </CardContent>
-                                                            </Card>
-
-                                                            <Card>
-                                                                <CardHeader className="mt-2">
-                                                                    <CardTitle>Pembayaran</CardTitle>
-                                                                </CardHeader>
-                                                                <CardContent className="mb-2 space-y-2">
-                                                                    <div>
-                                                                        <span className="font-semibold">Bank:</span>
-                                                                        <p>BCA</p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <span className="font-semibold">No Rekening:</span>
-                                                                        <p>02397489289748</p>
-                                                                    </div>
-                                                                    <div>
-                                                                        <span className="font-semibold">Atas Nama:</span>
-                                                                        <p>Rainbee</p>
-                                                                    </div>
-                                                                    <p className="font-black">
-                                                                        Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja
-                                                                        di TokoKami!
-                                                                    </p>
                                                                 </CardContent>
                                                             </Card>
 

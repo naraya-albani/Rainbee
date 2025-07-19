@@ -18,7 +18,7 @@ const siteData = {
     tagline: 'Tetes Murni, Energi Alami. ',
 };
 
-const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'Faq', 'Kontak'];
+const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'FAQ', 'Kontak'];
 
 type Props = {
     auth: Auth;
@@ -75,7 +75,7 @@ interface Faq1Props {
 }
 
 const faqs: Faq1Props = {
-    heading: 'Frequently asked questions',
+    heading: 'Frequently Asked Questions',
     items: [
         {
             id: 'faq-1',
@@ -291,7 +291,6 @@ export default function Welcome({ auth, product }: Props) {
                                 </svg>
                             </button>
                         </div>
-                        {/* <Button onClick={() => router.visit('/keranjang')}>Ke Halaman Keranjang</Button> */}
                         <div className="hidden items-center space-x-4 md:flex">
                             {auth.user ? (
                                 <>
@@ -309,7 +308,7 @@ export default function Welcome({ auth, product }: Props) {
                                             <DropdownMenuTrigger asChild>
                                                 <Button
                                                     variant="ghost"
-                                                    className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                                    className="inline-block rounded-sm bg-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-[#EDEDEC] hover:border-[#1915014a] hover:text-[#f59e0b] dark:border-[#3E3E3A] dark:hover:border-[#62605b]"
                                                 >
                                                     <User></User>
                                                 </Button>
@@ -317,13 +316,13 @@ export default function Welcome({ auth, product }: Props) {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem asChild>
                                                     <Link href={route('keranjang')}>
-                                                        <ShoppingCart></ShoppingCart>
+                                                        <ShoppingCart />
                                                         Lihat Keranjang
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>
                                                     <Link href={route('riwayat')}>
-                                                        <History></History>
+                                                        <History />
                                                         Riwayat
                                                     </Link>
                                                 </DropdownMenuItem>
@@ -518,6 +517,11 @@ export default function Welcome({ auth, product }: Props) {
                                                 <Button
                                                     className="w-full"
                                                     onClick={() => {
+                                                        if (!auth.user?.id) {
+                                                            router.visit(route('login'));
+                                                            return;
+                                                        }
+
                                                         setData({
                                                             id: auth.user.id,
                                                             product_id: product.id,
@@ -710,7 +714,7 @@ export default function Welcome({ auth, product }: Props) {
                                             <a href="#keunggulan"> Keunggulan</a>
                                         </Button>
                                         <Button asChild>
-                                            <a href="#faq">Faq</a>
+                                            <a href="#faq">FAQ</a>
                                         </Button>
                                         <Button asChild>
                                             <a href="#kontak">Kontak</a>

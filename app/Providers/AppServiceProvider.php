@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\DetailCart;
+use App\Models\Invoice;
 use App\Observers\DetailCartObserver;
+use App\Observers\InvoiceObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         DetailCart::observe(DetailCartObserver::class);
+        Invoice::observe(InvoiceObserver::class);
     }
 }

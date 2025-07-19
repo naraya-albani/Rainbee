@@ -2,7 +2,6 @@ import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Dialog,
     DialogClose,
@@ -16,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Auth, Cart } from '@/types';
-import { router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -73,7 +72,6 @@ export default function Keranjang({ auth, cart }: Props) {
                 onSuccess: () => {
                     router.reload({
                         only: ['cart'],
-
                     });
                     toast.success('Produk berhasil dihapus dari keranjang');
                 },
@@ -151,11 +149,11 @@ export default function Keranjang({ auth, cart }: Props) {
                 toast.success('Berhasil dikirim!');
             },
             onError: (err) => {
+                console.log(err);
                 toast.error('Gagal mengirim:', err);
             },
         });
     };
-
 
     //data provinsi
     useEffect(() => {
@@ -204,223 +202,227 @@ export default function Keranjang({ auth, cart }: Props) {
     }, [selectedKabupaten]);
 
     return (
-        <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
-            <div className="space-y-4 md:col-span-2">
-                <header className="text-3xl font-bold text-[#f59e0b]">Keranjang</header>
-                <Breadcrumb>
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/">Welcome</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator>
-                            <SlashIcon />
-                        </BreadcrumbSeparator>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink href="/keranjang">keranjang</BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
+        <>
+            <Head title="Keranjang" />
+            <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
+                <div className="space-y-4 md:col-span-2">
+                    <header className="text-3xl font-bold text-[#f59e0b]">Keranjang</header>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/">Welcome</BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator>
+                                <SlashIcon />
+                            </BreadcrumbSeparator>
+                            <BreadcrumbItem>
+                                <BreadcrumbLink href="/keranjang">Keranjang</BreadcrumbLink>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
 
-                {cart.details.length === 0 ? (
-                    <Card>
-                        <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
-                    </Card>
-                ) : (
-                    cart.details.map((item) => (
-                        <Card key={item.product.id} className="relative">
-                            <CardContent className="flex items-start gap-4 py-4">
-                                <img src={`/storage/${item.product.image}`} alt={item.product.name} className="h-20 w-20 rounded object-cover" />
-                                <div className="flex-1">
-                                    <p className="text-lg">{item.product.name}</p>
-                                    <p className="text-sm">{item.product.size} ml</p>
-                                    <div className="mt-2 flex flex-row items-center justify-between">
-                                        <p className="text-lg font-bold text-[#f59e0b]">
-                                            Rp{new Intl.NumberFormat('id-ID').format(Number(item.product.price * item.quantity))}
-                                        </p>
-                                        <div className="flex items-center gap-2">
-                                            <QuantitySelector
-                                                value={item.quantity}
-                                                min={0}
-                                                max={item.product.stock}
-                                                onChange={(val: number) => handleQuantityChange(item.id, val)}
-                                            />
-                                            <Button onClick={submitDelete(item.id)} className="bg-red-500 text-white hover:bg-red-600">
-                                                <Trash></Trash>
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
+                    {cart.details.length === 0 ? (
+                        <Card>
+                            <CardContent className="py-6 text-center text-gray-500">Keranjang kosong.</CardContent>
                         </Card>
-                    ))
-                )}
-            </div>
-
-            {/* total belanja */}
-            <div>
-                <Card className="sticky top-6">
-                    <CardContent className="space-y-4 p-4">
-                        <h2 className="text-lg font-semibold">Ringkasan belanja</h2>
-                        <div className="flex justify-between text-sm">
-                            <span>Total</span>
-                            <span>Rp{new Intl.NumberFormat('id-ID').format(cart.subtotal)}</span>
-                        </div>
-
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button>Beli Sekarang</Button>
-                            </DialogTrigger>
-                            <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
-                                <form onSubmit={handleSubmit}>
-                                    <DialogHeader>
-                                        <DialogTitle>Konfirmasi Pemesanan</DialogTitle>
-                                        <DialogDescription>Jangan lupa cek kembali pesanan Anda sebelum melakukan pembayaran</DialogDescription>
-                                    </DialogHeader>
-                                    <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
-                                        <div className="flex w-full flex-col items-start gap-3 lg:w-1/2">
-                                            <h1>Alamat</h1>
-                                            <Label className="font-bold">Masukkan alamatmu</Label>
-                                            <Input
-                                                placeholder="Alamat lengkap"
-                                                value={data.address.address_line}
-                                                onChange={(e) => setData('address', { ...data.address, address_line: e.target.value })}
-                                            />
-                                            <Label className="font-bold">Provinsi</Label>
-                                            <select
-                                                className="w-full rounded border p-2"
-                                                value={selectedProvinsi}
-                                                onChange={(e) => {
-                                                    const id = e.target.value;
-                                                    setSelectedProvinsi(id);
-                                                    const provinsiTerpilih = provinsi.find((p) => p.id === id);
-                                                    const provinsiName = toTitleCaseSmart(provinsiTerpilih?.name || '');
-
-                                                    setData('address', {
-                                                        ...data.address,
-                                                        state: provinsiName,
-                                                        city: '',
-                                                        district: '',
-                                                    });
-                                                }}
-                                            >
-                                                <option value="">Pilih Provinsi</option>
-                                                {provinsi.map((province) => (
-                                                    <option key={province.id} value={province.id}>
-                                                        {province.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                            <Label className="font-bold">Kab/Kota</Label>
-                                            <select
-                                                className="w-full rounded border p-2"
-                                                value={selectedKabupaten}
-                                                onChange={(e) => {
-                                                    const id = e.target.value;
-                                                    setSelectedKabupaten(id);
-                                                    const kabTerpilih = kabupaten.find((k) => k.id === id);
-                                                    const kabupatenName = toTitleCaseSmart(kabTerpilih?.name || '');
-
-                                                    setData('address', {
-                                                        ...data.address,
-                                                        city: kabupatenName,
-                                                        district: '',
-                                                    });
-                                                }}
-                                                disabled={!selectedProvinsi}
-                                            >
-                                                <option value="">Pilih Kab/Kota</option>
-                                                {kabupaten.map((regency) => (
-                                                    <option key={regency.id} value={regency.id}>
-                                                        {regency.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <Label className="font-bold">Kecamatan</Label>
-                                            <select
-                                                className="w-full rounded border p-2"
-                                                value={selectedKecamatan}
-                                                onChange={(e) => {
-                                                    const id = e.target.value;
-                                                    setSelectedKecamatan(id);
-                                                    const kecTerpilih = kecamatan.find((k) => k.id === id);
-                                                    const kecamatanName = toTitleCaseSmart(kecTerpilih?.name || '');
-
-                                                    setData('address', {
-                                                        ...data.address,
-                                                        district: kecamatanName,
-                                                    });
-                                                }}
-                                                disabled={!selectedKabupaten}
-                                            >
-                                                <option value="">Pilih Kecamatan</option>
-                                                {kecamatan.map((district) => (
-                                                    <option key={district.id} value={district.id}>
-                                                        {district.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <Label className="font-bold">Masukkan kode posmu</Label>
-                                            <Input
-                                                placeholder="Kode pos"
-                                                value={data.address.postal_code}
-                                                onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    if (numericValue.length <= 5) {
-                                                        setData('address', { ...data.address, postal_code: numericValue });
-                                                    }
-                                                }}
-                                            />
-                                            <Label className="font-bold">Masukkan nomor telepon</Label>
-                                            <Input
-                                                placeholder="Nomor telepon"
-                                                value={data.address.phone_number}
-                                                onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    if (numericValue.length <= 15) {
-                                                        setData('address', { ...data.address, phone_number: numericValue });
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        <div className="grid w-full gap-4 lg:w-1/2">
-                                            {cart.details.map((item) => (
-                                                <Card key={item.product.id} className="relative">
-                                                    <CardContent className="flex items-start gap-4 py-4">
-                                                        <Checkbox />
-                                                        <img
-                                                            src={`/storage/${item.product.image}`}
-                                                            alt={item.product.name}
-                                                            className="h-20 w-20 rounded object-cover"
-                                                        />
-                                                        <div className="flex-1">
-                                                            <p className="text-lg">{item.product.name}</p>
-                                                            <p className="text-sm">{item.product.size} ml</p>
-                                                            <div className="mt-2">
-                                                                <p className="text-lg font-bold text-[#f59e0b]">
-                                                                    Rp{new Intl.NumberFormat('id-ID').format(item.product.price * item.quantity)}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </CardContent>
-                                                </Card>
-                                            ))}
+                    ) : (
+                        cart.details.map((item) => (
+                            <Card key={item.product.id} className="relative">
+                                <CardContent className="flex items-start gap-4 py-4">
+                                    <img src={`/storage/${item.product.image}`} alt={item.product.name} className="h-20 w-20 rounded object-cover" />
+                                    <div className="flex-1">
+                                        <p className="text-lg">{item.product.name}</p>
+                                        <p className="text-sm">{item.product.size} ml</p>
+                                        <div className="mt-2 flex flex-row items-center justify-between">
+                                            <p className="text-lg font-bold text-[#f59e0b]">
+                                                Rp{new Intl.NumberFormat('id-ID').format(Number(item.product.price * item.quantity))}
+                                            </p>
+                                            <div className="flex items-center gap-2">
+                                                <QuantitySelector
+                                                    value={item.quantity}
+                                                    min={0}
+                                                    max={item.product.stock}
+                                                    onChange={(val: number) => handleQuantityChange(item.id, val)}
+                                                />
+                                                <Button onClick={submitDelete(item.id)} className="bg-red-500 text-white hover:bg-red-600">
+                                                    <Trash></Trash>
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <DialogFooter>
-                                        <DialogClose asChild>
-                                            <Button variant="outline">Batal</Button>
-                                        </DialogClose>
-                                        <Button type="submit" disabled={processing}>
-                                            Lakukan pembayaran
-                                        </Button>
-                                    </DialogFooter>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
-                    </CardContent>
-                </Card>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
+                </div>
+
+                {/* total belanja */}
+                <div>
+                    <Card className="sticky top-6">
+                        <CardContent className="space-y-4 p-4">
+                            <h2 className="text-lg font-semibold">Ringkasan belanja</h2>
+                            <div className="flex justify-between text-sm">
+                                <span>Total</span>
+                                <span>Rp{new Intl.NumberFormat('id-ID').format(cart.subtotal)}</span>
+                            </div>
+
+                            <Dialog>
+                                {cart.details.length > 0 && (
+                                    <DialogTrigger asChild>
+                                        <Button>Beli Sekarang</Button>
+                                    </DialogTrigger>
+                                )}
+                                <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
+                                    <form onSubmit={handleSubmit}>
+                                        <DialogHeader>
+                                            <DialogTitle>Konfirmasi Pemesanan</DialogTitle>
+                                            <DialogDescription>Jangan lupa cek kembali pesanan Anda sebelum melakukan pembayaran</DialogDescription>
+                                        </DialogHeader>
+                                        <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
+                                            <div className="flex w-full flex-col items-start gap-3 lg:w-1/2">
+                                                <h1>Alamat</h1>
+                                                <Label className="font-bold">Masukkan alamatmu</Label>
+                                                <Input
+                                                    placeholder="Alamat lengkap"
+                                                    value={data.address.address_line}
+                                                    onChange={(e) => setData('address', { ...data.address, address_line: e.target.value })}
+                                                />
+                                                <Label className="font-bold">Provinsi</Label>
+                                                <select
+                                                    className="w-full rounded border p-2"
+                                                    value={selectedProvinsi}
+                                                    onChange={(e) => {
+                                                        const id = e.target.value;
+                                                        setSelectedProvinsi(id);
+                                                        const provinsiTerpilih = provinsi.find((p) => p.id === id);
+                                                        const provinsiName = toTitleCaseSmart(provinsiTerpilih?.name || '');
+
+                                                        setData('address', {
+                                                            ...data.address,
+                                                            state: provinsiName,
+                                                            city: '',
+                                                            district: '',
+                                                        });
+                                                    }}
+                                                >
+                                                    <option value="">Pilih Provinsi</option>
+                                                    {provinsi.map((province) => (
+                                                        <option key={province.id} value={province.id}>
+                                                            {province.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+
+                                                <Label className="font-bold">Kab/Kota</Label>
+                                                <select
+                                                    className="w-full rounded border p-2"
+                                                    value={selectedKabupaten}
+                                                    onChange={(e) => {
+                                                        const id = e.target.value;
+                                                        setSelectedKabupaten(id);
+                                                        const kabTerpilih = kabupaten.find((k) => k.id === id);
+                                                        const kabupatenName = toTitleCaseSmart(kabTerpilih?.name || '');
+
+                                                        setData('address', {
+                                                            ...data.address,
+                                                            city: kabupatenName,
+                                                            district: '',
+                                                        });
+                                                    }}
+                                                    disabled={!selectedProvinsi}
+                                                >
+                                                    <option value="">Pilih Kab/Kota</option>
+                                                    {kabupaten.map((regency) => (
+                                                        <option key={regency.id} value={regency.id}>
+                                                            {regency.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <Label className="font-bold">Kecamatan</Label>
+                                                <select
+                                                    className="w-full rounded border p-2"
+                                                    value={selectedKecamatan}
+                                                    onChange={(e) => {
+                                                        const id = e.target.value;
+                                                        setSelectedKecamatan(id);
+                                                        const kecTerpilih = kecamatan.find((k) => k.id === id);
+                                                        const kecamatanName = toTitleCaseSmart(kecTerpilih?.name || '');
+
+                                                        setData('address', {
+                                                            ...data.address,
+                                                            district: kecamatanName,
+                                                        });
+                                                    }}
+                                                    disabled={!selectedKabupaten}
+                                                >
+                                                    <option value="">Pilih Kecamatan</option>
+                                                    {kecamatan.map((district) => (
+                                                        <option key={district.id} value={district.id}>
+                                                            {district.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <Label className="font-bold">Masukkan kode posmu</Label>
+                                                <Input
+                                                    placeholder="Kode pos"
+                                                    value={data.address.postal_code}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/\D/g, '');
+                                                        if (numericValue.length <= 5) {
+                                                            setData('address', { ...data.address, postal_code: numericValue });
+                                                        }
+                                                    }}
+                                                />
+                                                <Label className="font-bold">Masukkan nomor telepon</Label>
+                                                <Input
+                                                    placeholder="Nomor telepon"
+                                                    value={data.address.phone_number}
+                                                    onChange={(e) => {
+                                                        const numericValue = e.target.value.replace(/\D/g, '');
+                                                        if (numericValue.length <= 15) {
+                                                            setData('address', { ...data.address, phone_number: numericValue });
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="grid w-full gap-4 lg:w-1/2">
+                                                {cart.details.map((item) => (
+                                                    <Card key={item.product.id} className="relative">
+                                                        <CardContent className="flex items-start gap-4 py-4">
+                                                            <img
+                                                                src={`/storage/${item.product.image}`}
+                                                                alt={item.product.name}
+                                                                className="h-20 w-20 rounded object-cover"
+                                                            />
+                                                            <div className="flex-1">
+                                                                <p className="text-lg">{item.product.name}</p>
+                                                                <p className="text-sm">{item.product.size} ml</p>
+                                                                <div className="mt-2">
+                                                                    <p className="text-lg font-bold text-[#f59e0b]">
+                                                                        Rp{new Intl.NumberFormat('id-ID').format(item.product.price * item.quantity)}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button variant="outline">Batal</Button>
+                                            </DialogClose>
+                                            <Button type="submit" disabled={processing}>
+                                                Lakukan pembayaran
+                                            </Button>
+                                        </DialogFooter>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
