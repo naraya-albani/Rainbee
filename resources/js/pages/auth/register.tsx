@@ -28,7 +28,7 @@ export default function Register() {
     };
 
     return (
-        <AuthLayout title="Create an account" description="Enter your details below to create your account">
+        <AuthLayout title="Buat akun" description="Masukkan nama dan nomor HP untuk mendaftar">
             <Head title="Register" />
             <InputError message={errors.otp} className="mt-2" />
             <form className="flex flex-col gap-6" onSubmit={submit}>
@@ -80,14 +80,14 @@ export default function Register() {
 
                     <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                        Create account
+                        Buat Akun
                     </Button>
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">
-                    Already have an account?{' '}
+                    Sudah punya akun?{' '}
                     <TextLink href={route('login')} tabIndex={6}>
-                        Log in
+                        masuk
                     </TextLink>
                 </div>
             </form>

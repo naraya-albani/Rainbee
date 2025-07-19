@@ -7,9 +7,8 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import AppLayout from '@/layouts/app-layout';
 import { Invoice, type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { DialogClose } from '@radix-ui/react-dialog';
 import axios from 'axios';
-import { PenBox, SendIcon } from 'lucide-react';
+import { PenBox, SendIcon, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -48,7 +47,6 @@ export default function Laporan({ invoice }: Prop) {
             await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'approved' }, { headers: { 'Content-Type': 'application/json' } });
             toast.success('Status berhasil diubah menjadi approved');
             setDialogOpen(false);
-
             window.location.reload();
         } catch (err) {
             console.error('Gagal mengubah status' + err);
@@ -61,12 +59,24 @@ export default function Laporan({ invoice }: Prop) {
             await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'sending' }, { headers: { 'Content-Type': 'application/json' } });
             toast.success('Barang telah dikirim');
             setDialogOpen(false);
-
             window.location.reload();
         } catch (err) {
             console.error('Gagal mengubah status' + err);
         }
     };
+
+    const handleCanceled = async () => {
+        if (!selectedInvoice) return;
+        try {
+            await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'canceled' }, { headers: { 'Content-Type': 'application/json' } });
+            toast.error('Pesanan dibatalkan');
+            setDialogOpen(false);
+            window.location.reload();
+        } catch (err) {
+            console.error('Gagal mengubah status' + err);
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Laporan" />
@@ -84,7 +94,7 @@ export default function Laporan({ invoice }: Prop) {
                                 <SelectItem value="pending">Menunggu Pembayaran</SelectItem>
                                 <SelectItem value="waiting">Menunggu Konfirmasi</SelectItem>
                                 <SelectItem value="approved">Disetujui</SelectItem>
-                                <SelectItem value="sending">Dalam Perjalanan</SelectItem>
+                                <SelectItem value="sending">Dikirim</SelectItem>
                                 <SelectItem value="claimed">Selesai</SelectItem>
                                 <SelectItem value="canceled">Dibatalkan</SelectItem>
                             </SelectGroup>
@@ -114,9 +124,9 @@ export default function Laporan({ invoice }: Prop) {
                                           : invoice.status === 'approved'
                                             ? 'Disetujui'
                                             : invoice.status === 'sending'
-                                              ? 'Dalam Perjalanan'
+                                              ? 'Dikirim'
                                               : invoice.status === 'claimed'
-                                                ? 'Selesai'
+                                                ? 'Diterima'
                                                 : invoice.status === 'canceled'
                                                   ? 'Dibatalkan'
                                                   : invoice.status}
@@ -230,12 +240,11 @@ export default function Laporan({ invoice }: Prop) {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="border-t pt-4">
-                                                    <DialogClose asChild>
-                                                        <Button variant="outline">Batal</Button>
-                                                    </DialogClose>
-                                                    <Button type="button" onClick={handleApprove}>
-                                                        Konfirmsi Pembayaran
-                                                    </Button>
+                                                    {selectedInvoice?.status !== 'approved' && (
+                                                        <Button type="button" onClick={handleApprove}>
+                                                            Konfirmasi Pembayaran
+                                                        </Button>
+                                                    )}
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>
@@ -249,6 +258,18 @@ export default function Laporan({ invoice }: Prop) {
                                             }}
                                         >
                                             <SendIcon></SendIcon>
+                                        </Button>
+                                    )}
+                                    {(invoice.status === 'waiting' || invoice.status === 'pending') && (
+                                        <Button
+                                            variant="default"
+                                            className="bg-red-500 text-white hover:bg-red-600"
+                                            onClick={async () => {
+                                                setSelectedInvoice(invoice);
+                                                await handleCanceled();
+                                            }}
+                                        >
+                                            <Trash></Trash>
                                         </Button>
                                     )}
                                 </TableCell>

@@ -100,7 +100,7 @@ export default function VerifyPhone({ phone, name, remember }: Props) {
                 </div>
 
                 <TextLink href={route('login')} className="mx-auto block text-sm">
-                    Log out
+                    Kembali
                 </TextLink>
             </form>
         </AuthLayout>

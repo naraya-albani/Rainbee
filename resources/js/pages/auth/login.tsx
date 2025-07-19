@@ -39,6 +39,8 @@ export default function Login({ status }: LoginProps) {
                 <div className="grid gap-6">
                     <div className="grid gap-2">
                         <Label htmlFor="phone">Nomor HP</Label>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span style={{ marginRight: '8px', fontWeight: 'bold' }}>+62</span>
                         <Input
                             id="phone"
                             type="tel"
@@ -51,18 +53,10 @@ export default function Login({ status }: LoginProps) {
                             placeholder="08xxxxxxxxxx"
                         />
                         <InputError message={errors.phone} />
+                        </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                        <Checkbox
-                            id="remember"
-                            name="remember"
-                            checked={data.remember}
-                            onClick={() => setData('remember', !data.remember)}
-                            tabIndex={2}
-                        />
-                        <Label htmlFor="remember">Ingat saya</Label>
-                    </div>
+                    
 
                     <Button type="submit" className="mt-4 w-full" tabIndex={3} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

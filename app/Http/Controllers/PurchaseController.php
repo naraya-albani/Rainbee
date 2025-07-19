@@ -18,18 +18,18 @@ class PurchaseController extends Controller
 {
 
 
-    public function index()
-    {
-        $invoices = Invoice::with([
-            'cart.user', // Tambahkan relasi user dari cart
-            'cart.details.product', // Ambil produk dari detail cart
-            'address'
-        ])->latest()->get();
+    // public function index()
+    // {
+    //     $invoices = Invoice::with([
+    //         'cart.user',
+    //         'cart.details.product',
+    //         'address'
+    //     ])->latest()->get();
 
-        return inertia('Invoice/Index', [
-            'invoices' => $invoices,
-        ]);
-    }
+    //     return inertia('Invoice/Index', [
+    //         'invoices' => $invoices,
+    //     ]);
+    // }
     public function store(Request $request): RedirectResponse
     {
         $request->validate([

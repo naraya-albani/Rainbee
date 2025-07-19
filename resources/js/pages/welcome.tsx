@@ -1,3 +1,4 @@
+import AppLogo from '@/components/app-logo';
 import AppLogoIcons from '@/components/app-logo-text';
 import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -79,39 +80,30 @@ const faqs: Faq1Props = {
     items: [
         {
             id: 'faq-1',
-            question: 'What is a FAQ?',
-            answer: 'A FAQ is a list of frequently asked questions and answers on a particular topic.',
+            question: 'Apa itu Rainbee?',
+            answer: 'Rainbee adalah platform yang menyediakan produk madu alami berkualitas tinggi, langsung dari peternak lebah terpercaya ke tangan Anda.',
         },
         {
             id: 'faq-2',
-            question: 'What is the purpose of a FAQ?',
-            answer: 'The purpose of a FAQ is to provide answers to common questions and help users find the information they need quickly and easily.',
+            question: 'Apakah madu Rainbee asli dan murni?',
+            answer: 'Ya. Semua produk Rainbee 100% madu murni tanpa campuran bahan kimia, pemanis buatan, atau pengawet.',
         },
         {
             id: 'faq-3',
-            question: 'How do I create a FAQ?',
-            answer: 'To create a FAQ, you need to compile a list of common questions and answers on a particular topic and organize them in a clear and easy-to-navigate format.',
+            question: 'Dari mana asal madu Rainbee?',
+            answer: 'Madu kami berasal dari peternakan lebah alami di wilayah Bondowoso, Pentung.',
         },
         {
             id: 'faq-4',
-            question: 'What are the benefits of a FAQ?',
-            answer: 'The benefits of a FAQ include providing quick and easy access to information, reducing the number of support requests, and improving the overall user experience.',
+            question: 'Bagaimana cara memesan produk Rainbee?',
+            answer: 'Anda bisa memesan langsung melalui website kami di bagian Produk. Pilih varian madu, lalu ikuti proses checkout.',
         },
         {
             id: 'faq-5',
-            question: 'How should I organize my FAQ?',
-            answer: 'You should organize your FAQ in a logical manner, grouping related questions together and ordering them from most basic to more advanced topics.',
+            question: 'Apakah Rainbee memiliki sertifikasi?',
+            answer: 'Produk Rainbee sudah melalui proses uji laboratorium dan memiliki sertifikasi resmi dari BPOM dan halal MUI.',
         },
-        {
-            id: 'faq-6',
-            question: 'How long should FAQ answers be?',
-            answer: 'FAQ answers should be concise and to the point, typically a few sentences or a short paragraph is sufficient for most questions.',
-        },
-        {
-            id: 'faq-7',
-            question: 'Should I include links in my FAQ?',
-            answer: 'Yes, including links to more detailed information or related resources can be very helpful for users who want to learn more about a particular topic.',
-        },
+
     ],
 };
 
@@ -261,6 +253,7 @@ export default function Welcome({ auth, product }: Props) {
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
+
                             <span className="hidden text-xl font-bold text-[#f59e0b] sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
@@ -625,7 +618,7 @@ export default function Welcome({ auth, product }: Props) {
                     </div>
                 </section>
 
-                <section id="faq" className="p-4 py-32 sm:p-6 lg:p-8">
+                <section id="faq" className="p-4 py-32 sm:p-6 lg:p-8 scroll-mt-24">
                     <div className="container mx-auto min-h-screen max-w-3xl">
                         <h1 className="mb-4 text-3xl font-semibold text-[#ffa407] md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
@@ -638,7 +631,7 @@ export default function Welcome({ auth, product }: Props) {
                         </Accordion>
                     </div>
                 </section>
-                <section id="kontak" className="bg-background p-4 py-32 sm:p-6 lg:p-8">
+                <section id="kontak" className="bg-background p-4 py-32 sm:p-6 lg:p-8 scroll-mt-24">
                     <div className="container mx-auto">
                         <div className="mb-14">
                             <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>
