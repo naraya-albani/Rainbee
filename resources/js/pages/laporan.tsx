@@ -41,6 +41,8 @@ export default function Laporan({ invoice }: Prop) {
 
     const filteredInvoices = statusFilter === 'all' ? invoice : invoice.filter((invoice) => invoice.status === statusFilter);
 
+    const sortedInvoices = [...filteredInvoices].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
     const handleApprove = async () => {
         if (!selectedInvoice) return;
         try {
@@ -65,17 +67,7 @@ export default function Laporan({ invoice }: Prop) {
         }
     };
 
-    const handleCanceled = async () => {
-        if (!selectedInvoice) return;
-        try {
-            await axios.post(`/purchase/${selectedInvoice.id}`, { status: 'canceled' }, { headers: { 'Content-Type': 'application/json' } });
-            toast.error('Pesanan dibatalkan');
-            setDialogOpen(false);
-            window.location.reload();
-        } catch (err) {
-            console.error('Gagal mengubah status' + err);
-        }
-    };
+    
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -102,18 +94,17 @@ export default function Laporan({ invoice }: Prop) {
                     </Select>
                 </div>
                 <Table>
-                    <TableCaption>A list of your recent invoices.</TableCaption>
+                    <TableCaption>Seluruh Invoice yang masuk.</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">No Invoice</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Total</TableHead>
-
                             <TableHead className="flex justify-center">Detail</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredInvoices.map((invoice) => (
+                        {sortedInvoices.map((invoice) => (
                             <TableRow key={invoice.id}>
                                 <TableCell className="font-medium">{invoice.id}</TableCell>
                                 <TableCell>
@@ -240,11 +231,12 @@ export default function Laporan({ invoice }: Prop) {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="border-t pt-4">
-                                                    {selectedInvoice?.status !== 'approved' && (
-                                                        <Button type="button" onClick={handleApprove}>
-                                                            Konfirmasi Pembayaran
-                                                        </Button>
-                                                    )}
+                                                    {selectedInvoice?.status === 'pending' ||
+                                                        (selectedInvoice?.status === 'waiting' && (
+                                                            <Button type="button" onClick={handleApprove}>
+                                                                Konfirmasi Pembayaran
+                                                            </Button>
+                                                        ))}
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>
@@ -265,11 +257,18 @@ export default function Laporan({ invoice }: Prop) {
                                             variant="default"
                                             className="bg-red-500 text-white hover:bg-red-600"
                                             onClick={async () => {
-                                                setSelectedInvoice(invoice);
-                                                await handleCanceled();
+                                                await axios.post(
+                                                    `/purchase/${invoice.id}`,
+                                                    { status: 'canceled' },
+                                                    {
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                    },
+                                                );
+                                                toast.error('Pesanan dibatalkan');
+                                                window.location.reload();
                                             }}
                                         >
-                                            <Trash></Trash>
+                                            <Trash />
                                         </Button>
                                     )}
                                 </TableCell>

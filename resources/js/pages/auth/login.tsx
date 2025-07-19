@@ -52,11 +52,12 @@ export default function Login({ status }: LoginProps) {
                             onChange={(e) => setData('phone', e.target.value)}
                             placeholder="08xxxxxxxxxx"
                         />
-                        <InputError message={errors.phone} />
                         </div>
+                        <InputError message={errors.phone} />
+
                     </div>
 
-                    
+
 
                     <Button type="submit" className="mt-4 w-full" tabIndex={3} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

@@ -274,8 +274,14 @@ export default function Addproduk() {
                                 </DialogFooter>
                             </form>
                         </DialogContent>
-                    </Dialog>
-                    <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                    </Dialog >
+                    <Dialog open={editDialogOpen}
+                        onOpenChange={(isOpen) => {
+                            setEditDialogOpen(isOpen);
+                            if (!isOpen) {
+                                resetForm();
+                            }
+                        }}>
                         <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
                             <form onSubmit={handleUpdate}>
                                 <DialogHeader>
