@@ -67,7 +67,7 @@ export default function Laporan({ invoice }: Prop) {
         }
     };
 
-    
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -231,12 +231,11 @@ export default function Laporan({ invoice }: Prop) {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="border-t pt-4">
-                                                    {selectedInvoice?.status === 'pending' ||
-                                                        (selectedInvoice?.status === 'waiting' && (
+                                                    {(selectedInvoice?.status === 'pending' || selectedInvoice?.status === 'waiting') && (
                                                             <Button type="button" onClick={handleApprove}>
                                                                 Konfirmasi Pembayaran
                                                             </Button>
-                                                        ))}
+                                                        )}
                                                 </DialogFooter>
                                             </DialogContent>
                                         </form>
