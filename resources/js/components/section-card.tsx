@@ -59,7 +59,6 @@ export function SectionCards() {
                     daysArr.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }));
                 }
 
-
                 const chartArr = daysArr.map((day) => ({
                     day,
                     claimed: grouped[day] || 0,
@@ -102,15 +101,17 @@ export function SectionCards() {
                     <CardDescription>Statistik Penjualan selama satu minggu</CardDescription>
                 </CardHeader>
                 <CardContent>
+                    <div className="h-64">
                     <ResponsiveContainer width="100%" height={250}>
                         <BarChart data={chartData}>
                             <XAxis dataKey="day" />
-                            <YAxis />
+                            <YAxis domain={[0, 'dataMax + 1']} />
                             <Tooltip />
                             <Legend />
                             <Bar dataKey="claimed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Invoice Claimed" />
                         </BarChart>
                     </ResponsiveContainer>
+                    </div>
                 </CardContent>
             </Card>
         </div>
