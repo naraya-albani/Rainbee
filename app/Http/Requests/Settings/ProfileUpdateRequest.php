@@ -22,7 +22,7 @@ class ProfileUpdateRequest extends FormRequest
             'phone' => [
                 'required',
                 'string',
-                'regex:/^628\d{8,12}$/',
+                'regex:/^8\d{10,14}$/',
                 'max:15',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],

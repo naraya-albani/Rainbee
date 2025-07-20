@@ -102,7 +102,7 @@ class PurchaseController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'receipt' => 'nullable|image|max:2048',
+            'receipt' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'nullable|string|in:waiting,approved,sending,claimed,canceled',
         ]);
 

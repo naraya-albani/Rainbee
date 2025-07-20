@@ -1,3 +1,4 @@
+import InputError from '@/components/input-error';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,8 +16,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { Invoice, SharedData, BreadcrumbItem as TypeBreadcrumbItem } from '@/types';
-import { Head, router, useForm, usePage } from '@inertiajs/react';
+import { Invoice, BreadcrumbItem as TypeBreadcrumbItem } from '@/types';
+import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { Ban, SlashIcon, SquareArrowOutUpRight } from 'lucide-react';
 import { useState } from 'react';
@@ -34,14 +35,13 @@ const breadcrumbs: TypeBreadcrumbItem[] = [
 ];
 
 export default function Riwayat({ invoices }: Prop) {
-    const { auth } = usePage<SharedData>().props;
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
     const filteredInvoices = statusFilter ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
 
-    const { data, setData } = useForm<{
+    const { data, setData, errors } = useForm<{
         receipt: File | null;
     }>({
         receipt: null,
@@ -78,7 +78,6 @@ export default function Riwayat({ invoices }: Prop) {
                 router.visit('/riwayat');
             } catch (error) {
                 console.error('Upload gagal:', error);
-                alert('Gagal mengunggah bukti');
             }
         } else if (action === 'claimed') {
             const formData = new FormData();
@@ -90,7 +89,6 @@ export default function Riwayat({ invoices }: Prop) {
                 router.visit('/riwayat');
             } catch (error) {
                 console.error('Upload gagal:', error);
-                alert('Gagal menerima produk');
             }
         }
     };
@@ -156,7 +154,7 @@ export default function Riwayat({ invoices }: Prop) {
                         <TableCaption>Seluruh Pesanan anda.</TableCaption>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">No. Invoice</TableHead>
+                                <TableHead className="w-[100px]">Waktu</TableHead>
                                 <TableHead>Produk</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Total</TableHead>
@@ -166,7 +164,17 @@ export default function Riwayat({ invoices }: Prop) {
                         <TableBody>
                             {filteredInvoices.map((invoice) => (
                                 <TableRow key={invoice.id}>
-                                    <TableCell className="font-medium">{invoice.id}</TableCell>
+                                    <TableCell className="font-medium">
+                                        {new Date(invoice.created_at).toLocaleString('id-ID', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            timeZone: 'Asia/Jakarta',
+                                            hour12: false,
+                                        })}
+                                    </TableCell>
                                     <TableCell>
                                         <ul className="space-y-1">
                                             {invoice.cart.details.map((item, idx) => (
@@ -212,9 +220,24 @@ export default function Riwayat({ invoices }: Prop) {
                                                             <main className="flex-1 space-y-6 overflow-y-auto p-6">
                                                                 <Card>
                                                                     <CardHeader className="mt-2">
-                                                                        <CardTitle>Detail Pelanggan</CardTitle>
+                                                                        <CardTitle>Detail</CardTitle>
                                                                     </CardHeader>
                                                                     <CardContent className="mb-2 space-y-2">
+                                                                        <div>
+                                                                            <span className="font-semibold">Waktu Pemesanan</span>
+                                                                            <p>
+                                                                                Tanggal{' '}
+                                                                                {new Date(invoice.created_at).toLocaleString('id-ID', {
+                                                                                    day: 'numeric',
+                                                                                    month: 'long',
+                                                                                    year: 'numeric',
+                                                                                    hour: '2-digit',
+                                                                                    minute: '2-digit',
+                                                                                    timeZone: 'Asia/Jakarta',
+                                                                                    hour12: false,
+                                                                                })}
+                                                                            </p>
+                                                                        </div>
                                                                         <div>
                                                                             <span className="font-semibold">Nama Pengirim</span>
                                                                             <p>{invoice.cart.user.name}</p>
@@ -315,12 +338,16 @@ export default function Riwayat({ invoices }: Prop) {
                                                         {invoice.status === 'pending' && (
                                                             <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
                                                                 <Label>Unggah Bukti Pembayaran</Label>
+                                                                <InputError
+                                                                    message={errors.receipt && 'Nomor HP belum terdaftar atau tidak sesuai format'}
+                                                                />
                                                                 <input
                                                                     className="rounded-xl border-2"
                                                                     type="file"
                                                                     accept="image/*"
                                                                     onChange={handleImageChange}
                                                                 />
+
                                                                 {preview && (
                                                                     <>
                                                                         <img src={preview} className="w-48 rounded object-contain" />

@@ -1,4 +1,5 @@
 import AppLogoIcons from '@/components/app-logo-text';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -18,7 +19,7 @@ type Prop = {
 export default function Purchase({ invoice }: Prop) {
     const [preview, setPreview] = useState<string | null>(null);
 
-    const { data, setData, processing } = useForm<{
+    const { data, setData, processing, errors } = useForm<{
         receipt: File | null;
     }>({
         receipt: null,
@@ -60,8 +61,19 @@ export default function Purchase({ invoice }: Prop) {
             <header className="sticky top-0 z-10 flex items-center justify-between border-b p-6">
                 <AppLogoIcons className="h-8" />
                 <div>
-                    <h2 className="text-xl font-semibold">Invoice #INV001</h2>
-                    <p className="text-gray-500">Tanggal: 12/12/2023</p>
+                    <h2 className="text-xl font-semibold">Invoice {invoice.id}</h2>
+                    <p className="text-gray-500">
+                        Tanggal{' '}
+                        {new Date(invoice.created_at).toLocaleString('id-ID', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: 'Asia/Jakarta',
+                            hour12: false,
+                        })}
+                    </p>
                 </div>
             </header>
 
@@ -151,37 +163,42 @@ export default function Purchase({ invoice }: Prop) {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Dialog>
-                            <div className="w-full">
-                                <DialogTrigger asChild className="w-full">
-                                    <Button className="w-full">Bayar</Button>
-                                </DialogTrigger>
-                            </div>
-                            <DialogContent className="max-h-screen">
-                                <DialogHeader>
-                                    <DialogTitle>Bukti Pembayaran</DialogTitle>
-                                    <DialogDescription>Kirim Bukti Pembayaran disini.</DialogDescription>
-                                </DialogHeader>
-                                <form onSubmit={handleSubmit}>
-                                    <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
-                                        <div className="flex w-full flex-col items-center gap-3">
-                                            <Label className="text-lg font-semibold">Upload Bukti Pembayaran</Label>
-                                            <input type="file" name="receipt" accept="image/*" onChange={handleImageChange} />
-                                            {preview && <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />}
-                                            <Button type="submit" disabled={processing}>
-                                                Kirim Gambar
-                                            </Button>
+                        {invoice.status === 'pending' && (
+                            <Dialog>
+                                <div className="w-full">
+                                    <DialogTrigger asChild className="w-full">
+                                        <Button className="w-full">Bayar</Button>
+                                    </DialogTrigger>
+                                </div>
+                                <DialogContent className="max-h-screen">
+                                    <DialogHeader>
+                                        <DialogTitle>Bukti Pembayaran</DialogTitle>
+                                        <DialogDescription>Kirim Bukti Pembayaran disini.</DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
+                                            <div className="flex w-full flex-col items-center gap-3">
+                                                <Label className="text-lg font-semibold">Upload Bukti Pembayaran</Label>
+                                                <input type="file" name="receipt" accept="image/*" onChange={handleImageChange} />
+                                                <InputError message={errors.receipt} />
+                                                {preview && <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />}
+                                                <Button type="submit" disabled={processing}>
+                                                    Kirim Gambar
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
+                                    </form>
+                                </DialogContent>
+                            </Dialog>
+                        )}
                     </div>
-                    <Link href="/riwayat" className="w-full">
-                        <Button variant="outline" className="w-full">
-                            Batal
-                        </Button>
-                    </Link>
+                    {invoice.status === 'pending' && (
+                        <Link href="/riwayat" className="w-full">
+                            <Button variant="outline" className="w-full">
+                                Batal
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>

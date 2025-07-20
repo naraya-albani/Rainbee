@@ -29,9 +29,11 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
 
-        $request->user()->save();
+        $validated['phone'] = '62' . $validated['phone'];
+
+        $request->user()->fill($validated)->save();
 
         return to_route('profile.edit');
     }

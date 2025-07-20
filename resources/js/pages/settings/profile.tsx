@@ -29,7 +29,7 @@ export default function Profile() {
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
         name: auth.user.name,
-        phone: auth.user.phone,
+        phone: auth.user.phone.replace(/^62/, ''),
     });
 
     const submit: FormEventHandler = (e) => {

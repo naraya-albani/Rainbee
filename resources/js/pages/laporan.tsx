@@ -151,6 +151,18 @@ export default function Laporan({ invoice }: Prop) {
                                                                 </CardHeader>
                                                                 <CardContent className="mb-2 space-y-2">
                                                                     <p>{selectedInvoice?.cart?.user?.name ?? '-'}</p>
+                                                                    <p>
+                                                                        Tanggal{' '}
+                                                                        {new Date(invoice.created_at).toLocaleString('id-ID', {
+                                                                            day: 'numeric',
+                                                                            month: 'long',
+                                                                            year: 'numeric',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                            timeZone: 'Asia/Jakarta',
+                                                                            hour12: false,
+                                                                        })}
+                                                                    </p>
                                                                     <div>
                                                                         <span className="font-semibold">Alamat Pengiriman:</span>
                                                                         <p>
