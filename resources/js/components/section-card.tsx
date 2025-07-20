@@ -17,6 +17,7 @@ export function SectionCards() {
     const [items, setItems] = useState<PurchaseItem[]>([]);
     const [pendingInvoiceCount, setPendingInvoiceCount] = useState(0);
     const [chartData, setChartData] = useState<any[]>([]);
+    const [claimedInvoiceCount, setClaimedInvoiceCount] = useState(0);
 
     useEffect(() => {
         fetch('/api/purchase', {
@@ -31,6 +32,8 @@ export function SectionCards() {
                 const claimedInvoices = data.filter((item: PurchaseItem) => item.status === 'claimed');
 
                 setPendingInvoiceCount(data.filter((item: PurchaseItem) => item.status === 'pending').length);
+
+                setClaimedInvoiceCount(data.filter((item: PurchaseItem) => item.status === 'claimed').length);
 
                 //hari ini
                 const today = new Date();
@@ -80,17 +83,17 @@ export function SectionCards() {
                         <CardTitle className="text-2xl font-semibold text-[#f59e0b] tabular-nums">{pendingInvoiceCount}</CardTitle>
                     </CardHeader>
                     <CardFooter className="mb-2 flex-col items-start gap-1.5 text-sm">
-                        <div className="text-muted-foreground">Visitors for the last 6 months</div>
+                        <div className="text-muted-foreground">Seluruh pesanan menunggu konfirmasi</div>
                     </CardFooter>
                 </Card>
 
                 <Card className="flex-1">
                     <CardHeader className="mt-2">
                         <CardDescription className="font-bold">Total produk terjual</CardDescription>
-                        <CardTitle className="text-2xl font-semibold text-[#f59e0b] tabular-nums">{items.length}</CardTitle>
+                        <CardTitle className="text-2xl font-semibold text-[#f59e0b] tabular-nums">{claimedInvoiceCount}</CardTitle>
                     </CardHeader>
                     <CardFooter className="mb-2 flex-col items-start gap-1.5 text-sm">
-                        <div className="text-muted-foreground">Acquisition needs attention</div>
+                        <div className="text-muted-foreground">Total produk yang sudah terjual</div>
                     </CardFooter>
                 </Card>
             </div>
@@ -102,15 +105,15 @@ export function SectionCards() {
                 </CardHeader>
                 <CardContent>
                     <div className="h-64">
-                    <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={chartData}>
-                            <XAxis dataKey="day" />
-                            <YAxis domain={[0, 'dataMax + 1']} />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="claimed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Invoice Claimed" />
-                        </BarChart>
-                    </ResponsiveContainer>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={chartData}>
+                                <XAxis dataKey="day" />
+                                <YAxis domain={[0, 'dataMax + 1']} />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="claimed" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Produk terjual" />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </CardContent>
             </Card>
