@@ -14,8 +14,9 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Invoice } from '@/types';
-import { Head, router, useForm } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { Invoice, SharedData, BreadcrumbItem as TypeBreadcrumbItem } from '@/types';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { Ban, SlashIcon, SquareArrowOutUpRight } from 'lucide-react';
 import { useState } from 'react';
@@ -25,14 +26,22 @@ type Prop = {
     invoices: Invoice[];
 };
 
+const breadcrumbs: TypeBreadcrumbItem[] = [
+    {
+        title: 'Riwayat Pemesanan',
+        href: '/riwayat',
+    },
+];
+
 export default function Riwayat({ invoices }: Prop) {
+    const { auth } = usePage<SharedData>().props;
     const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
     const filteredInvoices = statusFilter ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
 
-    const { data, setData, processing } = useForm<{
+    const { data, setData } = useForm<{
         receipt: File | null;
     }>({
         receipt: null,
@@ -108,7 +117,7 @@ export default function Riwayat({ invoices }: Prop) {
     };
 
     return (
-        <>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Riwayat Pemesanan" />
             <div className="grid min-h-screen gap-6 p-6">
                 <div className="space-y-4 md:col-span-2">
@@ -392,6 +401,6 @@ export default function Riwayat({ invoices }: Prop) {
                     </Table>
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }

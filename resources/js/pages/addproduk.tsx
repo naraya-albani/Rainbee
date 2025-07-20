@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Tambah produk',
+        title: 'Produk',
         href: '/produk',
     },
 ];
@@ -183,10 +183,10 @@ export default function Addproduk() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Addproduk" />
+            <Head title="Produk" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Tambah Produk</h2>
+                    <h2 className="text-2xl font-bold">Produk</h2>
                     <Dialog
                         open={addDialogOpen}
                         onOpenChange={(isOpen) => {
@@ -231,7 +231,7 @@ export default function Addproduk() {
                                                 value={description}
                                                 onChange={(e) => setDescription(e.target.value)}
                                             />
-                                            <Label className="font-bold">Variant</Label>
+                                            <Label className="font-bold">Ukuran</Label>
                                             <div className="flex items-center gap-2">
                                                 <Input
                                                     type="number"
@@ -274,14 +274,16 @@ export default function Addproduk() {
                                 </DialogFooter>
                             </form>
                         </DialogContent>
-                    </Dialog >
-                    <Dialog open={editDialogOpen}
+                    </Dialog>
+                    <Dialog
+                        open={editDialogOpen}
                         onOpenChange={(isOpen) => {
                             setEditDialogOpen(isOpen);
                             if (!isOpen) {
                                 resetForm();
                             }
-                        }}>
+                        }}
+                    >
                         <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
                             <form onSubmit={handleUpdate}>
                                 <DialogHeader>
@@ -310,7 +312,7 @@ export default function Addproduk() {
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
                                         />
-                                        <Label className="font-bold">Variant</Label>
+                                        <Label className="font-bold">Ukuran</Label>
                                         <div className="flex items-center gap-2">
                                             <Input
                                                 type="number"
@@ -360,7 +362,7 @@ export default function Addproduk() {
                         <TableRow>
                             <TableHead>Nama Produk</TableHead>
                             <TableHead>Deskripsi</TableHead>
-                            <TableHead>Variant</TableHead>
+                            <TableHead>Ukuran</TableHead>
                             <TableHead>Stok</TableHead>
                             <TableHead className="text-center">Edit</TableHead>
                         </TableRow>

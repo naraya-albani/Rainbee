@@ -24,8 +24,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('produk/{id}', [ProdukController::class, 'update'])->name('produk.update');
         Route::delete('produk/{id}', [ProdukController::class, 'destroy'])->name('produk.destroy');
         
-
-
         Route::get('laporan', function () {
             $invoices = Invoice::
                 with([
@@ -60,7 +58,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             }
 
             return inertia('keranjang', [
-                'user' => $user,
                 'cart' => $cart
             ]);
         })->name('keranjang');
@@ -107,7 +104,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             return inertia('invoice', ['invoice' => $invoice]);
         })->name('invoice');
-
     });
 
     Route::middleware('checkrole:admin,user')->group(function () {

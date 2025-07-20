@@ -1,4 +1,3 @@
-import AppLogo from '@/components/app-logo';
 import AppLogoIcons from '@/components/app-logo-text';
 import QuantitySelector from '@/components/incrementDecrementBtn';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -9,7 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { Auth, CartForm, Product } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { History, LogOut, Mail, Phone, ShoppingCart, User } from 'lucide-react';
+import { History, LogOut, Mail, Phone, Settings, ShoppingCart, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 import { toast } from 'sonner';
@@ -103,7 +102,6 @@ const faqs: Faq1Props = {
             question: 'Apakah Rainbee memiliki sertifikasi?',
             answer: 'Produk Rainbee sudah melalui proses uji laboratorium dan memiliki sertifikasi resmi dari BPOM dan halal MUI.',
         },
-
     ],
 };
 
@@ -253,7 +251,6 @@ export default function Welcome({ auth, product }: Props) {
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
-
                             <span className="hidden text-xl font-bold text-[#f59e0b] sm:inline">{import.meta.env.VITE_APP_NAME}</span>
                         </a>
 
@@ -320,6 +317,12 @@ export default function Welcome({ auth, product }: Props) {
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>
+                                                    <Link href={route('profile.edit')}>
+                                                        <Settings />
+                                                        Pengaturan
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild>
                                                     <Link
                                                         className="block w-full"
                                                         method="post"
@@ -328,7 +331,7 @@ export default function Welcome({ auth, product }: Props) {
                                                         onClick={handleLogout}
                                                     >
                                                         <LogOut />
-                                                        Log out
+                                                        Keluar
                                                     </Link>
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
@@ -341,7 +344,7 @@ export default function Welcome({ auth, product }: Props) {
                                         href={route('login')}
                                         className="inline-block rounded-sm border border-[#f59e0b] px-5 py-1.5 text-sm leading-normal text-white hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                                     >
-                                        Log in
+                                        Login
                                     </Link>
                                     <Link
                                         href={route('register')}
@@ -618,7 +621,7 @@ export default function Welcome({ auth, product }: Props) {
                     </div>
                 </section>
 
-                <section id="faq" className="p-4 py-32 sm:p-6 lg:p-8 scroll-mt-24">
+                <section id="faq" className="scroll-mt-24 p-4 py-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto min-h-screen max-w-3xl">
                         <h1 className="mb-4 text-3xl font-semibold text-[#ffa407] md:mb-11 md:text-4xl">{faqs.heading}</h1>
                         <Accordion type="single" collapsible>
@@ -631,7 +634,7 @@ export default function Welcome({ auth, product }: Props) {
                         </Accordion>
                     </div>
                 </section>
-                <section id="kontak" className="bg-background p-4 py-32 sm:p-6 lg:p-8 scroll-mt-24">
+                <section id="kontak" className="scroll-mt-24 bg-background p-4 py-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <div className="mb-14">
                             <h1 className="mt-2 mb-3 text-3xl font-semibold text-[#f59e0b] md:text-4xl">{contact.title}</h1>

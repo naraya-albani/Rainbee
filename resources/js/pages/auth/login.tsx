@@ -5,7 +5,6 @@ import { FormEventHandler } from 'react';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
@@ -33,7 +32,7 @@ export default function Login({ status }: LoginProps) {
 
     return (
         <AuthLayout title="Selamat datang di Rainbee" description="Masukkan nomor HP untuk melanjutkan">
-            <Head title="Log in" />
+            <Head title="Login" />
 
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
@@ -41,23 +40,26 @@ export default function Login({ status }: LoginProps) {
                         <Label htmlFor="phone">Nomor HP</Label>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <span style={{ marginRight: '8px', fontWeight: 'bold' }}>+62</span>
-                        <Input
-                            id="phone"
-                            type="tel"
-                            required
-                            autoFocus
-                            tabIndex={1}
-                            autoComplete="tel"
-                            value={data.phone}
-                            onChange={(e) => setData('phone', e.target.value)}
-                            placeholder="08xxxxxxxxxx"
-                        />
+                            <Input
+                                id="phone"
+                                type="tel"
+                                required
+                                autoFocus
+                                tabIndex={1}
+                                autoComplete="tel"
+                                value={data.phone}
+                                onChange={(e) => {
+                                    const numericValue = e.target.value.replace(/\D/g, '');
+
+                                    if (numericValue.length <= 13) {
+                                        setData('phone', numericValue);
+                                    }
+                                }}
+                                placeholder="8xxxxxxxxxx"
+                            />
                         </div>
-                        <InputError message={errors.phone} />
-
+                        <InputError message={errors.phone && 'Nomor HP belum terdaftar atau tidak sesuai format'} />
                     </div>
-
-
 
                     <Button type="submit" className="mt-4 w-full" tabIndex={3} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

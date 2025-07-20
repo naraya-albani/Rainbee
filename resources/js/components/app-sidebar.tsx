@@ -2,9 +2,9 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { FileIcon, LayoutGrid, PlusCircle } from 'lucide-react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
+import { Archive, FileIcon, History, LayoutGrid, ShoppingCart } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -12,33 +12,40 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+        role: 'admin',
     },
     {
-        title: 'Tambah produk',
+        title: 'Produk',
         href: '/produk',
-        icon: PlusCircle,
+        icon: Archive,
+        role: 'admin',
     },
     {
         title: 'Laporan',
         href: '/laporan',
         icon: FileIcon,
+        role: 'admin',
+    },
+    {
+        title: 'Keranjang',
+        href: '/keranjang',
+        icon: ShoppingCart,
+        role: 'user',
+    },
+    {
+        title: 'Riwayat',
+        href: '/riwayat',
+        icon: History,
+        role: 'user',
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    // {
-    //     title: 'Repository',
-    //     href: 'https://github.com/laravel/react-starter-kit',
-    //     icon: Folder,
-    // },
-    // {
-    //     title: 'Documentation',
-    //     href: 'https://laravel.com/docs/starter-kits#react',
-    //     icon: BookOpen,
-    // },
-];
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const filteredMainNav = mainNavItems.filter((item) => item.role === auth.user.role);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -54,7 +61,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredMainNav} />
             </SidebarContent>
 
             <SidebarFooter>

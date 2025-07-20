@@ -1,4 +1,5 @@
 import QuantitySelector from '@/components/incrementDecrementBtn';
+import InputError from '@/components/input-error';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,11 +15,19 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Auth, Cart } from '@/types';
-import { Head, router, useForm } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { Auth, Cart, SharedData, BreadcrumbItem as TypeBreadcrumbItem } from '@/types';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { SlashIcon, Trash } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
+const breadcrumbs: TypeBreadcrumbItem[] = [
+    {
+        title: 'Keranjang',
+        href: '/keranjang',
+    },
+];
 
 type Props = {
     auth: Auth;
@@ -55,7 +64,8 @@ interface District {
     name: string;
 }
 
-export default function Keranjang({ auth, cart }: Props) {
+export default function Keranjang({ cart }: Props) {
+    const { auth } = usePage<SharedData>().props;
     const [provinsi, setProvinsi] = useState<Province[]>([]);
     const [kabupaten, setKabupaten] = useState<Regency[]>([]);
     const [kecamatan, setKecamatan] = useState<District[]>([]);
@@ -148,10 +158,6 @@ export default function Keranjang({ auth, cart }: Props) {
             onSuccess: () => {
                 toast.success('Berhasil dikirim!');
             },
-            onError: (err) => {
-                console.log(err);
-                toast.error('Gagal mengirim:', err);
-            },
         });
     };
 
@@ -202,7 +208,7 @@ export default function Keranjang({ auth, cart }: Props) {
     }, [selectedKabupaten]);
 
     return (
-        <>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Keranjang" />
             <div className="grid min-h-screen grid-cols-1 gap-6 p-6 md:grid-cols-3">
                 <div className="space-y-4 md:col-span-2">
@@ -272,8 +278,8 @@ export default function Keranjang({ auth, cart }: Props) {
                                         <Button>Beli Sekarang</Button>
                                     </DialogTrigger>
                                 )}
-                                <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
-                                    <form onSubmit={handleSubmit}>
+                                <DialogContent className="flex h-[90vh] flex-col sm:max-w-[1080px]">
+                                    <form onSubmit={handleSubmit} className="flex flex-1 flex-col overflow-hidden">
                                         <DialogHeader>
                                             <DialogTitle>Konfirmasi Pemesanan</DialogTitle>
                                             <DialogDescription>Jangan lupa cek kembali pesanan Anda sebelum melakukan pembayaran</DialogDescription>
@@ -287,6 +293,7 @@ export default function Keranjang({ auth, cart }: Props) {
                                                     value={data.address.address_line}
                                                     onChange={(e) => setData('address', { ...data.address, address_line: e.target.value })}
                                                 />
+                                                <InputError message={errors['address.address_line' as keyof typeof errors]} />
                                                 <Label className="font-bold">Provinsi</Label>
                                                 <select
                                                     className="w-full rounded border p-2"
@@ -312,6 +319,7 @@ export default function Keranjang({ auth, cart }: Props) {
                                                         </option>
                                                     ))}
                                                 </select>
+                                                <InputError message={errors['address.state' as keyof typeof errors]} />
 
                                                 <Label className="font-bold">Kab/Kota</Label>
                                                 <select
@@ -338,6 +346,8 @@ export default function Keranjang({ auth, cart }: Props) {
                                                         </option>
                                                     ))}
                                                 </select>
+                                                <InputError message={errors['address.city' as keyof typeof errors]} />
+
                                                 <Label className="font-bold">Kecamatan</Label>
                                                 <select
                                                     className="w-full rounded border p-2"
@@ -362,6 +372,8 @@ export default function Keranjang({ auth, cart }: Props) {
                                                         </option>
                                                     ))}
                                                 </select>
+                                                <InputError message={errors['address.district' as keyof typeof errors]} />
+
                                                 <Label className="font-bold">Masukkan kode posmu</Label>
                                                 <Input
                                                     placeholder="Kode pos"
@@ -373,6 +385,8 @@ export default function Keranjang({ auth, cart }: Props) {
                                                         }
                                                     }}
                                                 />
+                                                <InputError message={errors['address.postal_code' as keyof typeof errors]} />
+
                                                 <Label className="font-bold">Masukkan nomor telepon</Label>
                                                 <Input
                                                     placeholder="Nomor telepon"
@@ -384,8 +398,9 @@ export default function Keranjang({ auth, cart }: Props) {
                                                         }
                                                     }}
                                                 />
+                                                <InputError message={errors['address.phone_number' as keyof typeof errors]} />
                                             </div>
-                                            <div className="grid w-full gap-4 lg:w-1/2">
+                                            <div className="flex max-h-[60vh] w-full flex-col gap-4 overflow-y-auto pr-2 lg:w-1/2">
                                                 {cart.details.map((item) => (
                                                     <Card key={item.product.id} className="relative">
                                                         <CardContent className="flex items-start gap-4 py-4">
@@ -396,7 +411,11 @@ export default function Keranjang({ auth, cart }: Props) {
                                                             />
                                                             <div className="flex-1">
                                                                 <p className="text-lg">{item.product.name}</p>
-                                                                <p className="text-sm">{item.product.size} ml</p>
+                                                                <div className="flex items-center gap-1">
+                                                                    <p className="text-sm text-muted-foreground">{item.product.size} ml</p>
+                                                                    <p>|</p>
+                                                                    <p className="text-sm text-muted-foreground">{item.quantity} pcs</p>
+                                                                </div>
                                                                 <div className="mt-2">
                                                                     <p className="text-lg font-bold text-[#f59e0b]">
                                                                         Rp{new Intl.NumberFormat('id-ID').format(item.product.price * item.quantity)}
@@ -408,7 +427,7 @@ export default function Keranjang({ auth, cart }: Props) {
                                                 ))}
                                             </div>
                                         </div>
-                                        <DialogFooter>
+                                        <DialogFooter className="border-t pt-4">
                                             <DialogClose asChild>
                                                 <Button variant="outline">Batal</Button>
                                             </DialogClose>
@@ -423,6 +442,6 @@ export default function Keranjang({ auth, cart }: Props) {
                     </Card>
                 </div>
             </div>
-        </>
+        </AppLayout>
     );
 }

@@ -20,6 +20,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    role?: string;
 }
 
 export interface SharedData {
@@ -41,6 +42,7 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
     phone: string;
+    role: string;
 }
 
 export interface Invoice {

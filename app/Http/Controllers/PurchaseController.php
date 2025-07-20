@@ -11,25 +11,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
-
-
-    // public function index()
-    // {
-    //     $invoices = Invoice::with([
-    //         'cart.user',
-    //         'cart.details.product',
-    //         'address'
-    //     ])->latest()->get();
-
-    //     return inertia('Invoice/Index', [
-    //         'invoices' => $invoices,
-    //     ]);
-    // }
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
