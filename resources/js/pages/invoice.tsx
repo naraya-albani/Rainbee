@@ -127,26 +127,28 @@ export default function Purchase({ invoice }: Prop) {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader className="mt-2">
-                            <CardTitle>Pembayaran</CardTitle>
-                        </CardHeader>
-                        <CardContent className="mb-2 space-y-2">
-                            <div>
-                                <span className="font-semibold">Bank:</span>
-                                <p>BCA</p>
-                            </div>
-                            <div>
-                                <span className="font-semibold">No Rekening:</span>
-                                <p>02397489289748</p>
-                            </div>
-                            <div>
-                                <span className="font-semibold">Atas Nama:</span>
-                                <p>Rainbee</p>
-                            </div>
-                            <p className="font-black">Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja di Rainbee!</p>
-                        </CardContent>
-                    </Card>
+                    {invoice.status === 'pending' && (
+                        <Card>
+                            <CardHeader className="mt-2">
+                                <CardTitle>Pembayaran</CardTitle>
+                            </CardHeader>
+                            <CardContent className="mb-2 space-y-2">
+                                <div>
+                                    <span className="font-semibold">Bank:</span>
+                                    <p>BCA</p>
+                                </div>
+                                <div>
+                                    <span className="font-semibold">No Rekening:</span>
+                                    <p>02397489289748</p>
+                                </div>
+                                <div>
+                                    <span className="font-semibold">Atas Nama:</span>
+                                    <p>Rainbee</p>
+                                </div>
+                                <p className="font-black">Mohon konfirmasi setelah melakukan pembayaran. Terima kasih telah berbelanja di Rainbee!</p>
+                            </CardContent>
+                        </Card>
+                    )}
                 </main>
 
                 <div className="fixed bottom-0 flex w-full flex-row items-center justify-start gap-2 border-t p-6 md:static md:w-1/4 md:flex-col md:border-t-0 md:border-l">

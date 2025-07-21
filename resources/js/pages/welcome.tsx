@@ -434,7 +434,10 @@ export default function Welcome({ auth, product }: Props) {
                 </header>
 
                 <section id="home">
-                    <div className="relative min-h-screen bg-gray-400 bg-[url('bg-web.jpg')] bg-cover bg-center bg-no-repeat bg-blend-multiply md:py-20">
+                    <div
+                        className="relative min-h-screen bg-gray-400 bg-cover bg-center bg-no-repeat bg-blend-multiply md:py-20"
+                        style={{ backgroundImage: "url('/bg-web.jpg')" }}
+                    >
                         <div className="absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-b from-transparent to-background"></div>
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
