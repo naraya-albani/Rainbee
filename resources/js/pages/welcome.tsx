@@ -380,18 +380,29 @@ export default function Welcome({ auth, product }: Props) {
                         <div className="mb-2 space-y-2 px-4">
                             {auth.user ? (
                                 <>
-                                    <Link
-                                        href={route('keranjang')}
-                                        className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
-                                    >
-                                        Keranjang
-                                    </Link>
-                                    <Link
-                                        href={route('riwayat')}
-                                        className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
-                                    >
-                                        Riwayat
-                                    </Link>
+                                    {auth.user.role === 'admin' ? (
+                                        <Link
+                                            href={route('dashboard')}
+                                            className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
+                                        >
+                                            Dashboard
+                                        </Link>
+                                    ) : (
+                                        <>
+                                            <Link
+                                                href={route('keranjang')}
+                                                className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
+                                            >
+                                                Keranjang
+                                            </Link>
+                                            <Link
+                                                href={route('riwayat')}
+                                                className="block w-full rounded px-4 py-2 text-center text-sm text-white hover:bg-yellow-200"
+                                            >
+                                                Riwayat
+                                            </Link>
+                                        </>
+                                    )}
                                     <Link
                                         method="post"
                                         href={route('logout')}
