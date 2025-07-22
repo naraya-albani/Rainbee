@@ -15,11 +15,12 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ImageVideoUploader } from '@/components/upfile';
 import AppLayout from '@/layouts/app-layout';
 import { Invoice, BreadcrumbItem as TypeBreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
-import { Ban, SlashIcon, SquareArrowOutUpRight } from 'lucide-react';
+import { Ban, SlashIcon, SquareArrowOutUpRight, Star } from 'lucide-react';
 import { useState } from 'react';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { toast } from 'sonner';
@@ -453,13 +454,11 @@ export default function Riwayat({ invoices }: Prop) {
                                                                 {invoice.status === 'sending' && (
                                                                     <Dialog>
                                                                         <DialogTrigger>
-                                                                            <Button variant={'destructive'}>
-                                                                                Komplain
-                                                                            </Button>
+                                                                            <Button variant={'destructive'}>Komplain</Button>
                                                                         </DialogTrigger>
                                                                         <DialogContent>
-                                                                            <DialogHeader >Komplain</DialogHeader>
-                                                                            
+                                                                            <DialogHeader>Komplain</DialogHeader>
+                                                                            <ImageVideoUploader></ImageVideoUploader>
                                                                         </DialogContent>
                                                                     </Dialog>
                                                                 )}
@@ -501,6 +500,15 @@ export default function Riwayat({ invoices }: Prop) {
                                                                 </DialogFooter>
                                                             </form>
                                                         </DialogContent>
+                                                    </Dialog>
+                                                )}
+                                                {invoice.status === 'claimed' && (
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <Button>
+                                                                <Star></Star>
+                                                            </Button>
+                                                        </DialogTrigger>
                                                     </Dialog>
                                                 )}
                                             </TableCell>
