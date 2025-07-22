@@ -21,6 +21,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { Ban, SlashIcon, SquareArrowOutUpRight } from 'lucide-react';
 import { useState } from 'react';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { toast } from 'sonner';
 
 type Prop = {
@@ -40,6 +41,7 @@ export default function Riwayat({ invoices }: Prop) {
     const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
     const filteredInvoices = statusFilter && statusFilter !== 'all' ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
+    const [open, setOpen] = useState(false);
 
     const { data, setData, errors } = useForm<{
         receipt: File | null;
@@ -370,23 +372,97 @@ export default function Riwayat({ invoices }: Prop) {
                                                                         )}
                                                                     </div>
                                                                 )}
+                                                                {invoice.status === 'sending' && (
+                                                                    <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
+                                                                        <Dialog open={open} onOpenChange={setOpen}>
+                                                                            <DialogTrigger asChild>
+                                                                                <Button
+                                                                                    variant="link"
+                                                                                    className="p-0 text-blue-600 hover:underline"
+                                                                                    onClick={() => setOpen(true)}
+                                                                                >
+                                                                                    Lihat Bukti Pembayaran
+                                                                                </Button>
+                                                                            </DialogTrigger>
+                                                                            <DialogContent className="max-w-4xl">
+                                                                                <DialogHeader>
+                                                                                    <DialogTitle>Bukti Pembayaran</DialogTitle>
+                                                                                </DialogHeader>
+                                                                                <div className="h-[500px] w-full overflow-hidden rounded border">
+                                                                                    <TransformWrapper>
+                                                                                        <TransformComponent>
+                                                                                            <img
+                                                                                                src={`/storage/${invoice.receipt}`}
+                                                                                                alt="Bukti Pembayaran"
+                                                                                                className="mx-auto max-h-full max-w-full object-contain"
+                                                                                            />
+                                                                                        </TransformComponent>
+                                                                                    </TransformWrapper>
+                                                                                </div>
+                                                                            </DialogContent>
+                                                                        </Dialog>
+                                                                        <Label>Kirim Foto Bukti Diterima</Label>
+                                                                        <InputError message={errors.receipt && 'Mohon unggah foto'} />
+                                                                        <input
+                                                                            className="rounded-xl border-2"
+                                                                            type="file"
+                                                                            accept="image/*"
+                                                                            onChange={handleImageChange}
+                                                                        />
+                                                                        <Label>Beri nilai produk kami</Label>
+                                                                        <textarea
+                                                                            className="w-full rounded-xl border-2 p-2"
+                                                                            rows={3}
+                                                                            placeholder="Beri penilaian degan jujur"
+                                                                        ></textarea>
+
+                                                                        {preview && (
+                                                                            <>
+                                                                                <img src={preview} className="w-48 rounded object-contain" />
+                                                                                <Button
+                                                                                    onClick={handleRemoveImage}
+                                                                                    className="mt-2 w-full"
+                                                                                    variant="destructive"
+                                                                                >
+                                                                                    Hapus Gambar
+                                                                                </Button>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
                                                                 <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                                    {invoice.receipt && (
-                                                                        <>
-                                                                            <Label>Bukti Pembayaran</Label>
-                                                                            <img
-                                                                                src={`/storage/${invoice.receipt}`}
-                                                                                alt=""
-                                                                                className="w-48 rounded object-contain"
-                                                                            />
-                                                                        </>
-                                                                    )}
+                                                                    {invoice.status !== 'pending' &&
+                                                                        invoice.status !== 'sending' &&
+                                                                        invoice.receipt && (
+                                                                            <>
+                                                                                <Label>Bukti Pembayaran</Label>
+                                                                                <img
+                                                                                    src={`/storage/${invoice.receipt}`}
+                                                                                    alt=""
+                                                                                    className="w-48 rounded object-contain"
+                                                                                />
+                                                                            </>
+                                                                        )}
                                                                 </div>
                                                             </div>
                                                             <DialogFooter className="border-t pt-4">
                                                                 <DialogClose asChild>
                                                                     <Button variant="outline">Tutup</Button>
                                                                 </DialogClose>
+                                                                {invoice.status === 'sending' && (
+                                                                    <Dialog>
+                                                                        <DialogTrigger>
+                                                                            <Button variant={'destructive'}>
+                                                                                Komplain
+                                                                            </Button>
+                                                                        </DialogTrigger>
+                                                                        <DialogContent>
+                                                                            <DialogHeader >Komplain</DialogHeader>
+                                                                            
+                                                                        </DialogContent>
+                                                                    </Dialog>
+                                                                )}
                                                                 {invoice.status === 'pending' && (
                                                                     <Button type="submit" name="action" value="upload">
                                                                         Kirim Bukti
@@ -394,7 +470,7 @@ export default function Riwayat({ invoices }: Prop) {
                                                                 )}
                                                                 {invoice.status === 'sending' && (
                                                                     <Button type="submit" name="action" value="claimed">
-                                                                        Konfirmasi Barang
+                                                                        Konfirmasi diterima
                                                                     </Button>
                                                                 )}
                                                             </DialogFooter>
