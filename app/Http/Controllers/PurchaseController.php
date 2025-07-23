@@ -130,4 +130,34 @@ class PurchaseController extends Controller
 
         $invoice->save();
     }
+
+    public function feedback(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:rejected,claimed',
+            'comment' => 'nullable|string|max:255',
+            'files.*' => 'nullable|file|mimes:jpg,jpeg,png,mp4|max:10240',
+        ]);
+
+        $paths = [];
+
+        // Upload file jika ada
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store("feedback/$id", "public");
+                $paths[] = $path;
+            }
+        }
+
+        // Update data invoice
+        DB::table('invoices')
+            ->where('id', $id)
+            ->update([
+                'status' => $request->status,
+                'comment' => $request->comment,
+                'attachment' => json_encode($paths),
+            ]);
+
+        return redirect()->back()->with('success', 'Masukan berhasil dikirim.');
+    }
 }

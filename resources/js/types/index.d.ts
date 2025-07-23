@@ -48,11 +48,14 @@ export interface User {
 export interface Invoice {
     id: string;
     total: number;
-    status: string;
+    status: 'pending' | 'waiting' | 'approved' | 'sending' | 'claimed' | 'rejected' | 'canceled';
     cart: Cart;
     address: Address;
     receipt: string;
     created_at: string;
+    attachment?: any | null;
+    rating?: number | null;
+    comment?: string | null;
 }
 
 export interface Address {

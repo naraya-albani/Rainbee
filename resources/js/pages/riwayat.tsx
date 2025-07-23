@@ -151,7 +151,8 @@ export default function Riwayat({ invoices }: Prop) {
                                     <SelectItem value="approved">Disetujui</SelectItem>
                                     <SelectItem value="sending">Dalam Perjalanan</SelectItem>
                                     <SelectItem value="claimed">Selesai</SelectItem>
-                                    <SelectItem value="canceled">Dibatalkan</SelectItem>
+                                    <SelectItem value="rejected">Dikembalikan</SelectItem>
+                                    <SelectItem value="canceled">Ditolak</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
@@ -205,7 +206,9 @@ export default function Riwayat({ invoices }: Prop) {
                                                             ? 'Selesai'
                                                             : invoice.status === 'canceled'
                                                               ? 'Dibatalkan'
-                                                              : invoice.status}
+                                                              : invoice.status === 'rejected'
+                                                                ? 'Ditolak'
+                                                                : invoice.status}
                                             </TableCell>
                                             <TableCell>Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</TableCell>
 
@@ -226,7 +229,7 @@ export default function Riwayat({ invoices }: Prop) {
                                                                 {/* KIRI */}
                                                                 <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
                                                                     <main className="flex-1 space-y-6 overflow-y-auto p-6">
-                                                                        <Card>
+                                                                        <Card className="py-4">
                                                                             <CardHeader className="mt-2">
                                                                                 <CardTitle>Detail</CardTitle>
                                                                             </CardHeader>
@@ -265,7 +268,7 @@ export default function Riwayat({ invoices }: Prop) {
                                                                             </CardContent>
                                                                         </Card>
 
-                                                                        <Card>
+                                                                        <Card className="py-4">
                                                                             <CardHeader className="mt-2">
                                                                                 <CardTitle>Produk</CardTitle>
                                                                             </CardHeader>
@@ -304,7 +307,7 @@ export default function Riwayat({ invoices }: Prop) {
                                                                         </Card>
 
                                                                         {invoice.status === 'pending' && (
-                                                                            <Card>
+                                                                            <Card className="py-4">
                                                                                 <CardHeader className="mt-2">
                                                                                     <CardTitle>Pembayaran</CardTitle>
                                                                                 </CardHeader>
@@ -329,7 +332,7 @@ export default function Riwayat({ invoices }: Prop) {
                                                                             </Card>
                                                                         )}
 
-                                                                        <Card>
+                                                                        <Card className="py-4">
                                                                             <CardHeader>
                                                                                 <CardTitle>Total Pembelian</CardTitle>
                                                                             </CardHeader>
@@ -459,8 +462,8 @@ export default function Riwayat({ invoices }: Prop) {
                                                                             <Button variant={'destructive'}>Komplain</Button>
                                                                         </DialogTrigger>
                                                                         <DialogContent>
-                                                                            <DialogHeader>Komplain</DialogHeader>
-                                                                            <ImageVideoUploader></ImageVideoUploader>
+                                                                            <DialogTitle>Komplain</DialogTitle>
+                                                                            <ImageVideoUploader id={invoice.id} />
                                                                         </DialogContent>
                                                                     </Dialog>
                                                                 )}
@@ -513,18 +516,20 @@ export default function Riwayat({ invoices }: Prop) {
                                                         </DialogTrigger>
                                                         <DialogContent>
                                                             <DialogTitle>Ulas Pesanan</DialogTitle>
-                                                            <label className='flex justify-center items-center w-full'>Nilai produk disini</label>
-                                                            <div className='flex justify-center items-center w-full'>
-                                                            <Rating defaultValue={3} className="items-center">
-                                                                {Array.from({ length: 5 }).map((_, index) => (
-                                                                    <RatingButton key={index} />
-                                                                ))}
-                                                            </Rating>
+                                                            <label className="flex w-full items-center justify-center">Nilai produk disini</label>
+                                                            <div className="flex w-full items-center justify-center">
+                                                                <Rating defaultValue={3} className="items-center">
+                                                                    {Array.from({ length: 5 }).map((_, index) => (
+                                                                        <RatingButton key={index} />
+                                                                    ))}
+                                                                </Rating>
                                                             </div>
-                                                            <label className='w-full'>Berikan penilaian disini</label>
-                                                            <textarea className='w-full p-2 border border-gray-400 rounded-md' placeholder='Contoh: Madu ini menyehatkan dan enak'></textarea>
-                                                            <ImageVideoUploader></ImageVideoUploader>
-
+                                                            <label className="w-full">Berikan penilaian disini</label>
+                                                            <textarea
+                                                                className="w-full rounded-md border border-gray-400 p-2"
+                                                                placeholder="Contoh: Madu ini menyehatkan dan enak"
+                                                            ></textarea>
+                                                            <ImageVideoUploader id={invoice.id} />
                                                         </DialogContent>
                                                     </Dialog>
                                                 )}

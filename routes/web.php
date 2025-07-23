@@ -70,6 +70,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('purchase', [PurchaseController::class, 'store'])->name('purchase.store');
 
+        Route::post('feedback/{id}', [PurchaseController::class, 'feedback'])->name('feedback');
+
         Route::get('riwayat', function () {
             $user = Auth::user();
 

@@ -23,17 +23,6 @@ type Prop = {
     invoice: Invoice[];
 };
 
-type PurchaseItem = {
-    id: string;
-    total: string;
-    status: string;
-    cart_id: number;
-    address_id: number;
-    receipt: string | null;
-    created_at: string;
-    updated_at: string;
-};
-
 export default function Laporan({ invoice }: Prop) {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice>();
     const [dialogOpen, setDialogOpen] = useState(false);

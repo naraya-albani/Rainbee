@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->decimal('total', 10, 0);
-            $table->enum('status', ['pending', 'waiting', 'approved', 'sending', 'claimed', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'waiting', 'approved', 'sending', 'claimed', 'rejected', 'canceled'])->default('pending');
             $table->foreignId('cart_id')->constrained('carts')->onDelete('cascade');
             $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade');
             $table->string('receipt')->nullable();
+            $table->integer('rating')->nullable();
+            $table->string('comment')->nullable();
+            $table->json('attachment')->nullable();
             $table->timestamps();
         });
     }
