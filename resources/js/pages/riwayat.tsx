@@ -13,6 +13,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Rating, RatingButton } from '@/components/ui/rating';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ImageVideoUploader } from '@/components/upfile';
@@ -43,6 +44,7 @@ export default function Riwayat({ invoices }: Prop) {
 
     const filteredInvoices = statusFilter && statusFilter !== 'all' ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
     const [open, setOpen] = useState(false);
+    const [niali, setNilai] = useState(false);
 
     const { data, setData, errors } = useForm<{
         receipt: File | null;
@@ -509,6 +511,21 @@ export default function Riwayat({ invoices }: Prop) {
                                                                 <Star></Star>
                                                             </Button>
                                                         </DialogTrigger>
+                                                        <DialogContent>
+                                                            <DialogTitle>Ulas Pesanan</DialogTitle>
+                                                            <label className='flex justify-center items-center w-full'>Nilai produk disini</label>
+                                                            <div className='flex justify-center items-center w-full'>
+                                                            <Rating defaultValue={3} className="items-center">
+                                                                {Array.from({ length: 5 }).map((_, index) => (
+                                                                    <RatingButton key={index} />
+                                                                ))}
+                                                            </Rating>
+                                                            </div>
+                                                            <label className='w-full'>Berikan penilaian disini</label>
+                                                            <textarea className='w-full p-2 border border-gray-400 rounded-md' placeholder='Contoh: Madu ini menyehatkan dan enak'></textarea>
+                                                            <ImageVideoUploader></ImageVideoUploader>
+
+                                                        </DialogContent>
                                                     </Dialog>
                                                 )}
                                             </TableCell>

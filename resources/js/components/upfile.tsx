@@ -20,6 +20,7 @@ export function ImageVideoUploader() {
         accept: {
             'image/*': [],
             'video/*': [],
+            
         },
         multiple: true,
         maxFiles: 5,
@@ -47,7 +48,7 @@ export function ImageVideoUploader() {
                     </div>
                 </div>
 
-               
+
                 {files.length > 0 && (
                     <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                         {files.map((file, index) => (
