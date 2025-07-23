@@ -53,7 +53,7 @@ export interface Invoice {
     address: Address;
     receipt: string;
     created_at: string;
-    attachment?: any | null;
+    attachment?: string[] | string | null;
     rating?: number | null;
     comment?: string | null;
 }

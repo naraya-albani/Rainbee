@@ -69,13 +69,13 @@ export default function Laporan({ invoice }: Prop) {
                         <SelectContent>
                             <SelectGroup>
                                 <SelectItem value="all">Semua</SelectItem>
-
                                 <SelectItem value="pending">Menunggu Pembayaran</SelectItem>
                                 <SelectItem value="waiting">Menunggu Konfirmasi</SelectItem>
                                 <SelectItem value="approved">Disetujui</SelectItem>
                                 <SelectItem value="sending">Dikirim</SelectItem>
                                 <SelectItem value="claimed">Selesai</SelectItem>
                                 <SelectItem value="canceled">Dibatalkan</SelectItem>
+                                <SelectItem value="rejected">Ditolak</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -107,7 +107,9 @@ export default function Laporan({ invoice }: Prop) {
                                                 ? 'Diterima'
                                                 : invoice.status === 'canceled'
                                                   ? 'Dibatalkan'
-                                                  : invoice.status}
+                                                  : invoice.status === 'rejected'
+                                                    ? 'Ditolak'
+                                                    : invoice.status}
                                 </TableCell>
 
                                 <TableCell>{invoice.total}</TableCell>

@@ -1,4 +1,3 @@
-import InputError from '@/components/input-error';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +11,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Rating, RatingButton } from '@/components/ui/rating';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -23,7 +21,7 @@ import { Head, router, useForm } from '@inertiajs/react';
 import axios from 'axios';
 import { Ban, SlashIcon, SquareArrowOutUpRight, Star } from 'lucide-react';
 import { useState } from 'react';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 
 type Prop = {
@@ -38,27 +36,17 @@ const breadcrumbs: TypeBreadcrumbItem[] = [
 ];
 
 export default function Riwayat({ invoices }: Prop) {
-    const [image, setImage] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
     const filteredInvoices = statusFilter && statusFilter !== 'all' ? invoices.filter((invoice) => invoice.status === statusFilter) : invoices;
     const [open, setOpen] = useState(false);
-    const [niali, setNilai] = useState(false);
 
     const { data, setData, errors } = useForm<{
         receipt: File | null;
     }>({
         receipt: null,
     });
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setData('receipt', file);
-            setPreview(URL.createObjectURL(file));
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent, id: string) => {
         e.preventDefault();
@@ -68,7 +56,7 @@ export default function Riwayat({ invoices }: Prop) {
 
         if (action === 'upload') {
             if (!data.receipt) {
-                alert('Mohon pilih gambar terlebih dahulu.');
+                toast.warning('Mohon unggah bukti pembayaran atau hubungi admin.');
                 return;
             }
 
@@ -115,9 +103,22 @@ export default function Riwayat({ invoices }: Prop) {
     };
 
     const handleRemoveImage = () => {
-        setImage(null);
-        setPreview(null);
+        setData((prev) => ({ ...prev, receipt: null }));
     };
+
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+            setData('receipt', acceptedFiles[0]); // hanya ambil satu file
+        }
+    };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: {
+            'image/*': ['.jpg', '.jpeg', '.png'],
+        },
+        maxSize: 2 * 1024 * 1024, // 2MB
+    });
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -171,371 +172,442 @@ export default function Riwayat({ invoices }: Prop) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredInvoices.map((invoice) => (
-                                        <TableRow key={invoice.id}>
-                                            <TableCell className="font-medium">
-                                                {new Date(invoice.created_at).toLocaleString('id-ID', {
-                                                    day: 'numeric',
-                                                    month: 'long',
-                                                    year: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    timeZone: 'Asia/Jakarta',
-                                                    hour12: false,
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                <ul className="space-y-1">
-                                                    {invoice.cart.details.map((item, idx) => (
-                                                        <li key={idx}>
-                                                            {item.product.name} x {item.quantity}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </TableCell>
-                                            <TableCell>
-                                                {invoice.status === 'pending'
-                                                    ? 'Menunggu Pembayaran'
-                                                    : invoice.status === 'waiting'
-                                                      ? 'Menunggu Konfirmasi'
-                                                      : invoice.status === 'approved'
-                                                        ? 'Disetujui'
-                                                        : invoice.status === 'sending'
-                                                          ? 'Dalam Perjalanan'
-                                                          : invoice.status === 'claimed'
-                                                            ? 'Selesai'
-                                                            : invoice.status === 'canceled'
-                                                              ? 'Dibatalkan'
-                                                              : invoice.status === 'rejected'
-                                                                ? 'Ditolak'
-                                                                : invoice.status}
-                                            </TableCell>
-                                            <TableCell>Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</TableCell>
+                                    {filteredInvoices.map((invoice) => {
+                                        const attachments: string[] = (() => {
+                                            if (!invoice.attachment) return [];
+                                            if (Array.isArray(invoice.attachment)) return invoice.attachment;
+                                            try {
+                                                return JSON.parse(invoice.attachment);
+                                            } catch (e) {
+                                                console.error('Failed to parse attachment JSON:', e);
+                                                return [];
+                                            }
+                                        })();
 
-                                            <TableCell className="flex justify-center space-x-2">
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <Button variant="outline" onClick={() => setPreview(null)}>
-                                                            <SquareArrowOutUpRight />
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1080px]">
-                                                        <form onSubmit={(e) => handleSubmit(e, invoice.id)}>
-                                                            <DialogHeader>
-                                                                <DialogTitle>Detail Pesanan</DialogTitle>
-                                                                <DialogDescription>No. Invoice: {invoice.id}</DialogDescription>
-                                                            </DialogHeader>
-                                                            <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
-                                                                {/* KIRI */}
-                                                                <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                                    <main className="flex-1 space-y-6 overflow-y-auto p-6">
-                                                                        <Card className="py-4">
-                                                                            <CardHeader className="mt-2">
-                                                                                <CardTitle>Detail</CardTitle>
-                                                                            </CardHeader>
-                                                                            <CardContent className="mb-2 space-y-2">
-                                                                                <div>
-                                                                                    <span className="font-semibold">Waktu Pemesanan</span>
-                                                                                    <p>
-                                                                                        Tanggal{' '}
-                                                                                        {new Date(invoice.created_at).toLocaleString('id-ID', {
-                                                                                            day: 'numeric',
-                                                                                            month: 'long',
-                                                                                            year: 'numeric',
-                                                                                            hour: '2-digit',
-                                                                                            minute: '2-digit',
-                                                                                            timeZone: 'Asia/Jakarta',
-                                                                                            hour12: false,
-                                                                                        })}
-                                                                                    </p>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className="font-semibold">Nama Pengirim</span>
-                                                                                    <p>{invoice.cart.user.name}</p>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className="font-semibold">Alamat Pengiriman</span>
-                                                                                    <p>
-                                                                                        {invoice.address.address_line}, {invoice.address.district},{' '}
-                                                                                        {invoice.address.city}, {invoice.address.state}{' '}
-                                                                                        {invoice.address.postal_code}
-                                                                                    </p>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <span className="font-semibold">Nomor Telepon</span>
-                                                                                    <p>{invoice.address.phone_number}</p>
-                                                                                </div>
-                                                                            </CardContent>
-                                                                        </Card>
+                                        return (
+                                            <TableRow key={invoice.id}>
+                                                <TableCell className="font-medium">
+                                                    {new Date(invoice.created_at).toLocaleString('id-ID', {
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                        timeZone: 'Asia/Jakarta',
+                                                        hour12: false,
+                                                    })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <ul className="space-y-1">
+                                                        {invoice.cart.details.map((item, idx) => (
+                                                            <li key={idx}>
+                                                                {item.product.name} x {item.quantity}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {invoice.status === 'pending'
+                                                        ? 'Menunggu Pembayaran'
+                                                        : invoice.status === 'waiting'
+                                                          ? 'Menunggu Konfirmasi'
+                                                          : invoice.status === 'approved'
+                                                            ? 'Disetujui'
+                                                            : invoice.status === 'sending'
+                                                              ? 'Dalam Perjalanan'
+                                                              : invoice.status === 'claimed'
+                                                                ? 'Selesai'
+                                                                : invoice.status === 'canceled'
+                                                                  ? 'Dibatalkan'
+                                                                  : invoice.status === 'rejected'
+                                                                    ? 'Ditolak'
+                                                                    : invoice.status}
+                                                </TableCell>
+                                                <TableCell>Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}</TableCell>
 
-                                                                        <Card className="py-4">
-                                                                            <CardHeader className="mt-2">
-                                                                                <CardTitle>Produk</CardTitle>
-                                                                            </CardHeader>
-                                                                            <CardContent className="mb-2">
-                                                                                <Table>
-                                                                                    <TableHeader>
-                                                                                        <TableRow>
-                                                                                            <TableHead>Nama</TableHead>
-                                                                                            <TableHead>Jumlah</TableHead>
-                                                                                            <TableHead>Harga</TableHead>
-                                                                                            <TableHead>Total</TableHead>
-                                                                                        </TableRow>
-                                                                                    </TableHeader>
-                                                                                    <TableBody>
-                                                                                        {invoice.cart.details.map((item, idx) => (
-                                                                                            <TableRow key={idx}>
-                                                                                                <TableCell>{item.product.name}</TableCell>
-                                                                                                <TableCell>{item.quantity}</TableCell>
-                                                                                                <TableCell>
-                                                                                                    Rp
-                                                                                                    {new Intl.NumberFormat('id-ID').format(
-                                                                                                        item.product.price,
-                                                                                                    )}
-                                                                                                </TableCell>
-                                                                                                <TableCell>
-                                                                                                    Rp
-                                                                                                    {new Intl.NumberFormat('id-ID').format(
-                                                                                                        item.price,
-                                                                                                    )}
-                                                                                                </TableCell>
-                                                                                            </TableRow>
-                                                                                        ))}
-                                                                                    </TableBody>
-                                                                                </Table>
-                                                                            </CardContent>
-                                                                        </Card>
-
-                                                                        {invoice.status === 'pending' && (
+                                                <TableCell className="flex justify-center space-x-2">
+                                                    <Dialog>
+                                                        <DialogTrigger asChild>
+                                                            <Button variant="outline" onClick={() => setPreview(null)}>
+                                                                <SquareArrowOutUpRight />
+                                                            </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[1080px]">
+                                                            <form onSubmit={(e) => handleSubmit(e, invoice.id)}>
+                                                                <DialogHeader>
+                                                                    <DialogTitle>Detail Pesanan</DialogTitle>
+                                                                    <DialogDescription>No. Invoice: {invoice.id}</DialogDescription>
+                                                                </DialogHeader>
+                                                                <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
+                                                                    {/* KIRI */}
+                                                                    <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
+                                                                        <main className="flex-1 space-y-6 overflow-y-auto">
                                                                             <Card className="py-4">
                                                                                 <CardHeader className="mt-2">
-                                                                                    <CardTitle>Pembayaran</CardTitle>
+                                                                                    <CardTitle>Detail</CardTitle>
                                                                                 </CardHeader>
                                                                                 <CardContent className="mb-2 space-y-2">
                                                                                     <div>
-                                                                                        <span className="font-semibold">Bank:</span>
-                                                                                        <p>BCA</p>
+                                                                                        <span className="font-semibold">Waktu Pemesanan</span>
+                                                                                        <p>
+                                                                                            Tanggal{' '}
+                                                                                            {new Date(invoice.created_at).toLocaleString('id-ID', {
+                                                                                                day: 'numeric',
+                                                                                                month: 'long',
+                                                                                                year: 'numeric',
+                                                                                                hour: '2-digit',
+                                                                                                minute: '2-digit',
+                                                                                                timeZone: 'Asia/Jakarta',
+                                                                                                hour12: false,
+                                                                                            })}
+                                                                                        </p>
                                                                                     </div>
                                                                                     <div>
-                                                                                        <span className="font-semibold">No Rekening:</span>
-                                                                                        <p>02397489289748</p>
+                                                                                        <span className="font-semibold">Nama Pengirim</span>
+                                                                                        <p>{invoice.cart.user.name}</p>
                                                                                     </div>
                                                                                     <div>
-                                                                                        <span className="font-semibold">Atas Nama:</span>
-                                                                                        <p>Rainbee</p>
+                                                                                        <span className="font-semibold">Alamat Pengiriman</span>
+                                                                                        <p>
+                                                                                            {invoice.address.address_line}, {invoice.address.district}
+                                                                                            , {invoice.address.city}, {invoice.address.state}{' '}
+                                                                                            {invoice.address.postal_code}
+                                                                                        </p>
                                                                                     </div>
-                                                                                    <p className="font-black">
-                                                                                        Mohon konfirmasi setelah melakukan pembayaran. Terima kasih
-                                                                                        telah berbelanja di Rainbee!
-                                                                                    </p>
+                                                                                    <div>
+                                                                                        <span className="font-semibold">Nomor Telepon</span>
+                                                                                        <p>{invoice.address.phone_number}</p>
+                                                                                    </div>
                                                                                 </CardContent>
                                                                             </Card>
-                                                                        )}
 
-                                                                        <Card className="py-4">
-                                                                            <CardHeader>
-                                                                                <CardTitle>Total Pembelian</CardTitle>
-                                                                            </CardHeader>
-                                                                            <CardContent>
-                                                                                <div className="flex items-center font-medium">
-                                                                                    <div>Total</div>
-                                                                                    <div className="ml-auto">
-                                                                                        Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}
+                                                                            <Card className="py-4">
+                                                                                <CardHeader className="mt-2">
+                                                                                    <CardTitle>Produk</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent className="mb-2">
+                                                                                    <Table>
+                                                                                        <TableHeader>
+                                                                                            <TableRow>
+                                                                                                <TableHead>Nama</TableHead>
+                                                                                                <TableHead>Jumlah</TableHead>
+                                                                                                <TableHead>Harga</TableHead>
+                                                                                                <TableHead>Total</TableHead>
+                                                                                            </TableRow>
+                                                                                        </TableHeader>
+                                                                                        <TableBody>
+                                                                                            {invoice.cart.details.map((item, idx) => (
+                                                                                                <TableRow key={idx}>
+                                                                                                    <TableCell>{item.product.name}</TableCell>
+                                                                                                    <TableCell>{item.quantity}</TableCell>
+                                                                                                    <TableCell>
+                                                                                                        Rp
+                                                                                                        {new Intl.NumberFormat('id-ID').format(
+                                                                                                            item.product.price,
+                                                                                                        )}
+                                                                                                    </TableCell>
+                                                                                                    <TableCell>
+                                                                                                        Rp
+                                                                                                        {new Intl.NumberFormat('id-ID').format(
+                                                                                                            item.price,
+                                                                                                        )}
+                                                                                                    </TableCell>
+                                                                                                </TableRow>
+                                                                                            ))}
+                                                                                        </TableBody>
+                                                                                    </Table>
+                                                                                </CardContent>
+                                                                            </Card>
+
+                                                                            {invoice.status === 'pending' && (
+                                                                                <Card className="py-4">
+                                                                                    <CardHeader className="mt-2">
+                                                                                        <CardTitle>Pembayaran</CardTitle>
+                                                                                    </CardHeader>
+                                                                                    <CardContent className="mb-2 space-y-2">
+                                                                                        <div>
+                                                                                            <span className="font-semibold">Bank:</span>
+                                                                                            <p>BCA</p>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <span className="font-semibold">No Rekening:</span>
+                                                                                            <p>02397489289748</p>
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            <span className="font-semibold">Atas Nama:</span>
+                                                                                            <p>Rainbee</p>
+                                                                                        </div>
+                                                                                        <p className="font-black">
+                                                                                            Mohon konfirmasi setelah melakukan pembayaran. Terima
+                                                                                            kasih telah berbelanja di Rainbee!
+                                                                                        </p>
+                                                                                    </CardContent>
+                                                                                </Card>
+                                                                            )}
+
+                                                                            <Card className="py-4">
+                                                                                <CardHeader>
+                                                                                    <CardTitle>Total Pembelian</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent>
+                                                                                    <div className="flex items-center font-medium">
+                                                                                        <div>Total</div>
+                                                                                        <div className="ml-auto">
+                                                                                            Rp{new Intl.NumberFormat('id-ID').format(invoice.total)}
+                                                                                        </div>
                                                                                     </div>
-                                                                                </div>
-                                                                            </CardContent>
-                                                                        </Card>
-                                                                    </main>
-                                                                </div>
-
-                                                                {/* KANAN */}
-                                                                {invoice.status === 'pending' && (
-                                                                    <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                                        <Label>Unggah Bukti Pembayaran</Label>
-                                                                        <InputError
-                                                                            message={
-                                                                                errors.receipt && 'Nomor HP belum terdaftar atau tidak sesuai format'
-                                                                            }
-                                                                        />
-                                                                        <input
-                                                                            className="rounded-xl border-2"
-                                                                            type="file"
-                                                                            accept="image/*"
-                                                                            onChange={handleImageChange}
-                                                                        />
-
-                                                                        {preview && (
-                                                                            <>
-                                                                                <img src={preview} className="w-48 rounded object-contain" />
-                                                                                <Button
-                                                                                    onClick={handleRemoveImage}
-                                                                                    className="mt-2 w-full"
-                                                                                    variant="destructive"
-                                                                                >
-                                                                                    Hapus Gambar
-                                                                                </Button>
-                                                                            </>
-                                                                        )}
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </main>
                                                                     </div>
-                                                                )}
-                                                                {invoice.status === 'sending' && (
-                                                                    <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                                        <Dialog open={open} onOpenChange={setOpen}>
-                                                                            <DialogTrigger asChild>
-                                                                                <Button
-                                                                                    variant="link"
-                                                                                    className="p-0 text-blue-600 hover:underline"
-                                                                                    onClick={() => setOpen(true)}
-                                                                                >
-                                                                                    Lihat Bukti Pembayaran
-                                                                                </Button>
-                                                                            </DialogTrigger>
-                                                                            <DialogContent className="max-w-4xl">
-                                                                                <DialogHeader>
-                                                                                    <DialogTitle>Bukti Pembayaran</DialogTitle>
-                                                                                </DialogHeader>
-                                                                                <div className="h-[500px] w-full overflow-hidden rounded border">
-                                                                                    <TransformWrapper>
-                                                                                        <TransformComponent>
+
+                                                                    {/* KANAN */}
+                                                                    {invoice.status === 'pending' && (
+                                                                        <div className="flex w-full flex-col items-center gap-3">
+                                                                            <Card className="py-4">
+                                                                                <CardHeader className="mt-2">
+                                                                                    <CardTitle>Unggah Bukti Pembayaran</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent className="mb-2 space-y-2">
+                                                                                    {data.receipt === null && (
+                                                                                        <div
+                                                                                            {...getRootProps()}
+                                                                                            className="cursor-pointer rounded-md border-2 border-dashed border-[#f59e0b] p-6 text-center transition hover:bg-blue-50"
+                                                                                        >
+                                                                                            <input {...getInputProps()} />
+                                                                                            {isDragActive ? (
+                                                                                                <p>Drop file di sini...</p>
+                                                                                            ) : (
+                                                                                                <p>Drag & drop atau klik untuk memilih dokumen</p>
+                                                                                            )}
+                                                                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                                                                Format: .jpg, .png, .jpeg
+                                                                                                <br />
+                                                                                                (maks. ukuran 1 MB)
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    )}
+
+                                                                                    {data.receipt && (
+                                                                                        <>
                                                                                             <img
-                                                                                                src={`/storage/${invoice.receipt}`}
-                                                                                                alt="Bukti Pembayaran"
-                                                                                                className="mx-auto max-h-full max-w-full object-contain"
+                                                                                                src={URL.createObjectURL(data.receipt)}
+                                                                                                alt={data.receipt.name}
+                                                                                                className="w-full rounded object-cover"
                                                                                             />
-                                                                                        </TransformComponent>
-                                                                                    </TransformWrapper>
-                                                                                </div>
-                                                                            </DialogContent>
-                                                                        </Dialog>
-                                                                        <Label>Kirim Foto Bukti Diterima</Label>
-                                                                        <InputError message={errors.receipt && 'Mohon unggah foto'} />
-                                                                        <input
-                                                                            className="rounded-xl border-2"
-                                                                            type="file"
-                                                                            accept="image/*"
-                                                                            onChange={handleImageChange}
-                                                                        />
-                                                                        <Label>Beri nilai produk kami</Label>
-                                                                        <textarea
-                                                                            className="w-full rounded-xl border-2 p-2"
-                                                                            rows={3}
-                                                                            placeholder="Beri penilaian degan jujur"
-                                                                        ></textarea>
+                                                                                            <Button
+                                                                                                onClick={handleRemoveImage}
+                                                                                                className="mt-2 w-full"
+                                                                                                variant="destructive"
+                                                                                            >
+                                                                                                Hapus Gambar
+                                                                                            </Button>
+                                                                                        </>
+                                                                                    )}
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </div>
+                                                                    )}
 
-                                                                        {preview && (
-                                                                            <>
-                                                                                <img src={preview} className="w-48 rounded object-contain" />
-                                                                                <Button
-                                                                                    onClick={handleRemoveImage}
-                                                                                    className="mt-2 w-full"
-                                                                                    variant="destructive"
-                                                                                >
-                                                                                    Hapus Gambar
-                                                                                </Button>
-                                                                            </>
-                                                                        )}
-                                                                    </div>
-                                                                )}
+                                                                    {invoice.status === 'waiting' && (
+                                                                        <div className="flex flex-col gap-3 max-md:items-center">
+                                                                            <Card className="py-4">
+                                                                                <CardHeader className="mt-2">
+                                                                                    <CardTitle>Bukti Pembayaran</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent className="mb-2 space-y-2">
+                                                                                    <img
+                                                                                        src={`/storage/${invoice.receipt}`}
+                                                                                        alt=""
+                                                                                        className="w-48 rounded object-contain"
+                                                                                    />
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </div>
+                                                                    )}
 
-                                                                <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
-                                                                    {invoice.status !== 'pending' &&
-                                                                        invoice.status !== 'sending' &&
-                                                                        invoice.receipt && (
-                                                                            <>
-                                                                                <Label>Bukti Pembayaran</Label>
-                                                                                <img
-                                                                                    src={`/storage/${invoice.receipt}`}
-                                                                                    alt=""
-                                                                                    className="w-48 rounded object-contain"
-                                                                                />
-                                                                            </>
-                                                                        )}
+                                                                    {invoice.status === 'approved' && invoice.receipt && (
+                                                                        <div className="flex flex-col gap-3 max-md:items-center">
+                                                                            <Card className="py-4">
+                                                                                <CardHeader className="mt-2">
+                                                                                    <CardTitle>Bukti Pembayaran</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent className="mb-2 space-y-2">
+                                                                                    <img
+                                                                                        src={`/storage/${invoice.receipt}`}
+                                                                                        alt=""
+                                                                                        className="w-48 rounded object-contain"
+                                                                                    />
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {(invoice.status === 'rejected' ||
+                                                                        invoice.status === 'claimed' ||
+                                                                        invoice.status === 'sending') && (
+                                                                        <div className="flex flex-col gap-3 max-md:items-center">
+                                                                            {(invoice.rating !== null || invoice.rating !== 0) &&
+                                                                                invoice.attachment !== null &&
+                                                                                invoice.comment !== null && (
+                                                                                    <Card className="py-4">
+                                                                                        <CardHeader className="mt-2">
+                                                                                            <CardTitle>Testimoni</CardTitle>
+                                                                                        </CardHeader>
+                                                                                        <CardContent className="mb-2 space-y-2">
+                                                                                            <div className="flex flex-col">
+                                                                                                <span className="font-semibold">Rating</span>
+                                                                                                <Rating
+                                                                                                    defaultValue={invoice.rating ?? undefined}
+                                                                                                    readOnly
+                                                                                                >
+                                                                                                    {Array.from({ length: 5 }).map((_, index) => (
+                                                                                                        <RatingButton key={index} />
+                                                                                                    ))}
+                                                                                                </Rating>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-semibold">Komentar</span>
+                                                                                                <p>{invoice.comment}</p>
+                                                                                            </div>
+                                                                                            <div>
+                                                                                                <span className="font-semibold">Lampiran</span>
+                                                                                                <div className="flex flex-wrap gap-2">
+                                                                                                    {attachments.map((url: string, index: number) => (
+                                                                                                        <img
+                                                                                                            key={index}
+                                                                                                            src={`/storage/${url}`}
+                                                                                                            alt={`Lampiran ${index + 1}`}
+                                                                                                            width={150}
+                                                                                                            height={150}
+                                                                                                            className="rounded-md border object-cover"
+                                                                                                        />
+                                                                                                    ))}
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </CardContent>
+                                                                                    </Card>
+                                                                                )}
+                                                                            <Card className="py-4">
+                                                                                <CardHeader className="mt-2">
+                                                                                    <CardTitle>Bukti Pembayaran</CardTitle>
+                                                                                </CardHeader>
+                                                                                <CardContent className="mb-2 space-y-2">
+                                                                                    <img
+                                                                                        src={`/storage/${invoice.receipt}`}
+                                                                                        alt=""
+                                                                                        className="w-48 rounded object-contain"
+                                                                                    />
+                                                                                </CardContent>
+                                                                            </Card>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* {invoice.status === 'sending' && (
+                                                                        <div className="flex w-full flex-col items-center gap-3 lg:w-1/2">
+                                                                            <Dialog open={open} onOpenChange={setOpen}>
+                                                                                <DialogTrigger asChild>
+                                                                                    <Button
+                                                                                        variant="link"
+                                                                                        className="p-0 text-blue-600 hover:underline"
+                                                                                        onClick={() => setOpen(true)}
+                                                                                    >
+                                                                                        Lihat Bukti Pembayaran
+                                                                                    </Button>
+                                                                                </DialogTrigger>
+                                                                                <DialogContent className="max-w-4xl">
+                                                                                    <DialogHeader>
+                                                                                        <DialogTitle>Bukti Pembayaran</DialogTitle>
+                                                                                    </DialogHeader>
+                                                                                    <div className="h-[500px] w-full overflow-hidden rounded border">
+                                                                                        <TransformWrapper>
+                                                                                            <TransformComponent>
+                                                                                                <img
+                                                                                                    src={`/storage/${invoice.receipt}`}
+                                                                                                    alt="Bukti Pembayaran"
+                                                                                                    className="mx-auto max-h-full max-w-full object-contain"
+                                                                                                />
+                                                                                            </TransformComponent>
+                                                                                        </TransformWrapper>
+                                                                                    </div>
+                                                                                </DialogContent>
+                                                                            </Dialog>
+                                                                        </div>
+                                                                    )} */}
                                                                 </div>
-                                                            </div>
-                                                            <DialogFooter className="border-t pt-4">
-                                                                <DialogClose asChild>
-                                                                    <Button variant="outline">Tutup</Button>
-                                                                </DialogClose>
-                                                                {invoice.status === 'sending' && (
-                                                                    <Dialog>
-                                                                        <DialogTrigger>
-                                                                            <Button variant={'destructive'}>Komplain</Button>
-                                                                        </DialogTrigger>
-                                                                        <DialogContent>
-                                                                            <DialogTitle>Komplain</DialogTitle>
-                                                                            <ImageVideoUploader id={invoice.id} />
-                                                                        </DialogContent>
-                                                                    </Dialog>
-                                                                )}
-                                                                {invoice.status === 'pending' && (
-                                                                    <Button type="submit" name="action" value="upload">
-                                                                        Kirim Bukti
-                                                                    </Button>
-                                                                )}
-                                                                {invoice.status === 'sending' && (
-                                                                    <Button type="submit" name="action" value="claimed">
-                                                                        Konfirmasi diterima
-                                                                    </Button>
-                                                                )}
-                                                            </DialogFooter>
-                                                        </form>
-                                                    </DialogContent>
-                                                </Dialog>
-
-                                                {invoice.status === 'pending' && (
-                                                    <Dialog>
-                                                        <DialogTrigger asChild>
-                                                            <Button className="bg-red-500 text-white hover:bg-red-600">
-                                                                <Ban />
-                                                            </Button>
-                                                        </DialogTrigger>
-                                                        <DialogContent className="sm:max-w-[425px]">
-                                                            <form onSubmit={(e) => handleCancel(e, invoice.id)}>
-                                                                <DialogHeader>
-                                                                    <DialogTitle>Batalkan Pesanan</DialogTitle>
-                                                                    <DialogDescription>Yakin ingin membatalkan pesanan ini?</DialogDescription>
-                                                                </DialogHeader>
-                                                                <DialogFooter>
+                                                                <DialogFooter className="border-t pt-4">
                                                                     <DialogClose asChild>
-                                                                        <Button variant="outline">Tidak</Button>
+                                                                        <Button variant="outline">Tutup</Button>
                                                                     </DialogClose>
-                                                                    <Button className="bg-red-500 text-white hover:bg-red-600" type="submit">
-                                                                        Ya
-                                                                    </Button>
+                                                                    {invoice.status === 'sending' && (
+                                                                        <>
+                                                                            <Dialog>
+                                                                                <DialogTrigger>
+                                                                                    <Button variant={'destructive'}>Komplain</Button>
+                                                                                </DialogTrigger>
+                                                                                <DialogContent>
+                                                                                    <DialogTitle>Komplain</DialogTitle>
+                                                                                    <ImageVideoUploader id={invoice.id} status="rejected" />
+                                                                                </DialogContent>
+                                                                            </Dialog>
+                                                                            <Button type="submit" name="action" value="claimed">
+                                                                                Barang Diterima
+                                                                            </Button>
+                                                                        </>
+                                                                    )}
+                                                                    {invoice.status === 'pending' && (
+                                                                        <Button type="submit" name="action" value="upload">
+                                                                            Kirim Bukti
+                                                                        </Button>
+                                                                    )}
                                                                 </DialogFooter>
                                                             </form>
                                                         </DialogContent>
                                                     </Dialog>
-                                                )}
-                                                {invoice.status === 'claimed' && (
-                                                    <Dialog>
-                                                        <DialogTrigger asChild>
-                                                            <Button>
-                                                                <Star></Star>
-                                                            </Button>
-                                                        </DialogTrigger>
-                                                        <DialogContent>
-                                                            <DialogTitle>Ulas Pesanan</DialogTitle>
-                                                            <label className="flex w-full items-center justify-center">Nilai produk disini</label>
-                                                            <div className="flex w-full items-center justify-center">
-                                                                <Rating defaultValue={3} className="items-center">
-                                                                    {Array.from({ length: 5 }).map((_, index) => (
-                                                                        <RatingButton key={index} />
-                                                                    ))}
-                                                                </Rating>
-                                                            </div>
-                                                            <label className="w-full">Berikan penilaian disini</label>
-                                                            <textarea
-                                                                className="w-full rounded-md border border-gray-400 p-2"
-                                                                placeholder="Contoh: Madu ini menyehatkan dan enak"
-                                                            ></textarea>
-                                                            <ImageVideoUploader id={invoice.id} />
-                                                        </DialogContent>
-                                                    </Dialog>
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+
+                                                    {invoice.status === 'pending' && (
+                                                        <Dialog>
+                                                            <DialogTrigger asChild>
+                                                                <Button className="bg-red-500 text-white hover:bg-red-600">
+                                                                    <Ban />
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent className="sm:max-w-[425px]">
+                                                                <form onSubmit={(e) => handleCancel(e, invoice.id)}>
+                                                                    <DialogHeader>
+                                                                        <DialogTitle>Batalkan Pesanan</DialogTitle>
+                                                                        <DialogDescription>Yakin ingin membatalkan pesanan ini?</DialogDescription>
+                                                                    </DialogHeader>
+                                                                    <DialogFooter>
+                                                                        <DialogClose asChild>
+                                                                            <Button variant="outline">Tidak</Button>
+                                                                        </DialogClose>
+                                                                        <Button className="bg-red-500 text-white hover:bg-red-600" type="submit">
+                                                                            Ya
+                                                                        </Button>
+                                                                    </DialogFooter>
+                                                                </form>
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                    )}
+
+                                                    {invoice.status === 'claimed' && (invoice.rating === null || invoice.rating === 0) && (
+                                                        <Dialog>
+                                                            <DialogTrigger asChild>
+                                                                <Button>
+                                                                    <Star />
+                                                                </Button>
+                                                            </DialogTrigger>
+                                                            <DialogContent>
+                                                                <DialogTitle>Ulas Pesanan</DialogTitle>
+                                                                <ImageVideoUploader id={invoice.id} status="claimed" />
+                                                            </DialogContent>
+                                                        </Dialog>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
                                 </TableBody>
 
                                 <TableFooter></TableFooter>

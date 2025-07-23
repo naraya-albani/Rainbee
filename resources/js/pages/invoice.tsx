@@ -59,7 +59,9 @@ export default function Purchase({ invoice }: Prop) {
     return (
         <div className="flex h-screen flex-col">
             <header className="sticky top-0 z-10 flex items-center justify-between border-b p-6">
-                <AppLogoIcons className="h-8" />
+                <Link href={route('home')}>
+                    <AppLogoIcons className="h-8" />
+                </Link>
                 <div>
                     <h2 className="text-xl font-semibold">Invoice {invoice.id}</h2>
                     <p className="text-gray-500">

@@ -571,7 +571,7 @@ export default function Welcome({ auth, product }: Props) {
                                             <div className="flex flex-col">
                                                 <h1 className="mb-2 text-left text-xl font-bold text-[#f59e0b]">{selectedProduct.name}</h1>
                                                 <p className="text-left text-sm text-gray-700">{selectedProduct.description}</p>
-                                                <div className="flex flex-wrap gap-2">
+                                                <div className="mb-2 flex flex-wrap gap-2">
                                                     <Badge variant="default" className="bg-primary text-primary-foreground duration-200">
                                                         {selectedProduct.size} ml
                                                     </Badge>
@@ -592,7 +592,7 @@ export default function Welcome({ auth, product }: Props) {
                                                     }}
                                                 />
                                                 <div className="grid grid-cols-2">
-                                                    <p className="text-left">harga</p>
+                                                    <p className="text-left">Harga</p>
                                                     <p className="text-right font-bold text-[#f59e0b]">
                                                         Rp
                                                         {new Intl.NumberFormat('id-ID').format(quantity * Number(selectedProduct.price))}

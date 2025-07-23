@@ -4,20 +4,16 @@ import { Textarea } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { Trash } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
+import { Label } from './ui/label';
+import { Rating, RatingButton } from './ui/rating';
 
-export function ImageVideoUploader({ id }: { id: string }) {
+export function ImageVideoUploader({ id, status }: { id: string; status: 'rejected' | 'claimed' }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         comment: '',
         files: [] as File[],
-        status: 'rejected',
+        status: status,
+        rating: 0,
     });
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFiles = e.target.files;
-        if (selectedFiles) {
-            setData('files', Array.from(selectedFiles));
-        }
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,10 +52,24 @@ export function ImageVideoUploader({ id }: { id: string }) {
         <Card className="mx-auto w-full">
             <CardContent className="py-4">
                 <form onSubmit={handleSubmit}>
+                    {status === 'claimed' && (
+                        <>
+                            <Label className="flex w-full items-center justify-center">Nilai produk di sini</Label>
+                            <div className="mb-4 flex w-full items-center justify-center">
+                                <Rating value={data.rating} onValueChange={(val) => setData('rating', val)}>
+                                    {Array.from({ length: 5 }).map((_, index) => (
+                                        <RatingButton key={index} />
+                                    ))}
+                                </Rating>
+                            </div>
+                        </>
+                    )}
+
                     <Textarea
+                        className="w-full rounded-lg border-2 border-muted-foreground p-2"
                         value={data.comment}
                         onChange={(e) => setData('comment', e.target.value)}
-                        placeholder="Apa keluhan dari produk kami yang Anda terima?"
+                        placeholder={status === 'claimed' ? 'Berikan testimoni Anda' : 'Apa keluhan dari produk kami yang Anda terima?'}
                     />
                     {errors.comment && <p className="mt-1 text-sm text-red-500">{errors.comment}</p>}
 
@@ -106,7 +116,7 @@ export function ImageVideoUploader({ id }: { id: string }) {
                     {errors.files && <p className="text-sm text-red-500">{errors.files}</p>}
 
                     <Button type="submit" className="w-full" disabled={processing}>
-                        Kirim Komplain
+                        Kirim
                     </Button>
                 </form>
             </CardContent>

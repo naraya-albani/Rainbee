@@ -137,6 +137,7 @@ class PurchaseController extends Controller
             'status' => 'required|string|in:rejected,claimed',
             'comment' => 'nullable|string|max:255',
             'files.*' => 'nullable|file|mimes:jpg,jpeg,png,mp4|max:10240',
+            'rating' => 'nullable|numeric|max:5'
         ]);
 
         $paths = [];
@@ -156,6 +157,7 @@ class PurchaseController extends Controller
                 'status' => $request->status,
                 'comment' => $request->comment,
                 'attachment' => json_encode($paths),
+                'rating' => $request->rating
             ]);
 
         return redirect()->back()->with('success', 'Masukan berhasil dikirim.');
