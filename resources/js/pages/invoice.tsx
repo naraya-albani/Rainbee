@@ -199,7 +199,7 @@ export default function Purchase({ invoice }: Prop) {
                     {invoice.status === 'pending' && (
                         <Link href="/riwayat" className="w-full">
                             <Button variant="outline" className="w-full">
-                                Batal
+                                Kembali
                             </Button>
                         </Link>
                     )}
