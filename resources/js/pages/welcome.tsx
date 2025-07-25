@@ -129,10 +129,9 @@ const contact: Contact7Props = {
     emailLabel: 'Email',
     emailDescription: 'Kirimkan pertanyaan atau permintaan Anda melalui email.',
     email: 'rainbee.madu@gmail.com',
-    phoneLabel: 'Telfon',
-    phoneDescription: 'Hubungi kami melalui telfon untuk bantuan cepat.',
-    phone1: '081249900122 (Niswa)',
-    phone2: '085158662580 (Rainbee)',
+    phoneLabel: 'Telepon',
+    phoneDescription: 'Hubungi kami melalui telepon untuk bantuan cepat.',
+    phone1: '081249900122 (Niswatin)',
 };
 
 interface MenuItem {
@@ -199,7 +198,7 @@ const footerData: Footer2Props = {
 };
 
 const providers = [
-    { name: 'WhatsApp', icon: <FaWhatsapp className="h-5 w-5" />, href: 'https://www.whatsapp.com' },
+    { name: 'WhatsApp', icon: <FaWhatsapp className="h-5 w-5" />, href: 'https://wa.me/6281249900122' },
     { name: 'Instagram', icon: <FaInstagram className="h-5 w-5" />, href: 'https://www.instagram.com/rainbee.madu/' },
     { name: 'Telepon', icon: <Phone className="h-5 w-5" />, href: `tel:${contactInfo.whatsapp}` },
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },

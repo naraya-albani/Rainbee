@@ -144,7 +144,7 @@ export default function Laporan({ invoice }: Prop) {
                                                 <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">
                                                     <DialogHeader>
                                                         <DialogTitle>Detail Pesanan</DialogTitle>
-                                                        <DialogDescription>No. Invoice: {invoice.id}</DialogDescription>
+                                                        <DialogDescription>No. Invoice: {selectedInvoice?.id}</DialogDescription>
                                                     </DialogHeader>
                                                     {/* kiri */}
                                                     <div className="flex flex-1 flex-col gap-6 overflow-y-auto pt-4 lg:flex-row">
@@ -158,16 +158,21 @@ export default function Laporan({ invoice }: Prop) {
                                                                         <p>{selectedInvoice?.cart?.user?.name ?? '-'}</p>
                                                                         <p>
                                                                             Tanggal{' '}
-                                                                            {new Date(invoice.created_at).toLocaleString('id-ID', {
-                                                                                day: 'numeric',
-                                                                                month: 'long',
-                                                                                year: 'numeric',
-                                                                                hour: '2-digit',
-                                                                                minute: '2-digit',
-                                                                                timeZone: 'Asia/Jakarta',
-                                                                                hour12: false,
-                                                                            })}
+                                                                            {selectedInvoice?.created_at
+                                                                                ? new Date(
+                                                                                      selectedInvoice.created_at.replace(' ', 'T'),
+                                                                                  ).toLocaleString('id-ID', {
+                                                                                      day: 'numeric',
+                                                                                      month: 'long',
+                                                                                      year: 'numeric',
+                                                                                      hour: '2-digit',
+                                                                                      minute: '2-digit',
+                                                                                      timeZone: 'Asia/Jakarta',
+                                                                                      hour12: false,
+                                                                                  })
+                                                                                : 'Tidak tersedia'}
                                                                         </p>
+
                                                                         <div>
                                                                             <span className="font-semibold">Alamat Pengiriman:</span>
                                                                             <p>
