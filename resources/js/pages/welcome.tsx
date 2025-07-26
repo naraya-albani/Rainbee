@@ -779,7 +779,13 @@ export default function Welcome({ auth, product }: Props) {
                                             <a href="#produk">Produk</a>
                                         </Button>
                                         <Button asChild>
+                                            <a href="#dokumentasi"> Dokumentasi</a>
+                                        </Button>
+                                        <Button asChild>
                                             <a href="#keunggulan"> Keunggulan</a>
+                                        </Button>
+                                        <Button asChild>
+                                            <a href="#review">Review</a>
                                         </Button>
                                         <Button asChild>
                                             <a href="#faq">FAQ</a>
