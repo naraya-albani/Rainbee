@@ -1,5 +1,8 @@
 import AppLogoIcons from '@/components/app-logo-text';
+import { Timeline3 } from '@/components/dokumentasisection';
 import QuantitySelector from '@/components/incrementDecrementBtn';
+import Rainbee from '@/components/raimbeeicons';
+import Rainbeewhite from '@/components/rainbeelight';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { Auth, CartForm, Product } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { History, LogOut, Mail, Phone, Settings, ShoppingCart, User } from 'lucide-react';
+import { History, LogOut, Mail, Phone, Settings, ShoppingCart, Star, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
 import { toast } from 'sonner';
@@ -18,7 +21,7 @@ const siteData = {
     tagline: 'Tetes Murni, Energi Alami. ',
 };
 
-const navLinks = ['Beranda', 'Produk', 'Keunggulan', 'FAQ', 'Kontak'];
+const navLinks = ['Beranda', 'Produk', 'Dokumentasi', 'Keunggulan', 'Review', 'FAQ', 'Kontak'];
 
 type Props = {
     auth: Auth;
@@ -204,6 +207,23 @@ const providers = [
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
 
+const reviews = [
+    {
+        name: 'Andi Wijaya',
+        description: 'madunya mantap',
+        rating: 5,
+    },
+    {
+        name: 'Siti Rahma',
+        description: 'madunya manis',
+        rating: 4,
+    },
+    {
+        name: 'Dedi Pranoto',
+        description: 'madunya bermanfaat',
+        rating: 5,
+    },
+];
 export default function Welcome({ auth, product }: Props) {
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [quantity, setQuantity] = useState<number>(1);
@@ -250,7 +270,8 @@ export default function Welcome({ auth, product }: Props) {
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
-                            <span className="hidden text-xl font-bold text-[#f59e0b] sm:inline">{import.meta.env.VITE_APP_NAME}</span>
+                            <Rainbee className='h-6 hidden text-xl font-bold text-[#f59e0b] sm:inline'></Rainbee>
+
                         </a>
 
                         <nav className="hidden flex-grow items-center justify-center space-x-4 md:flex">
@@ -440,7 +461,7 @@ export default function Welcome({ auth, product }: Props) {
                         <div className="absolute right-0 bottom-0 left-0 z-10 h-32 bg-gradient-to-b from-transparent to-background"></div>
                         <div className="mb-16 text-center md:mb-20">
                             <div className="mb-4 flex items-center justify-center">
-                                <AppLogoIcons className="h-30 w-auto max-lg:h-12" />
+                                <Rainbeewhite className="h-30 w-auto max-lg:h-12" />
                             </div>
                             <p className="mx-auto mb-10 max-w-3xl px-4 text-lg text-white md:text-xl">{siteData.tagline}</p>
 
@@ -610,7 +631,24 @@ export default function Welcome({ auth, product }: Props) {
                         </div>
                     </div>
                 </section>
-
+                <section id="dokumentasi" className="scroll-mt-24 bg-background p-4 py-32 sm:p-6 lg:p-8">
+                    <Timeline3
+                        heading="Dokumentasi Proyek"
+                        description="Lihat perjalanan Rainbee berkembang dari waktu ke waktu."
+                        features={[
+                            {
+                                image: '/doc1.jpg',
+                                title: 'Inisiasi',
+                                description: 'Proyek dimulai dengan riset dan perencanaan.',
+                            },
+                            {
+                                image: '/doc2.jpg',
+                                title: 'Pengembangan',
+                                description: 'Tim mulai membangun fitur utama aplikasi.',
+                            },
+                        ]}
+                    />
+                </section>
                 <section id="keunggulan" className="py-12 md:py-16">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="mb-10 text-center md:mb-12">
@@ -628,6 +666,26 @@ export default function Welcome({ auth, product }: Props) {
                                         <h3 className="mb-2 text-lg font-bold text-primary">{item.title}</h3>
                                         <p className="text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
                                     </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+                <section id="review" className="min-h-screen scroll-mt-24 bg-background px-4 py-20 sm:px-6 lg:px-8">
+                    <div className="container mx-auto text-center">
+                        <h2 className="mb-4 text-3xl font-bold text-[#f59e0b]">Apa kata mereka?</h2>
+                        <p className="mx-auto mb-12 max-w-xl text-muted-foreground">Testimoni pengguna yang telah merasakan manfaat madu kami.</p>
+
+                        <div className="grid gap-6 md:grid-cols-3">
+                            {reviews.map((r, i) => (
+                                <div key={i} className="rounded-xl bg-muted p-6 shadow transition-shadow duration-300 hover:shadow-lg">
+                                    <p className="mb-4 text-muted-foreground italic">"{r.description}"</p>
+                                    <div className="mb-2 flex justify-center">
+                                        {Array.from({ length: r.rating }).map((_, idx) => (
+                                            <Star key={idx} className="h-5 w-5 fill-primary text-primary" />
+                                        ))}
+                                    </div>
+                                    <p className="font-semibold text-primary">{r.name}</p>
                                 </div>
                             ))}
                         </div>
@@ -690,6 +748,7 @@ export default function Welcome({ auth, product }: Props) {
                         </div>
                     </div>
                 </section>
+
                 <section className="p-4 pt-32 sm:p-6 lg:p-8">
                     <div className="container mx-auto">
                         <footer>
