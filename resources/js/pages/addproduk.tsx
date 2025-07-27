@@ -199,7 +199,7 @@ export default function Addproduk() {
                         <DialogTrigger asChild>
                             <Button>
                                 <Plus />
-                                Tambahkan Produk
+                                Tambah Produk
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="flex max-h-screen flex-col sm:max-w-[1080px]">

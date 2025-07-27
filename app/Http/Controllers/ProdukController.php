@@ -37,7 +37,6 @@ class ProdukController extends Controller
 
             return response()->json([
                 'message' => 'Produk berhasil ditambahkan',
-                'data' => $product
             ], 201);
         } catch (\Exception $e) {
             return response()->json([

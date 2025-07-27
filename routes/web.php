@@ -12,8 +12,17 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
-        'user' => Auth::user(),
-        'product' => Product::all()
+        'product' => Product::all(),
+        'ratings' => Invoice::with('cart.user')
+            ->where('rating', '>', 3)
+            ->get()
+            ->map(function ($invoice) {
+                return [
+                    'rating' => $invoice->rating,
+                    'comment' => $invoice->comment,
+                    'name' => $invoice->cart->user->name
+                ];
+            }),
     ]);
 })->name('home');
 

@@ -1,4 +1,3 @@
-import AppLogoIcons from '@/components/app-logo-text';
 import { Timeline3 } from '@/components/dokumentasisection';
 import QuantitySelector from '@/components/incrementDecrementBtn';
 import Rainbee from '@/components/raimbeeicons';
@@ -9,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
-import { Auth, CartForm, Product } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { CartForm, Product, SharedData } from '@/types';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { History, LogOut, Mail, Phone, Settings, ShoppingCart, Star, User } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa6';
@@ -24,8 +23,12 @@ const siteData = {
 const navLinks = ['Beranda', 'Produk', 'Dokumentasi', 'Keunggulan', 'Review', 'FAQ', 'Kontak'];
 
 type Props = {
-    auth: Auth;
     product: Product[];
+    ratings: {
+        rating: number;
+        comment: string;
+        name: string;
+    }[];
 };
 
 interface WhyChooseUsItem {
@@ -42,7 +45,7 @@ const whyChooseUs: WhyChooseUsItem[] = [
     },
     {
         title: 'Kualitas Terjamin',
-        desc: 'Setiap tetes Rainbee melewati prosesQuality Control ketat untuk memastikan kemurnian dan manfaatnya bagi Anda.',
+        desc: 'Setiap tetes Rainbee melewati proses Quality Control ketat untuk memastikan kemurnian dan manfaatnya bagi Anda.',
         icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-4 text-[#f59e0b]"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>`,
     },
     {
@@ -99,11 +102,6 @@ const faqs: Faq1Props = {
             id: 'faq-4',
             question: 'Bagaimana cara memesan produk Rainbee?',
             answer: 'Anda bisa memesan langsung melalui website kami di bagian Produk. Pilih varian madu, lalu ikuti proses checkout.',
-        },
-        {
-            id: 'faq-5',
-            question: 'Apakah Rainbee memiliki sertifikasi?',
-            answer: 'Produk Rainbee sudah melalui proses uji laboratorium dan memiliki sertifikasi resmi dari BPOM dan halal MUI.',
         },
     ],
 };
@@ -207,24 +205,8 @@ const providers = [
     { name: 'Surel', icon: <Mail className="h-5 w-5" />, href: `mailto:${contact.email}` },
 ];
 
-const reviews = [
-    {
-        name: 'Andi Wijaya',
-        description: 'madunya mantap',
-        rating: 5,
-    },
-    {
-        name: 'Siti Rahma',
-        description: 'madunya manis',
-        rating: 4,
-    },
-    {
-        name: 'Dedi Pranoto',
-        description: 'madunya bermanfaat',
-        rating: 5,
-    },
-];
-export default function Welcome({ auth, product }: Props) {
+export default function Welcome({ product, ratings }: Props) {
+    const { auth } = usePage<SharedData>().props;
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [quantity, setQuantity] = useState<number>(1);
     const [openPopup, setOpenPopup] = useState(false);
@@ -270,8 +252,7 @@ export default function Welcome({ auth, product }: Props) {
                 <header className="bg-opacity-90 sticky top-0 z-50 bg-[#1b1b18] backdrop-blur-md dark:bg-[#1b1b18]">
                     <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                         <a href="#beranda" className="flex flex-shrink-0 items-center space-x-2" aria-label="Homepage">
-                            <Rainbee className='h-6 hidden text-xl font-bold text-[#f59e0b] sm:inline'></Rainbee>
-
+                            <Rainbee className="hidden h-6 text-xl font-bold text-[#f59e0b] sm:inline"></Rainbee>
                         </a>
 
                         <nav className="hidden flex-grow items-center justify-center space-x-4 md:flex">
@@ -485,7 +466,7 @@ export default function Welcome({ auth, product }: Props) {
                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                                         />
                                     </svg>
-                                    Lihat Layanan
+                                    Lihat Produk
                                 </a>
 
                                 <a
@@ -621,7 +602,7 @@ export default function Welcome({ auth, product }: Props) {
 
                                                 <Button className="mt-5" onClick={submit} disabled={processing}>
                                                     <ShoppingCart />
-                                                    Tambahkan Keranjang
+                                                    Tambahkan ke Keranjang
                                                 </Button>
                                             </div>
                                         </div>
@@ -633,8 +614,8 @@ export default function Welcome({ auth, product }: Props) {
                 </section>
                 <section id="dokumentasi" className="scroll-mt-24 bg-background p-4 py-32 sm:p-6 lg:p-8">
                     <Timeline3
-                        heading="Dokumentasi Proyek"
-                        description="Lihat perjalanan Rainbee berkembang dari waktu ke waktu."
+                        heading="Dokumentasi"
+                        description="Rainbee merupakan hasil kolaborasi, inovasi, dan aksi nyata di lapangan."
                         features={[
                             {
                                 image: '/doc1.jpg',
@@ -643,8 +624,9 @@ export default function Welcome({ auth, product }: Props) {
                             },
                             {
                                 image: '/doc2.jpg',
-                                title: 'Pengembangan',
-                                description: 'Tim mulai membangun fitur utama aplikasi.',
+                                title: 'Tim Rainbee',
+                                description:
+                                    'Para penggerak di balik proyek Rainbee yang bekerja bersama masyarakat secara langsung untuk membawa perubahan nyata.',
                             },
                         ]}
                     />
@@ -676,19 +658,26 @@ export default function Welcome({ auth, product }: Props) {
                         <h2 className="mb-4 text-3xl font-bold text-[#f59e0b]">Apa kata mereka?</h2>
                         <p className="mx-auto mb-12 max-w-xl text-muted-foreground">Testimoni pengguna yang telah merasakan manfaat madu kami.</p>
 
-                        <div className="grid gap-6 md:grid-cols-3">
-                            {reviews.map((r, i) => (
-                                <div key={i} className="rounded-xl bg-muted p-6 shadow transition-shadow duration-300 hover:shadow-lg">
-                                    <p className="mb-4 text-muted-foreground italic">"{r.description}"</p>
-                                    <div className="mb-2 flex justify-center">
-                                        {Array.from({ length: r.rating }).map((_, idx) => (
-                                            <Star key={idx} className="h-5 w-5 fill-primary text-primary" />
-                                        ))}
+                        {ratings.length === 0 ? (
+                            <p className="text-muted-foreground">Belum ada testimoni untuk saat ini.</p>
+                        ) : (
+                            <div className="flex flex-wrap justify-center gap-6">
+                                {ratings.map((r, i) => (
+                                    <div
+                                        key={i}
+                                        className="w-full max-w-sm rounded-xl bg-muted p-6 shadow transition-shadow duration-300 hover:shadow-lg"
+                                    >
+                                        <p className="mb-4 text-muted-foreground italic">"{r.comment}"</p>
+                                        <div className="mb-2 flex justify-center">
+                                            {Array.from({ length: r.rating }).map((_, idx) => (
+                                                <Star key={idx} className="h-5 w-5 fill-primary text-primary" />
+                                            ))}
+                                        </div>
+                                        <p className="font-semibold text-primary">{r.name}</p>
                                     </div>
-                                    <p className="font-semibold text-primary">{r.name}</p>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </section>
 
@@ -736,7 +725,7 @@ export default function Welcome({ auth, product }: Props) {
                             </div>
                             <div className="col-span-full mt-6">
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31594.412854934653!2d113.721344!3d-8.1723392!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd695b617d8f623%3A0xf6c4437632474338!2sPoliteknik%20Negeri%20Jember!5e0!3m2!1sid!2sid!4v1752216074517!5m2!1sid!2sid"
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3113.6795120740644!2d113.83805187378638!3d-7.835073477835674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd6df004e732b9d%3A0x829ed348a851872b!2sDusun%20petung!5e1!3m2!1sen!2sid!4v1753516659941!5m2!1sen!2sid"
                                     className="w-full rounded-lg"
                                     height="500"
                                     style={{ border: 0 }}
