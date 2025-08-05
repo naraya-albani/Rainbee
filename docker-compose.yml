@@ -6,7 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: myapp-app
+    container_name: rainbee-app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -17,7 +17,7 @@ services:
   # Nginx Service
   web:
     image: nginx:alpine
-    container_name: myapp-web
+    container_name: rainbee-web
     restart: unless-stopped
     ports:
       - '9090:80' # Map host port 8080 to container port 80
@@ -32,7 +32,7 @@ services:
   # MySQL Service
   db:
     image: mysql:8.0
-    container_name: myapp-db
+    container_name: rainbee-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-madumurni}
@@ -48,7 +48,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: myapp-pma
+    container_name: rainbee-pma
     restart: unless-stopped
     ports:
       - '9091:80' # <-- phpMyAdmin akan diakses dari port 8081
