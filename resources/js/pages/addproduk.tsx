@@ -16,7 +16,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
-import { PenBox, Plus, Trash2 } from 'lucide-react';
+import { Loader2, PenBox, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -76,8 +76,12 @@ export default function Addproduk() {
             });
     }, []);
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        setIsSubmitting(true);
 
         const formData = new FormData();
         formData.append('name', name);
@@ -115,6 +119,9 @@ export default function Addproduk() {
             setAddDialogOpen(false);
         } catch (err) {
             console.error('Gagal menambahkan produk:', err);
+            toast.error('Gagal menambahkan produk');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -270,7 +277,10 @@ export default function Addproduk() {
                                     <DialogClose asChild>
                                         <Button variant="outline">Cancel</Button>
                                     </DialogClose>
-                                    <Button type="submit">Save changes</Button>
+                                    <Button type="submit" disabled={isSubmitting}>
+                                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {isSubmitting ? 'Menyimpan...' : 'Save changes'}
+                                    </Button>
                                 </DialogFooter>
                             </form>
                         </DialogContent>
