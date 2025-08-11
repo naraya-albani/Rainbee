@@ -1,5 +1,6 @@
 interface Feature {
-  image: string;
+  image?: string; 
+  video?: string;
   title: string;
   description: string;
 }
@@ -7,14 +8,12 @@ interface Feature {
 interface Timeline3Props {
   heading: string;
   description: string;
-
   features?: Feature[];
 }
 
 const Timeline3 = ({
   heading = "Experience the difference with us",
   description = "We believe in creating lasting partnerships with our clients, focusing on long-term success through collaborative innovation and dedicated support.",
-
   features = [
     {
       image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-4.svg",
@@ -29,14 +28,9 @@ const Timeline3 = ({
         "Secured $50M in Series B funding to accelerate product development.",
     },
     {
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-5.svg",
-      title: "Product Launch",
-      description: "Successfully launched our flagship product to market.",
-    },
-    {
-      image: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-5.svg",
-      title: "Company Founded",
-      description: "Started with a vision to revolutionize the industry.",
+      video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      title: "Company Video",
+      description: "Watch our company journey in this short video.",
     },
   ],
 }: Timeline3Props) => {
@@ -51,16 +45,26 @@ const Timeline3 = ({
             <p className="font-medium text-muted-foreground md:text-xl">
               {description}
             </p>
-
           </div>
+
           <div className="flex flex-col gap-12 md:gap-20">
-            {features.map((feature, index) => (
+            {features?.map((feature, index) => (
               <div key={index} className="rounded-xl border p-2">
-                <img
-                  src={feature.image}
-                  alt={feature.title}
-                  className="aspect-video w-full rounded-xl border border-dashed object-cover"
-                />
+                {feature.video ? (
+                  <iframe
+                    src={feature.video}
+                    className="aspect-video w-full rounded-xl border border-dashed"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                ) : (
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="aspect-video w-full rounded-xl border border-dashed object-cover"
+                  />
+                )}
+
                 <div className="p-6">
                   <h3 className="mb-1 text-2xl font-semibold">
                     {feature.title}

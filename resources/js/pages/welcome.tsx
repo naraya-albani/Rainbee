@@ -505,7 +505,7 @@ export default function Welcome({ product, ratings }: Props) {
                                     return (
                                         <Card key={product.id} className="w-[350px] overflow-hidden">
                                             <img
-                                                src={`/storage/${product.image}`}
+                                                src={product.image.startsWith('/') ? product.image : `/storage/${product.image}`}
                                                 alt={product.name}
                                                 className="h-[180px] w-full rounded-t-lg object-cover"
                                             />
@@ -565,7 +565,11 @@ export default function Welcome({ product, ratings }: Props) {
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <img
-                                                src={`/storage/${selectedProduct.image}`}
+                                                src={
+                                                    selectedProduct.image.startsWith('/')
+                                                        ? selectedProduct.image
+                                                        : `/storage/${selectedProduct.image}`
+                                                }
                                                 alt="Madu Alami"
                                                 className="h-[180px] w-full rounded-t-lg object-cover"
                                             />
@@ -627,6 +631,12 @@ export default function Welcome({ product, ratings }: Props) {
                                 title: 'Tim Rainbee',
                                 description:
                                     'Para penggerak di balik proyek Rainbee yang bekerja bersama masyarakat secara langsung untuk membawa perubahan nyata.',
+                            },
+                            {
+                                video: 'https://www.youtube.com/embed/JayuZldap0s',
+                                title: 'Aftermovie',
+                                description:
+                                    'Cuplikan video yang menampilkan momen-momen berharga selama pelaksanaan proyek Rainbee bersama masyarakat.',
                             },
                         ]}
                     />
