@@ -49,7 +49,6 @@ export default function Addproduk() {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editProduct, setEditProduct] = useState<Product | null>(null);
     const [addDialogOpen, setAddDialogOpen] = useState(false);
-    const [inputValue, setInputValue] = useState('');
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -126,7 +125,7 @@ export default function Addproduk() {
         setSize(product.size.toString());
         setStock(product.stock.toString());
         setPrice(product.price.toString());
-        setPreview(product.image ? `/storage/${product.image}` : null);
+        setPreview(product.image ? (product.image.startsWith('/') ? product.image : `/storage/${product.image}`) : null);
         setImage(null);
     };
 
@@ -214,7 +213,11 @@ export default function Addproduk() {
                                         {!preview && <input type="file" accept="image/*" onChange={handleImageChange} />}
                                         {preview && (
                                             <div className="flex flex-col items-center gap-2">
-                                                <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />
+                                                <img
+                                                    src={preview.startsWith('/') ? preview : `/storage/${preview}`}
+                                                    alt="Preview"
+                                                    className="h-48 w-48 rounded object-cover"
+                                                />
                                                 <Button type="button" onClick={handleRemoveImage} className="mt-2 w-full" variant="destructive">
                                                     Hapus Gambar
                                                 </Button>
@@ -296,7 +299,11 @@ export default function Addproduk() {
                                         {!preview && <input type="file" accept="image/*" onChange={handleImageChange} />}
                                         {preview && (
                                             <div className="flex flex-col items-center gap-2">
-                                                <img src={preview} alt="Preview" className="h-48 w-48 rounded object-cover" />
+                                                <img
+                                                    src={preview.startsWith('/') ? preview : `/storage/${preview}`}
+                                                    alt="Preview"
+                                                    className="h-48 w-48 rounded object-cover"
+                                                />
                                                 <Button type="button" onClick={handleRemoveImage} className="mt-2 w-full" variant="destructive">
                                                     Hapus Gambar
                                                 </Button>
