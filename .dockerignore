@@ -1,0 +1,10 @@
+public/storage
+vendor/
+node_modules/
+storage/logs/
+.git/
+.gitignore
+.env
+.env.example
+.editorconfig
+README.md
